@@ -1,0 +1,38 @@
+<?php
+class Home extends Mk\Controller
+{
+/**
+* @once
+* @protected
+*/
+public function init()
+{
+echo "init";
+}
+/**
+* @protected
+*/
+public function authenticate()
+{
+echo "authenticate";
+}
+/**
+* @before init, authenticate, init
+* @after notify
+*/
+public function index()
+{
+	$this->init();
+echo "hello world!";
+}
+/**
+* @protected
+*/
+public function notify()
+{
+echo "notify";
+}
+}
+
+
+?>
