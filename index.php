@@ -1,5 +1,5 @@
 <?php
-error_reporting( E_PARSE );
+error_reporting( E_ERROR );
 define("DEBUG", 1);
 define("APP_PATH", dirname(__FILE__));
 define("CORE_PATH", dirname(__FILE__));
@@ -7,6 +7,17 @@ try
 {
 require(CORE_PATH."/mk/core.php");
 Mk\Core::initialize();
+$path = APP_PATH . "/application/plugins";
+$iterator = new DirectoryIterator($path);
+foreach ($iterator as $item)
+{
+	if (!$item->isDot() && $item->isDir())
+	{
+		include($path . "/" . $item->getFilename() . "/initialize.php");
+	}
+}
+
+
 $configuration = new Mk\Configuration(array("type" => "ini"));
 Mk\Registry::set("configuration", $configuration-> initialize());
 $database = new Mk\Database();

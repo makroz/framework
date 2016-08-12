@@ -1,8 +1,8 @@
 <?php 
-use Shared\Controller as Controller;
+use Shared\ControllerDb as ControllerDb;
 use Mk\Registry as Registry;
 use Mk\RequestMethods as RequestMethods;
-class User_controller extends Controller
+class User_controller extends ControllerDb
 {
 	
 	public function register()
@@ -62,7 +62,7 @@ class User_controller extends Controller
 				{
 					$session = Registry::get("session");
 					$session-> set("user", serialize($user));
-					header("Location: index.php?url=users/profile&extension=html");
+					header("Location: index.php?url=users/profile");
 					exit();
 				}
 				else
@@ -145,7 +145,7 @@ class User_controller extends Controller
 			$this-> setUser(false);
 			$session = Registry::get("session");
 			$session-> erase("user");
-			header("Location: index.php?url=users/login&extension=html");
+			header("Location: index.php?url=users/login");
 			exit();
 		}
 

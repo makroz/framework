@@ -1,0 +1,4 @@
+[2016-08-11 02:38:05]mk.configuration.initialize.before: 
+[2016-08-11 02:38:05]mk.cache.initialize.before: 
+Average: 0.0035365, Longest: 0.004113, Shortest: 0.00296, Total: 0.036826
+<hr>[2016-08-11 02:42:49]mk.configuration.initialize.before: <br>[2016-08-11 02:42:49]mk.cache.initialize.before: <br><hr>Average: 0.00372, Longest: 0.004081, Shortest: 0.003359, Total: 0.047933<br>

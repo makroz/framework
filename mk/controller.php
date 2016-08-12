@@ -46,6 +46,11 @@ namespace Mk
 		* @readwrite
 		*/
 		protected $_defaultContentType = "text/html";
+		/**
+		* @read
+		*/
+		protected $_name;
+
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
@@ -114,9 +119,20 @@ namespace Mk
 				throw $this->_Exception("Invalid layout/template syntax");
 			}
 		}
+
+		protected function getName()
+		{
+			if (empty($this->_name))
+			{
+				$this->_name = get_class($this);
+			}
+			return $this->_name;
+		}
 		public function __destruct()
 		{
+			Events::fire("mk.controller.destruct.before", array($this->name));
 			$this->render();
+			Events::fire("mk.controller.destruct.after", array($this->name));
 		}
 	}
 }	

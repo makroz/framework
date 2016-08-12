@@ -1,8 +1,12 @@
 <?php 
 namespace Shared
 {
-	class Controller extends \Mk\Controller
+	use Mk\Events as Events;
+	use Mk\Router as Router;
+	use Mk\Registry as Registry;
+	class ControllerDb extends \Mk\Controller
 	{
+		private $_codeError=4000;
 		/**
 		* @readwrite
 		*/
@@ -11,12 +15,54 @@ namespace Shared
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
-			$database = \Mk\Registry::get("database");
+			$database = Registry::get("database");
 			$database-> connect();
 
-			$session = \Mk\Registry::get("session");
+			$session = Registry::get("session");
 			$user = unserialize($session-> get("user", null));
 			$this->setUser($user);
+
+// schedule: load user from session
+			Events::add("mk.router.beforehooks.before", function($name, $parameters) {
+				$session = Registry::get("session");
+				$controller = Registry::get("controller");
+				$user = $session-> get("user");
+				if ($user)
+				{
+					$controller-> user = \User::first(array(
+						"id = ?" => $user
+						));
+				}
+			});
+// schedule: save user to session
+			Events::add("mk.router.afterhooks.after", function($name, $parameters) {
+				$session = Registry::get("session");
+				$controller = Registry::get("controller");
+				if ($controller-> user)
+				{
+					$session-> set("user", $controller-> user-> id);
+				}
+			});
+// schedule: disconnect from database
+			Events::add("mk.controller.destruct.after", function($name) {
+				$database = Registry::get("database");
+				$database->disconnect();
+			});
+		}
+
+		public function setUser($user)
+		{
+			$session = Registry::get("session");
+			if ($user)
+			{
+				$session-> set("user", $user-> id);
+			}
+			else
+			{
+				$session-> erase("user");
+			}
+			$this-> _user = $user;
+			return $this;
 		}
 
 /*		public function __destruct()
@@ -76,6 +122,18 @@ namespace Shared
 			-> set("limit", $limit)
 			-> set("count", $count)
 			-> set("users", $users);
+		}
+
+
+		/**
+		* @protected
+		*/
+		public function _admin()
+		{
+			if (!$this-> user-> admin)
+			{
+				throw $this->_Execption("Not a valid admin user account",1);
+			}
 		}
 
 

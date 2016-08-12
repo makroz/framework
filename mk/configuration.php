@@ -18,10 +18,12 @@ namespace Mk
 
 		public function initialize()
 		{
+			Events::fire("mk.configuration.initialize.before",  array('type'=>$this->type,'options'=>$this->_options));
 			if (!$this->type)
 			{
 				throw $this->_Exception("Invalid type");
 			}
+			Events::fire("mk.configuration.initialize.after",  array('type'=>$this->type,'options'=>$this->_options));
 			switch ($this->type)
 			{
 				case "ini":
@@ -35,6 +37,7 @@ namespace Mk
 					break;
 				}
 			}
+
 		}
 	}
 }

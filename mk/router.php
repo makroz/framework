@@ -9,6 +9,7 @@ namespace Mk
 	//use Mk\Router\Exception as Exception;
 	class Router extends Base
 	{
+		 private $_codeError=3000;
 		/**
 		* @readwrite
 		*/
@@ -57,6 +58,7 @@ namespace Mk
 			$name = ucfirst($controller).'_controller';
 			$this->_controller = $controller;
 			$this->_action = $action;
+			Events::fire("mk.router.controller.before", array($controller, $parameters));
 			try
 			{
 				$instance = new $name(array(
@@ -64,21 +66,24 @@ namespace Mk
 					));
 				Registry::set("controller", $instance);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
-				throw $this->_Exception("Controller {$name} not found");
+				throw $this->_Exception("Controller {$name} not found",1);
 			}
+
+			Events::fire("mk.router.controller.after", array($controller, $parameters));
+			
 			if (!method_exists($instance, $action))
 			{
 				$instance->willRenderLayoutView = false;
 				$instance->willRenderActionView = false;
-				throw $this->_Exception("Action {$action} not found");
+				throw $this->_Exception("Action {$action} not found",2);
 			}
 			$inspector = new Inspector($instance);
 			$methodMeta = $inspector->getMethodMeta($action);
 			if (!empty($methodMeta["@protected"]) || !empty($methodMeta["@private"]))
 			{
-				throw $this->_Exception("Action {$action} not found");
+				throw $this->_Exception("Action {$action} not found",3);
 			}
 			$hooks = function($meta, $type) use ($inspector, $instance)
 			{
@@ -97,12 +102,21 @@ namespace Mk
 					}
 				}
 			};
+
+			Events::fire("mk.router.beforehooks.before", array($action, $parameters));
 			$hooks($methodMeta, "@before");
+			Events::fire("framework.router.beforehooks.after", array($action, $parameters));
+
+			Events::fire("mk.router.action.before", array($action, $parameters));
 			call_user_func_array(array(
 				$instance,
 				$action
 				), is_array($parameters) ? $parameters : array());
+			Events::fire("mk.router.action.after", array($action, $parameters));
+
+			Events::fire("mk.router.afterhooks.before", array($action, $parameters));
 			$hooks($methodMeta, "@after");
+			Events::fire("mk.router.afterhooks.after", array($action, $parameters));
 		// unset controller
 			Registry::erase("controller");
 		}

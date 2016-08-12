@@ -17,6 +17,7 @@ namespace Mk
 		
 		public function initialize()
 		{
+			Events::fire("mk.cache.initialize.before", array('type'=>$this->_type,'options'=>$this->_options));
 			$type = $this-> getType();
 			if (empty($type))
 			{
@@ -41,6 +42,7 @@ namespace Mk
 			{
 				throw $this->_Exception("(type) NO fue definido");
 			}
+			Events::fire("mk.cache.initialize.after",  array('type'=>$this->type,'options'=>$this->_options));
 			switch ($type)
 			{
 				case "memcached":
@@ -54,6 +56,7 @@ namespace Mk
 					break;
 				}
 			}
+			
 		}
 	}
 }
