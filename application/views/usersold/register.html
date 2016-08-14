@@ -9,7 +9,7 @@ Your account has been created!
 			<label>
 				First name:
 				<input type="text" name ="first" />
-				{echo \Shared\Markup::errors($errors, "first")}
+				{echo \Shared\FormTools::errors($errors, "first")}
 			</label>
 		</li>
 		<li>
@@ -17,21 +17,21 @@ Your account has been created!
 				Last name:
 				<input type="text" name="last" />
 				<?php $a=2;echo $a+2;>
-				{echo \Shared\Markup::errors($errors, "last")}
+				{echo \Shared\FormTools::errors($errors, "last")}
 			</label>
 		</li>
 		<li>
 			<label>
 				Email:
 				<input type="text" name="email" />
-				{echo \Shared\Markup::errors($errors, "email")}
+				{echo \Shared\FormTools::errors($errors, "email")}
 			</label>
 		</li>
 		<li>
 			<label>
 				Password:
 				<input type="password" name="password" />
-				{echo \Shared\Markup::errors($errors, "password")}
+				{echo \Shared\FormTools::errors($errors, "password")}
 			</label>
 		</li>
 		<li>

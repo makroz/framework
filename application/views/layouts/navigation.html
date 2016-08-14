@@ -1,0 +1,11 @@
+<a href="/" > home</a>
+<a href = "index.php?url=user/search" > search</a>
+{if isset($user)}
+<a href = "index.php?url=user/profile" > profile</a>
+<a href = "index.php?url=user/settings" > settings</a>
+<a href = "index.php?url=user/logout" > logout</a>
+{/if}
+{else}
+<a href = "index.php?url=user/register" > register</a>
+<a href = "index.php?url=user/login" > login</a>
+{/else}

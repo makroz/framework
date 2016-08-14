@@ -6,43 +6,45 @@ namespace Shared
 	use Mk\Registry as Registry;
 	class ControllerDb extends \Mk\Controller
 	{
-		private $_codeError=4000;
+		
 		/**
 		* @readwrite
 		*/
-		protected $_user;
+		protected $_model;
+
+		/**
+		* @readwrite
+		*/
+		protected $_secureKey;
+
+		/**
+		* @readwrite
+		*/
+		protected $_modelName;
+
+
 
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
 			$database = Registry::get("database");
 			$database-> connect();
+			if ((!$this->_secureKey)or($this->_secureKey==''))
+			{
+				$this->_secureKey=str_replace('_controller','',get_class($this));	
+			}
 
-			$session = Registry::get("session");
+			if ((!$this->_modelName)or($this->_modelName==''))
+			{
+				$this->_modelName=str_replace('_controller','',get_class($this));	
+			}
+			$this->_model= new $this->_modelName();
+
+			/*$session = Registry::get("session");
 			$user = unserialize($session-> get("user", null));
-			$this->setUser($user);
+			$this->setUser($user);*/
 
-// schedule: load user from session
-			Events::add("mk.router.beforehooks.before", function($name, $parameters) {
-				$session = Registry::get("session");
-				$controller = Registry::get("controller");
-				$user = $session-> get("user");
-				if ($user)
-				{
-					$controller-> user = \User::first(array(
-						"id = ?" => $user
-						));
-				}
-			});
-// schedule: save user to session
-			Events::add("mk.router.afterhooks.after", function($name, $parameters) {
-				$session = Registry::get("session");
-				$controller = Registry::get("controller");
-				if ($controller-> user)
-				{
-					$session-> set("user", $controller-> user-> id);
-				}
-			});
+
 // schedule: disconnect from database
 			Events::add("mk.controller.destruct.after", function($name) {
 				$database = Registry::get("database");
@@ -50,20 +52,7 @@ namespace Shared
 			});
 		}
 
-		public function setUser($user)
-		{
-			$session = Registry::get("session");
-			if ($user)
-			{
-				$session-> set("user", $user-> id);
-			}
-			else
-			{
-				$session-> erase("user");
-			}
-			$this-> _user = $user;
-			return $this;
-		}
+		
 
 /*		public function __destruct()
 		{
@@ -75,17 +64,18 @@ namespace Shared
 
 		public function render()
 		{
-			if ($this-> getUser())
+			
+			if ($this-> _model)
 			{
 				if ($this-> getActionView())
 				{
 					$this->getActionView()
-					->set("user", $this->getUser());
+					->set($this->_model->getTable(), $this->_model);
 				}
 				if ($this->getLayoutView())
 				{
 					$this->getLayoutView()
-					->set("user", $this->getUser());
+					->set($this->_model->getTable(), $this->_model);
 				}
 			}
 			parent::render();
@@ -124,15 +114,86 @@ namespace Shared
 			-> set("users", $users);
 		}
 
-
-		/**
-		* @protected
-		*/
-		public function _admin()
+		
+		public function _secure($key=false)
 		{
-			if (!$this-> user-> admin)
+
+
+			$session = Registry::get("session");
+			if (($key)and($key!='')){
+				$secureKey = $key; 	
+			}
+			else
 			{
-				throw $this->_Execption("Not a valid admin user account",1);
+				$secureKey = $this->_secureKey;	
+			}
+			
+
+
+			$user = $session-> get('Secure_'.$secureKey, null);
+			//echo '<hr>Secure_'.$secureKey.' User:';print_r($user);
+			if (!$user)
+			{
+				header("Location: index.php?url={$secureKey}/login");
+				exit();
+			}
+		}
+
+		public function _isLoged($key=false)
+		{
+
+			$session = Registry::get("session");
+			if (($key)and($key!='')){
+				$secureKey = $key; 	
+			}
+			else
+			{
+				$secureKey = $this->_secureKey;	
+			}
+			
+			return $session-> get('Secure_'.$secureKey, false);
+		}
+	
+			public function _getLoged($key=false)
+		{
+			$session = Registry::get("session");
+			if (($key)and($key!='')){
+				$secureKey = $key; 	
+			}
+			else
+			{
+				$secureKey = $this->_secureKey;	
+			}
+
+			$user = $session-> get('Secure_'.$secureKey, null);
+			if ($user)
+			{
+				return $this->_model->first(array(
+					"id = ?" => $user
+					));
+			}else{
+				return false;
+			}
+		}
+		
+		public function _setLoged($id,$key=false)
+		{
+			$session = Registry::get("session");
+			if (($key)and($key!='')){
+				$secureKey = $key; 	
+			}
+			else
+			{
+				$secureKey = $this->_secureKey;	
+			}
+
+			if (($id)and($id!=''))
+			{
+				return  $session->set('Secure_'.$secureKey, $id);
+			}
+			else
+			{
+				return  $session->erase('Secure_'.$secureKey);
 			}
 		}
 

@@ -29,6 +29,7 @@ namespace Mk
 		public function fileexist()
 		{
 
+			//echo "<hr>file:".$this-> getFile();
 			$this-> setFile(strtolower(str_replace("/", DIRECTORY_SEPARATOR, trim($this-> getFile() )) ));
 
 			if (!file_exists($this-> getFile()))
@@ -50,7 +51,7 @@ namespace Mk
 			}
 			$content = file_get_contents($this-> getFile());
 			$this-> _template-> parse($content);
-			//\Shared\Markup::debug($this-> _template-> process($this-> _data),551);
+			//\Shared\FormTools::debug($this-> _template-> process($this-> _data),551);
 
 			return $this-> _template-> process($this-> _data);
 		}
@@ -69,12 +70,12 @@ namespace Mk
 				throw $this->_Exception("Key must be a string or a number");
 			}
 			$this-> _data[$key] = $value;
-			//\Shared\Markup::debug($this->_data,50);
+			//\Shared\FormTools::debug($this->_data,50);
 		}
 		public function set($key, $value = null)
 		{
-			//\Shared\Markup::debug($key,51);
-			//\Shared\Markup::debug($value,10);
+			//\Shared\FormTools::debug($key,51);
+			//\Shared\FormTools::debug($value,10);
 			if (is_array($key))
 			{
 				foreach ($key as $_key => $value)

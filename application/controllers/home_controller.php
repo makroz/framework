@@ -1,5 +1,5 @@
 <?php
-class Home extends Mk\Controller
+class Home_controller extends Mk\Controller
 {
 /**
 * @once

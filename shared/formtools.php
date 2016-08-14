@@ -1,7 +1,7 @@
 <?php 
 namespace Shared
 {
-	class Markup
+	class FormTools
 	{
 		public function __construct()
 		{

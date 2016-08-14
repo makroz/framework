@@ -61,6 +61,7 @@ namespace Mk
 			Events::fire("mk.router.controller.before", array($controller, $parameters));
 			try
 			{
+				//echo "<hr><hr><hr><hr>$name";
 				$instance = new $name(array(
 					"parameters" => $parameters
 					));

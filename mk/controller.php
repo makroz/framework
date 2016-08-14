@@ -88,6 +88,7 @@ namespace Mk
 			$results = null;
 			$doAction = $this->getWillRenderActionView() && $this->getActionView()->fileExist();
 			$doLayout = $this->getWillRenderLayoutView() && $this->getLayoutView()->fileExist();
+			
 			try
 			{
 				
@@ -97,7 +98,7 @@ namespace Mk
 					$view = $this->getActionView();
 					$results = $view->render();
 				}
-				//\Shared\Markup::debug($result,2);
+				//\Shared\FormTools::debug($result,2);
 				if ($doLayout)
 				{
 					$view = $this->getLayoutView();

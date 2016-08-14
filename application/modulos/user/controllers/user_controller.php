@@ -1,15 +1,57 @@
 <?php 
 use Shared\ControllerDb as ControllerDb;
 use Mk\Registry as Registry;
+use Mk\Session as Session;
+use Mk\Events as Events;
 use Mk\RequestMethods as RequestMethods;
 class User_controller extends ControllerDb
 {
+
+		/**
+		* @readwrite
+		*/
+		protected $_secureKey='User';
+
+
+	public function __construct($options = array())
+	{
+		parent::__construct($options);
+
+		$this->_model =$this->_getLoged();
+	}
+/*		$session = Registry::get("session");
+			$controller = Registry::get("controller");
+			$user = $session-> get("user",false);
+			if ($user)
+			{
+				$this->_model = \User::first(array(
+					"id = ?" => $user
+					));
+			}
+*/
+
+
+	public function seUser($user)
+	{
+		$session = Registry::get("session");
+		if ($user)
+		{
+			$session-> set("user", $user-> id);
+		}
+		else
+		{
+			$session-> erase("user");
+		}
+		$this-> _model = $user;
+		return $this;
+	}
+
 	
 	public function register()
 	{
 
 
-		\Shared\Markup::init();
+		\Shared\FormTools::init();
 		$view = $this-> getActionView();
 		if (RequestMethods::post("register"))
 		{
@@ -25,7 +67,7 @@ class User_controller extends ControllerDb
 				$user->save();
 				$view->set("success", true);
 			}
-			//\Shared\Markup::debug($user->getErrors(),50000);
+			//\Shared\FormTools::debug($user->getErrors(),50000);
 			$view->set("errors", $user->getErrors());
 		}
 		//$view->set("errors", '');
@@ -52,38 +94,37 @@ class User_controller extends ControllerDb
 			}
 			if (!$error)
 			{
-				$user = User::first(array(
+				$session = Registry::get("session");
+				$user = new $this->_modelName();
+				$user = $user->first(array(
 					"email = ?" => $email,
 					"password = ?" => $password,
 					"live = ?" => true,
 					"deleted = ?" => false
 					));
+				//echo '<hr>Modelo '.$this->_modelName.' User:';print_r($user);
 				if (!empty($user))
 				{
-					$session = Registry::get("session");
-					$session-> set("user", serialize($user));
-					header("Location: index.php?url=users/profile");
+					
+					$this-> _setLoged($user->id);
+					header("Location: index.php?url={$this->_secureKey}/profile");
 					exit();
 				}
 				else
 				{
+					$this-> _setLoged(false);
 					$view-> set("password_error", "Email address and/or password are incorrect");
 				}
 			}
 		}
 	}
+
+		/**
+		* @before _secure
+		*/	
 	public function profile()
 	{
-		$session = Registry::get("session");
-		$user = unserialize($session-> get("user", null));
-		if (empty($user))
-		{
-			$user = new StdClass();
-			$user-> first = "Mr.";
-			$user-> last = "Smith";
-		}
-		//print_r($user);
-		$this-> getActionView()-> set("user", $user);
+		$this-> getActionView()-> set("user", $this->getModel());
 	}
 
 		public function search()
@@ -119,10 +160,13 @@ class User_controller extends ControllerDb
 		-> set("users", $users);
 		}
 
+		/**
+		* @before _secure
+		*/
 		public function settings()
 		{
 			$view = $this->getActionView();
-			$user = $this->getUser();
+			$user = $this->_model;
 			if (RequestMethods::post("update"))
 			{
 				$user = new User(array(
@@ -142,12 +186,21 @@ class User_controller extends ControllerDb
 
 		public function logout()
 		{
-			$this-> setUser(false);
-			$session = Registry::get("session");
-			$session-> erase("user");
-			header("Location: index.php?url=users/login");
+			$this-> _setLoged(false);
+			header("Location: index.php?url=user/login");
 			exit();
 		}
+
+		
+
+		public function _admin()
+		{
+			if (!$this-> _model-> admin)
+			{
+				throw $this->_Execption("Not a valid admin user account",1);
+			}
+		}
+
 
 
 }
