@@ -31,6 +31,7 @@ namespace Mk
 		protected $_function;
 		protected function _arguments($source, $expression)
 		{
+
 			$args = $this->_array($expression, array(
 				$expression=>array(
 					"opener"=>"{",
@@ -38,8 +39,10 @@ namespace Mk
 					)
 				));
 			$tags = $args["tags"];
+			//echo "Mario4:($source)($expression)";print_r($args);echo "<br>Tags:".print_r($tags);echo "<hr>";
 			$arguments = array();
 			$sanitized = StringMethods::sanitize($expression, "()[],.<>*$@");
+			//echo "Mario5: $expression ($sanitized)";echo "<hr>";
 			foreach ($tags as $i=>$tag)
 			{
 				$sanitized = str_replace($tag, "(.*)", $sanitized);
@@ -52,10 +55,12 @@ namespace Mk
 					$arguments[$tag] = $matches[$i + 1];
 				}
 			}
+			//echo "<hr>(Mario 8: $source)<br>".print_r($arguments)."<hr>";
 			return $arguments;
 		}
 		protected function _tag($source)
 		{
+			//echo "<script>alert('$source');</script>";
 			$tag = null;
 			$arguments = array();
 			$match = $this->_implementation->match($source);
@@ -68,18 +73,22 @@ namespace Mk
 			$start = strlen($type["opener"]);
 			$end = strpos($source, $type["closer"]);
 			$extract = substr($source, $start, $end - $start);
+
 			if (isset($type["tags"]))
 			{
 				$tags = implode("|", array_keys($type["tags"]));
+
 				$regex = "#^(/){0,1}({$tags})\s*(.*)$#";
 				if (!preg_match($regex, $extract, $matches))
 				{
 					return false;
 				}
+				
 				$tag = $matches[2];
 				$extract = $matches[3];
-				$closer =!!$matches[1];
+				$closer = !!$matches[1];
 			}
+
 			if ($tag && $closer)
 			{
 				return array(
@@ -91,14 +100,19 @@ namespace Mk
 					"isolated"=>$type["tags"][$tag]["isolated"]
 					);
 			}
+
 			if (isset($type["arguments"]))
 			{
+
 				$arguments = $this->_arguments($extract, $type["arguments"]);
 			}
 			else if ($tag && isset($type["tags"][$tag]["arguments"]))
 			{
+							//echo "<hr>mario2:";print_r($type["tags"][$tag]["arguments"]);echo "($extract)<hr>";
+
 				$arguments = $this->_arguments($extract, $type["tags"][$tag]["arguments"]);
 			}
+			//echo "Mario($tag)(".$type["arguments"].")(($extract))($source):****";print_r($arguments);echo '****';
 			return array(
 				"tag"=>$tag,
 				"delimiter"=>$delimiter,
@@ -108,22 +122,42 @@ namespace Mk
 				"isolated"=>(!empty($type["tags"]) ? $type["tags"][$tag]["isolated"]: false)
 				);
 		}
-		protected function _array($source)
+		protected function _array($source,$map=null)
 		{
-			$parts = array();
+				$parts = array();
 			$tags = array();
 			$all = array();
 			$type = null;
 			$delimiter = null;
 			while ($source)
 			{
-				$match = $this->_implementation->match($source);
+				$match = $this->_implementation->match($source,$map);
 				$type = $match["type"];
 				$delimiter = $match["delimiter"];
 				$opener = strpos($source, $type["opener"]);
 				$closer = strpos($source, $type["closer"]) + strlen($type["closer"]);
 				if ($opener !== false)
 				{
+
+					$closer1=$closer;
+					$opener1=$opener;
+					$c=0;
+					while ($opener1!==false){
+						$opener1 = strpos($source, $type["opener"],$opener1+strlen($type["opener"]) );
+						if (($opener1 !== false)and($opener1 < $closer1-strlen($type["closer"])))
+						{
+
+							$c++;
+						}
+					}
+					while ($c>0){
+						$c--;
+						$closer1 = strpos($source, $type["closer"],$closer1) + strlen($type["closer"]);
+					}
+
+
+					$closer=$closer1;
+					
 					$parts[] = substr($source, 0, $opener);
 					$tags[] = substr($source, $opener, $closer - $opener);
 					$source = substr($source, $closer);
@@ -242,6 +276,7 @@ namespace Mk
 			$tree = $this->_tree($array["all"]);
 			$this->_code = $this->header.$this->_script($tree).$this->footer;
 			$this->_function = create_function("\$_data", $this->code);
+			
 			return $this;
 		}
 		public function process($data = array())

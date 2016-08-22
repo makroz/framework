@@ -8,18 +8,18 @@ namespace Mk\Template\Implementation
 	{
 		protected $_map = array(
 			"echo"=>array(
-				"opener"=>"{echo",
-				"closer"=>"}",
+				"opener"=>"{% echo",
+				"closer"=>"%}",
 				"handler"=>"_echo"
 				),
 			"script"=>array(
-				"opener"=>"{php",
-				"closer"=>"}",
+				"opener"=>"{% php",
+				"closer"=>"%}",
 				"handler"=>"_script"
 				),
 			"statement"=>array(
-				"opener"=>"{",
-				"closer"=>"}",
+				"opener"=>"{% ",
+				"closer"=>"%}",
 				"tags"=>array(
 					"foreach"=>array(
 						"isolated"=>false,
@@ -119,7 +119,6 @@ namespace Mk\Template\Implementation
 		}
 		protected function _literal($tree, $content)
 		{
-			//echo"mario:asdasd";print_r($tree["source"]);echo"000<br>";
 			$source = addslashes($tree["source"]);
 			return "\$_text[] = \"{$source}\";";
 		}

@@ -30,36 +30,45 @@ namespace Mk\Template
 				throw $this->_Exception();
 			}
 		}
-		public function match($source)
-		{
-			$type = null;
-			$delimiter = null;
-			foreach ($this->_map as $_delimiter => $_type)
-			{
-				if (!$delimiter || StringMethods::indexOf($source, $type["opener"]) == -1)
-				{
-					$delimiter = $_delimiter;
-					$type = $_type;
-				}
-				$indexOf = StringMethods::indexOf($source, $_type["opener"]);
-				if ($indexOf > -1)
-				{
-					if (StringMethods::indexOf($source, $type["opener"]) > $indexOf)
-					{
-						$delimiter = $_delimiter;
-						$type = $_type;
-					}
-				}
-			}
-			if ($type == null)
-			{
-				return null;
-			}
-			return array(
-				"type" => $type,
-				"delimiter" => $delimiter
-				);
-		}
+		 public function match($source,$map=null)
+        {
+        	if (!$map)
+        	{
+        		$map=$this->_map;
+        	}
+            $type = null;
+            $delimiter = null;
+            
+            foreach ($map as $_delimiter => $_type)
+            {
+                if (!$delimiter || StringMethods::indexOf($source, $type["opener"]) == -1)
+                {
+                    $delimiter = $_delimiter;
+                    $type = $_type;
+                }
+                
+                $indexOf = StringMethods::indexOf($source, $_type["opener"]);
+                
+                if ($indexOf > -1)
+                {
+                    if (StringMethods::indexOf($source, $type["opener"]) > $indexOf)
+                    {
+                        $delimiter = $_delimiter;
+                        $type = $_type;
+                    }
+                }
+            }
+            
+            if ($type == null)
+            {
+                return null;
+            }
+            
+            return array(
+                "type" => $type,
+                "delimiter" => $delimiter
+            );
+        }
 	}
 }
 

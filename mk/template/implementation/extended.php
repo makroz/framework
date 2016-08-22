@@ -26,18 +26,18 @@ namespace Mk\Template\Implementation
 			parent::__construct($options);
 			$this-> _map = array(
 				"partial" => array(
-					"opener" => "{partial",
-					"closer" => "}",
+					"opener" => "{% partial",
+					"closer" => "%}",
 					"handler" => "_partial"
 					),
 				"include" => array(
-					"opener" => "{include",
-					"closer" => "}",
+					"opener" => "{% include",
+					"closer" => "%}",
 					"handler" => "_include"
 					),
 				"yield" => array(
-					"opener" => "{yield",
-					"closer" => "}",
+					"opener" => "{% yield",
+					"closer" => "%}",
 					"handler" => "yield"
 					)
 				) + $this-> _map;
@@ -119,7 +119,9 @@ namespace Mk\Template\Implementation
 
 		public function set($key, $value)
 		{
-			if (StringMethods::indexOf($value, "\$_text") > −1)
+
+			//\Mk\Debug::msgfile(print_r($key,true).": $value");
+			if (StringMethods::indexOf($value, "\$_text") >= 0)
 			{
 				$first = StringMethods::indexOf($value, "\"");
 				$last = StringMethods::lastIndexOf($value, "\"");
@@ -129,6 +131,7 @@ namespace Mk\Template\Implementation
 			{
 				$key = $this-> _getKey($key);
 			}
+			//\Mk\Debug::msgfile(print_r($key,true).": $value");
 			$this->_setValue($key, $value);
 		}
 

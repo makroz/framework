@@ -1,3 +1,56 @@
-{include \layouts\navigation.html}
-{echo $template}
+
+ <!DOCTYPE html>
+  <html>
+    <head>
+
+{% set style.files %}
+      <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+{% /set %}
+
+      <script type="text/javascript" src="js/jquery.js"></script>
+
+{% set js.files %}
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+{% /set %}
+
+{% set js.inline %}
+
+{% /set %}
+
+		
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+{% yield style.files %}
+
+{% yield meta.inline %}
+<style>
+{% yield style.inline %}
+</style>
+{% yield meta.inline %}
+
+
+</head>
+
+<body>
+{% include \layouts\navigation.html %}
+{% echo $template %}
+
+
+
+
+{% yield js.files %}
+<script >
+$(document).ready(function(){
+
+{% yield js.onready %}
+
+});
+
+{% yield js.inline %}
+</script>
+</body>
+</html>
+
+
 

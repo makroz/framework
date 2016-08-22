@@ -92,6 +92,7 @@ class User_controller extends ControllerDb
 				$view-> set("password_error", "Password not provided");
 				$error = true;
 			}
+
 			if (!$error)
 			{
 				$session = Registry::get("session");

@@ -81,15 +81,27 @@ namespace Mk
 			}
 			return $unique;
 		}
-		public static function indexOf($string, $substring, $offset = null)
-		{
-			$position = strpos($string, $substring, $offset);
-			if (!is_int($position))
-			{
-				return -1;
-			}
-			return $position;
-		}
+		 public static function indexOf($string, $substring, $offset = null)
+        {
+            $position = strpos($string, $substring, $offset);
+            if (!is_int($position))
+            {
+                return -1;
+            }
+            return $position;
+        }
+        
+        public static function lastIndexOf($string, $substring, $offset = null)
+        {
+            $position = strrpos($string, $substring, $offset);
+            if (!is_int($position))
+            {
+                return -1;
+            }
+            return $position;
+        }
+
+
 		private static $_singular = array(
 			"(matr)ices$" => "\\1ix",
 			"(vert|ind)ices$" => "\\1ex",

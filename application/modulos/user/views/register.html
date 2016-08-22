@@ -1,37 +1,36 @@
 <h1 > Register</h1>
-{if isset($success)}
+{% if isset($success) %}
 Your account has been created!
-{/if}
-{else}
+{% /if %}
+{% else %}
 <form method="post">
 	<ol>
 		<li>
 			<label>
 				First name:
 				<input type="text" name ="first" />
-				{echo \Shared\FormTools::errors($errors, "first")}
+				{% echo \Shared\FormTools::errors($errors, "first") %}
 			</label>
 		</li>
 		<li>
 			<label>
 				Last name:
 				<input type="text" name="last" />
-				<?php $a=2;echo $a+2;>
-				{echo \Shared\FormTools::errors($errors, "last")}
+				{% echo \Shared\FormTools::errors($errors, "last") %}
 			</label>
 		</li>
 		<li>
 			<label>
 				Email:
 				<input type="text" name="email" />
-				{echo \Shared\FormTools::errors($errors, "email")}
+				{% echo \Shared\FormTools::errors($errors, "email") %}
 			</label>
 		</li>
 		<li>
 			<label>
 				Password:
 				<input type="password" name="password" />
-				{echo \Shared\FormTools::errors($errors, "password")}
+				{% echo \Shared\FormTools::errors($errors, "password") %}
 			</label>
 		</li>
 		<li>
@@ -39,4 +38,4 @@ Your account has been created!
 		</li>
 	</ol>
 </form>
-{/else}
+{% /else %}

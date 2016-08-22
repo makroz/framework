@@ -5,22 +5,25 @@
 			<label>
 				Email:
 				<input type = "text" name = "email" />
-				{if isset($email_error)}
-				{echo $email_error}
-				{/if}
+				{% if isset($email_error) %}
+				{% echo $email_error %}
+				{% /if %}
 			</label>
 		</li>
 		<li>
 			<label>
 				Password:
 				<input type = "password" name = "password" />
-				{if isset($password_error)}
-				{echo $password_error}
-				{/if}
+				{% if isset($password_error) %}
+				{% echo $password_error %}
+				{% /if %}
 			</label>
 		</li>
 		<li>
-			<input type = "submit" name = "login" value = "login" />
+			
+			 <button class="btn waves-effect waves-light" type="submit" name="login" value="1">login
+    <i class="material-icons right">send</i>
+  </button>
 		</li>
 	</ol>
 </form>

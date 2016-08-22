@@ -7,14 +7,14 @@ class Home_controller extends Mk\Controller
 */
 public function init()
 {
-echo "init";
+//echo "init";
 }
 /**
 * @protected
 */
 public function authenticate()
 {
-echo "authenticate";
+//echo "authenticate";
 }
 /**
 * @before init, authenticate, init
@@ -23,14 +23,14 @@ echo "authenticate";
 public function index()
 {
 	$this->init();
-echo "hello world!";
+//echo "hello world!";
 }
 /**
 * @protected
 */
 public function notify()
 {
-echo "notify";
+//echo "notify";
 }
 }
 

@@ -18,6 +18,15 @@ namespace Mk
         // do nothing
 
         }
+
+        public static function msgfile($msg,$file=''){
+            if ($file==''){
+                $file='\log'.date('Ymd').'.txt';
+
+            }
+            file_put_contents($file, "*********\n\r\l\ln".$msg, FILE_APPEND);
+        }
+
         public static function msg($msg, $key = "",$nivel=2)
         {
             if (DEBUG>=$nivel)
