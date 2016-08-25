@@ -18,6 +18,9 @@ class User_controller extends ControllerDb
 		parent::__construct($options);
 
 		$this->_model =$this->_getLoged();
+
+
+
 	}
 /*		$session = Registry::get("session");
 			$controller = Registry::get("controller");
@@ -31,7 +34,7 @@ class User_controller extends ControllerDb
 */
 
 
-	public function seUser($user)
+	public function setUser($user)
 	{
 		$session = Registry::get("session");
 		if ($user)
@@ -76,6 +79,9 @@ class User_controller extends ControllerDb
 
 	public function login()
 	{
+
+				$database = Registry::get("database");
+				$database->getFields('user');
 		if (RequestMethods::post("login"))
 		{
 			$email = RequestMethods::post("email");
