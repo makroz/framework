@@ -424,7 +424,83 @@ $tmp = getdbsize("DATABASE_NAME");
   if (!$tmp) { echo "ERROR!"; }
   else { echo $tmp; }
 
+
+
+  // Si las comillas mágicas están habilitadas
+echo $_POST['apellido'];             // O\'reilly
+echo addslashes($_POST['apellido']); // O\\\'reilly
+
+// Uso en todas las versiones de PHP
+if (!get_magic_quotes_gpc()) {
+    $apellido = addslashes($_POST['apellido']);
+}
+else {
+    $apellido = $_POST['apellido'];
+}
+
+// Si se está usando MySQL
+$apellido = mysql_real_escape_string($apellido);
+
+echo $apellido; // O\'reilly
+$sql = "INSERT INTO apellidos (apellido) VALUES ('$apellido')";
+
+
+
+
+
+
+// Strip magic quotes from request data.
+if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
+    // Create lamba style unescaping function (for portability)
+    $quotes_sybase = strtolower(ini_get('magic_quotes_sybase'));
+    $unescape_function = (empty($quotes_sybase) || $quotes_sybase === 'off') ? 'stripslashes($value)' : 'str_replace("\'\'","\'",$value)';
+    $stripslashes_deep = create_function('&$value, $fn', '
+        if (is_string($value)) {
+            $value = ' . $unescape_function . ';
+        } else if (is_array($value)) {
+            foreach ($value as &$v) $fn($v, $fn);
+        }
+    ');
+   
+    // Unescape data
+    $stripslashes_deep($_POST, $stripslashes_deep);
+    $stripslashes_deep($_GET, $stripslashes_deep);
+
+    $stripslashes_deep($_COOKIE, $stripslashes_deep);
+    $stripslashes_deep($_REQUEST, $stripslashes_deep);
+***
+
+if(  
+            (  function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()  )
+             || (  ini_get('magic_quotes_sybase') && ( strtolower(ini_get('magic_quotes_sybase')) != "off" )  )
+           ){
+            foreach($_GET as $k => $v) $_GET[$k] = stripslashes($v);
+            foreach($_POST as $k => $v) $_POST[$k] = stripslashes($v);
+            foreach($_COOKIE as $k => $v) $_COOKIE[$k] = stripslashes($v);
+        }
+
+        ****
+        When you work with forms and databases you should use this concept:
+
+1.When inserting the user input in DB escape $_POST/$_GET with add_slashes() or similar (to match the speciffic database escape rules)
+
+$query='INSERT INTO users SET fullname="'.add_slashes($_POST['fullname']).'"';
+insert_into_db($query);
+
+2.When reading a previously submitted input from DB use html_special_chars to display an escaped result!
+
+read_db_row('SELECT fullname FROM users');
+echo '<input type="text" name="fullname" value="'.html_special_chars($db_row['fullname']).'" />
+
+this way you safely store and work with the original(unescaped) data.
+
+*****
+
+
 */
+
+
+
 	}
 }
 

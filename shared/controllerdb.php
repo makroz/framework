@@ -38,7 +38,11 @@ namespace Shared
 			{
 				$this->_modelName=str_replace('_controller','',get_class($this));	
 			}
-			$this->_model= new $this->_modelName();
+			if (get_class($this)!=$this->_modelName)
+			{
+				$this->_model= new $this->_modelName();	
+			} 
+			
 
 			/*$session = Registry::get("session");
 			$user = unserialize($session-> get("user", null));

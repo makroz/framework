@@ -50,7 +50,7 @@ class User_controller extends ControllerDb
 	}
 
 	
-	public function register()
+	public function actionRegister()
 	{
 
 
@@ -77,11 +77,9 @@ class User_controller extends ControllerDb
 	}
 
 
-	public function login()
+	public function actionLogin()
 	{
 
-				$database = Registry::get("database");
-				$database->getFields('user');
 		if (RequestMethods::post("login"))
 		{
 			$email = RequestMethods::post("email");
@@ -129,12 +127,12 @@ class User_controller extends ControllerDb
 		/**
 		* @before _secure
 		*/	
-	public function profile()
+	public function actionProfile()
 	{
 		$this-> getActionView()-> set("user", $this->getModel());
 	}
 
-		public function search()
+		public function actionSearch()
 		{
 		$view = $this-> getActionView();
 		$query = RequestMethods::post("query");
@@ -170,7 +168,7 @@ class User_controller extends ControllerDb
 		/**
 		* @before _secure
 		*/
-		public function settings()
+		public function actionSettings()
 		{
 			$view = $this->getActionView();
 			$user = $this->_model;
@@ -191,7 +189,7 @@ class User_controller extends ControllerDb
 			}
 		}
 
-		public function logout()
+		public function actionLogout()
 		{
 			$this-> _setLoged(false);
 			header("Location: index.php?url=user/login");

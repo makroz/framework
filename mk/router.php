@@ -53,11 +53,21 @@ namespace Mk
 			}
 			return $list;
 		}
-		protected function _pass($controller, $action, $parameters = array())
+		protected function _pass($controller, $action, $parameters = array(),$crud=false)
 		{
-			$name = ucfirst($controller).'_controller';
-			$this->_controller = $controller;
+			
 			$this->_action = $action;
+			
+
+			$action='action'.ucfirst($action);
+			if ($crud==false){
+				$name = ucfirst($controller).'_controller';
+			}else{
+				$name = ucfirst($controller);	
+			}
+			
+			$this->_controller = $controller;
+			
 			Events::fire("mk.router.controller.before", array($controller, $parameters));
 			try
 			{
@@ -123,6 +133,15 @@ namespace Mk
 		}
 		public function dispatch()
 		{
+			if ($_GET['crud'])
+			{
+				$controller = 'Mk\Crud\crud';
+				$action = ($_GET["crud"]!='') ? $_GET["crud"] : "init";
+				$parameters = $route->parameters;
+				$this->_pass($controller, $action, $parameters,true);
+				return;
+
+			}
 			$url = $this->url;
 			$parameters = array();
 			$controller = "index";

@@ -31,7 +31,7 @@ Mk\Registry::set("session", $session->initialize());
 
 $router = new Mk\Router(array(
 	"url" => isset($_GET["url"]) ? $_GET["url"] : "Home/Index",
-	"extension" => isset($_GET["url"]) ? $_GET["url"] : "html"
+	"extension" => isset($_GET["html"]) ? $_GET["html"] : "html"
 	));
 Mk\Registry::set("router", $router);
 $router->dispatch();

@@ -94,7 +94,7 @@ namespace Mk
         {
             $deb=debug_backtrace();
             foreach ($deb as $k => $v) {
-                \Mk\Debug::msg($v,$code);
+                \Mk\Debug::msg($v,$code,5);
             }
             
         }

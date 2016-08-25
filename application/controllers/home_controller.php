@@ -20,7 +20,7 @@ public function authenticate()
 * @before init, authenticate, init
 * @after notify
 */
-public function index()
+public function actionIndex()
 {
 	$this->init();
 //echo "hello world!";
