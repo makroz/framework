@@ -79,7 +79,8 @@ namespace Mk
 			}
 			catch (\Exception $e)
 			{
-				throw $this->_Exception("Controller {$name} not found",1);
+				
+				throw $this->_Exception("Controller {$name} not found",1,$e);
 			}
 
 			Events::fire("mk.router.controller.after", array($controller, $parameters));
@@ -135,7 +136,7 @@ namespace Mk
 		{
 			if ($_GET['crud'])
 			{
-				$controller = 'Mk\Crud\crud';
+				$controller = 'Mk\Crud\Crud';
 				$action = ($_GET["crud"]!='') ? $_GET["crud"] : "init";
 				$parameters = $route->parameters;
 				$this->_pass($controller, $action, $parameters,true);

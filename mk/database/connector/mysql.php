@@ -230,6 +230,7 @@ public function  getFields($tablename)
         $numlistmatch     = "/,?(\d+)/";
        
         $fieldsquery .= "DESCRIBE $tablename";
+        //echo "Mario:{$fieldsquery}";
         $result_fieldsquery =$this->execute($fieldsquery);
         while ($row_fieldsquery =$result_fieldsquery->fetch_assoc()) {
            

@@ -44,6 +44,7 @@ unset($router);
 }
 catch(\Exception $e)
 {
-	echo "<h3>Error ({$e->getCode()}): </h3><code>".str_replace("\n",'<br>',Mk\Debug::jdebug($e))."</code>";
+	//echo "<h3>Error ({$e->getCode()}): </h3><code>".str_replace("\n",'<br>',Mk\Debug::jdebug($e))."</code>";
+	echo "<h3>Error ({$e->getCode()}): </h3>".Mk\Debug::msg($e,$e->getCode());
 }
 ?>
