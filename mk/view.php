@@ -20,16 +20,19 @@ namespace Mk
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
-			$this-> setFile(strtolower(str_replace("/", DIRECTORY_SEPARATOR, trim($this-> getFile() )) ));
 			$this-> _template = new Template(array(
-				"implementation" => new Template\Implementation\Extended()
+				"implementation" => new Template\Implementation\Extended(array("defaultPath"=>dirname($this->_file)
+					)
+					)
 				));
+			//\Mk\Debug::msg($this-> _template);
+			//$this-> _template->_implementation->_defaultPath=dirname($this->getFile());
 		}
 
 		public function fileexist()
 		{
 
-			//echo "<hr>file:".$this-> getFile();
+			
 			$this-> setFile(strtolower(str_replace("/", DIRECTORY_SEPARATOR, trim($this-> getFile() )) ));
 
 			if (!file_exists($this-> getFile()))
@@ -39,6 +42,20 @@ namespace Mk
 			}
 			return true;
 		}
+
+		public function getVarView(){
+			
+			$default = $this->Template->Implementation->getDefaultKey();
+			//echo "Mario:".$default;
+			$data = Registry::get($default, array());
+			//Debug::msg($data);
+			if ((isset($data['varView']))and(is_array($data['varView'])))
+			{
+				$this-> _data=array_merge($this-> _data,$data['varView']);
+			}
+
+		}
+
 
 		public function render()
 		{
@@ -51,8 +68,9 @@ namespace Mk
 			}
 			$content = file_get_contents($this-> getFile());
 			$this-> _template-> parse($content);
-			//\Shared\FormTools::debug($this-> _template-> process($this-> _data),551);
+			//\Mk\Shared\FormTools::debug($this-> _template-> process($this-> _data),551);
 
+			 $this->getVarView();
 			return $this-> _template-> process($this-> _data);
 		}
 		public function get($key, $default = "")
@@ -70,12 +88,12 @@ namespace Mk
 				throw $this->_Exception("Key must be a string or a number");
 			}
 			$this-> _data[$key] = $value;
-			//\Shared\FormTools::debug($this->_data,50);
+			//\Mk\Shared\FormTools::debug($this->_data,50);
 		}
 		public function set($key, $value = null)
 		{
-			//\Shared\FormTools::debug($key,51);
-			//\Shared\FormTools::debug($value,10);
+			//\Mk\Shared\FormTools::debug($key,51);
+			//\Mk\Shared\FormTools::debug($value,10);
 			if (is_array($key))
 			{
 				foreach ($key as $_key => $value)

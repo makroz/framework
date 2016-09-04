@@ -6,7 +6,7 @@ namespace Mk\Template\Implementation
 	use Mk\Registry as Registry;
 	use Mk\Template as Template;
 	use Mk\StringMethods as StringMethods;
-	use Mk\RequestMethods as RequestMethods;
+	use Mk\Inputs as Inputs;
 	class Extended extends Standard
 	{
 		/**
@@ -25,6 +25,11 @@ namespace Mk\Template\Implementation
 		{
 			parent::__construct($options);
 			$this-> _map = array(
+				"var" => array(
+					"opener" => "{% var",
+					"closer" => "%}",
+					"handler" => "_var"
+					),
 				"partial" => array(
 					"opener" => "{% partial",
 					"closer" => "%}",
@@ -68,9 +73,10 @@ namespace Mk\Template\Implementation
 
 			$file = trim($tree["raw"]);
 			$path = $this-> getDefaultPath();
-			$content = file_get_contents(APP_PATH."/{$path}/{$file}");
+			$content = file_get_contents("{$path}/{$file}");
 			$template-> parse($content);
-			$index = $this-> _index++;
+			//$this-> _index++;
+			$index =substr(basename($file), 0,strpos( basename($file),'.')) .$this-> _index++;
 			return "function anon_{$index}(\$_data){
 				".$template-> getCode()."
 			};\$_text[] = anon_{$index}(\$_data);";
@@ -81,7 +87,7 @@ namespace Mk\Template\Implementation
 			$address = trim($tree["raw"], " /");
 			if (StringMethods::indexOf($address, "http") != 0)
 			{
-				$host = RequestMethods::server("HTTP_HOST");
+				$host = Inputs::server("HTTP_HOST");
 				$address = "http://{$host}/{$address}";
 			}
 			$request = new Request();
@@ -97,6 +103,35 @@ namespace Mk\Template\Implementation
 			}
 			return trim($tree["arguments"]["key"]);
 		}
+
+		protected function _var($tree, $content)
+		{
+			$var = trim($tree["raw"]);
+			//\Mk\Debug::msg($tree);
+			$var=explode('=', $var);
+			if (!isset($var[1])){
+				$var[1]='1';
+			}
+			$default = $this-> getDefaultKey();
+			//echo "Mario5:".$default;
+			$data = Registry::get($default, array());
+			$var[0]=str_replace(' ','',$var[0]);
+			$var[1]=trim($var[1]);
+			$data['varView'][$var[0]] = $var[1];
+			Registry::set($default, $data);
+			//\Mk\Debug::msg($data,4);
+			//$this->_header = '\$'.$var.'="{$'.$var.''}"') && sizeof(\$_data))
+			//extract(\$_data); \$_text = array();".$this->_header;
+			//echo "Mario:((($var)))";
+			/*if (!empty($key))
+			{
+				$default = $this-> getDefaultKey();
+				$data = Registry::get($default, array());
+				$data[$key] = $value;
+				Registry::set($default, $data);
+			}*/
+		}
+
 		protected function _setValue($key, $value)
 		{
 			if (!empty($key))
@@ -120,7 +155,8 @@ namespace Mk\Template\Implementation
 		public function set($key, $value)
 		{
 
-			//\Mk\Debug::msgfile(print_r($key,true).": $value");
+			//\Mk\Debug::msg(": $value");
+			//$value1=$value;
 			if (StringMethods::indexOf($value, "\$_text") >= 0)
 			{
 				$first = StringMethods::indexOf($value, "\"");
@@ -131,7 +167,7 @@ namespace Mk\Template\Implementation
 			{
 				$key = $this-> _getKey($key);
 			}
-			//\Mk\Debug::msgfile(print_r($key,true).": $value");
+			//\Mk\Debug::msg(print_r($key,true).": $value");
 			$this->_setValue($key, $value);
 		}
 
@@ -156,8 +192,17 @@ namespace Mk\Template\Implementation
 		public function yield($tree, $content)
 		{
 			$key = trim($tree["raw"]);
-			$value = addslashes($this-> _getValue($key));
-			return "\$_text[] = \"{$value}\";";
+			if (StringMethods::indexOf($this-> _getValue($key), "\$_text") >= 0)
+			{
+				return $this-> _getValue($key);
+			}
+			else
+			{
+				
+				$value = addslashes($this-> _getValue($key));
+				return "\$_text[] = \"{$value}\";";
+
+			}
 		}
 
 

@@ -1,5 +1,5 @@
 <?php 
-class User extends Shared\Model
+class User extends Mk\Shared\Model
 {
 /**
 * @column

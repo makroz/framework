@@ -4,7 +4,7 @@ namespace Mk
 {
 	use Mk\Base as Base;
 	use Mk\StringMethods as StringMethods;
-	use Mk\RequestMethods as RequestMethods;
+	use Mk\Inputs as Inputs;
 	//use Mk\Request\Exception as Exception;
 	class Request extends Base
 	{
@@ -33,7 +33,7 @@ namespace Mk
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
-			$this-> setAgent(RequestMethods::server("HTTP_USER_AGENT", 
+			$this-> setAgent(Inputs::server("HTTP_USER_AGENT", 
 				"Curl/PHP ".PHP_VERSION));
 		}
 		public function delete($url, $parameters = array())

@@ -1,5 +1,5 @@
 <?php 
-namespace Shared
+namespace Mk\Shared
 {
 	class Model extends \Mk\Model
 	{

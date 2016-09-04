@@ -13,6 +13,10 @@ namespace Mk
 		/**
 		* @readwrite
 		*/
+		protected $_sharedData=array();
+		/**
+		* @readwrite
+		*/
 		protected $_parameters;
 		/**
 		* @readwrite
@@ -37,6 +41,14 @@ namespace Mk
 		/**
 		* @readwrite
 		*/
+		protected $_defaultModules = MODULE_PATH;
+		/**
+		* @readwrite
+		*/
+		protected $_pathModule = MODULE_PATH;
+		/**
+		* @readwrite
+		*/
 		protected $_defaultLayout = "layouts/standard";
 		/**
 		* @readwrite
@@ -54,34 +66,72 @@ namespace Mk
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
+
+			
+			$router = Registry::get("router");
+			$controller = $router->getController();
+			$action = $router->getAction();
+			
+			$defaultPath = $this->getDefaultPath();
+			$defaultLayout = $this->getDefaultLayout();
+			$defaultExtension = $this->getDefaultExtension();
+			$defaultModule=$this->getDefaultModules();
+			$this->addViewData('_action',$action);
+			$this->addViewData('_controller',$controller);
+
+
 			if ($this->getWillRenderLayoutView())
 			{
-				$defaultPath = $this->getDefaultPath();
-				$defaultLayout = $this->getDefaultLayout();
-				$defaultExtension = $this->getDefaultExtension();
+				$file="{$defaultModule}/{$controller}/views/{$defaultLayout}.{$defaultExtension}";
+				if (!file_exists($file))
+				{
+					$file=APP_PATH."/{$defaultPath}/{$defaultLayout}.{$defaultExtension}";
+				}
+
 				$view = new View(array(
-					"file" => APP_PATH."/{$defaultPath}/{$defaultLayout}.{$defaultExtension}"
+					"file" => $file
 					));
 				$this->setLayoutView($view);
 			}
 
 			if ($this->getWillRenderActionView())
 			{
-				$router = Registry::get("router");
-				$controller = $router->getController();
-				$action = $router->getAction();
-				$file=MODULE_PATH. 
-					"/{$controller}/views/{$action}.{$defaultExtension}";
+				$this->_pathModule ="{$defaultModule}/{$controller}/views/";
+				$file=$this->_pathModule."{$action}.{$defaultExtension}";
+				
 				if (!file_exists($file))
 				{
-					$file=PP_PATH."/{$defaultPath}/{$controller}/{$action}.{$defaultExtension}";
+					$this->_pathModule =APP_PATH."/{$defaultPath}/{$controller}/";
+					$file=$this->_pathModule."{$action}.{$defaultExtension}";
 				}
 				$view = new View(array(
 					"file" => $file
 					));
 				$this->setActionView($view);
+				//\MK\Debug::msg($this->getLayoutView()->getFile());
 			}
 		}
+
+		public function getVarView(){
+			$view = $this->getActionView();
+			$default = $view->Template->Implementation->getDefaultKey();
+			//echo "Mario:".$default;
+			$data = Registry::get($default, array());
+			Debug::msg($data);
+			if ((isset($data['varView']))and(is_array($data['varView'])))
+			{
+				$this->_sharedData=array_merge($this->_sharedData,$data['varView']);
+			}
+
+		}
+		public function addViewData($key,$value){
+			$this->_sharedData[$key]=$value;
+		}
+
+		public function delViewData($key){
+			unset($this->_sharedData[$key]);
+		}
+
 		public function render()
 		{
 			$defaultContentType = $this->getDefaultContentType();
@@ -89,6 +139,7 @@ namespace Mk
 			$doAction = $this->getWillRenderActionView() && $this->getActionView()->fileExist();
 			$doLayout = $this->getWillRenderLayoutView() && $this->getLayoutView()->fileExist();
 			
+			//$this->getVarView();
 			try
 			{
 				
@@ -96,13 +147,21 @@ namespace Mk
 				if ($doAction)
 				{
 					$view = $this->getActionView();
+					foreach ($this->_sharedData as $key => $value) {
+						$view->set($key,$value);
+					}
+
 					$results = $view->render();
 				}
-				//\Shared\FormTools::debug($result,2);
+				//\Mk\Shared\FormTools::debug($result,2);
 				if ($doLayout)
 				{
 					$view = $this->getLayoutView();
 					$view->set("template", $results);
+					foreach ($this->_sharedData as $key => $value) {
+						$view->set($key,$value);
+					}
+
 					$results = $view->render();
 					header("Content-type: {$defaultContentType}");
 					echo $results;

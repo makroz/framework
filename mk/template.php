@@ -275,12 +275,14 @@ namespace Mk
 			$array = $this->_array($template);
 			$tree = $this->_tree($array["all"]);
 			$this->_code = $this->header.$this->_script($tree).$this->footer;
+			//\Mk\Debug::msg($this->code);
 			$this->_function = create_function("\$_data", $this->code);
 			
 			return $this;
 		}
 		public function process($data = array())
 		{
+			//\Mk\Debug::msg($data);
 			if ($this->_function == null)
 			{
 				throw $this->_Exception();

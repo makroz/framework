@@ -1,9 +1,9 @@
 <?php 
-use Shared\ControllerDb as ControllerDb;
+use Mk\Shared\ControllerDb as ControllerDb;
 use Mk\Registry as Registry;
 use Mk\Session as Session;
 use Mk\Events as Events;
-use Mk\RequestMethods as RequestMethods;
+use Mk\Inputs as Inputs;
 class User_controller extends ControllerDb
 {
 
@@ -54,23 +54,23 @@ class User_controller extends ControllerDb
 	{
 
 
-		\Shared\FormTools::init();
+		\Mk\Shared\FormTools::init();
 		$view = $this-> getActionView();
-		if (RequestMethods::post("register"))
+		if (Inputs::post("register"))
 		{
 
 			$user = new User(array(
-				"first" => RequestMethods::post("first"),
-				"last" => RequestMethods::post("last"),
-				"email" => RequestMethods::post("email"),
-				"password" => RequestMethods::post("password")
+				"first" => Inputs::post("first"),
+				"last" => Inputs::post("last"),
+				"email" => Inputs::post("email"),
+				"password" => Inputs::post("password")
 				));
 			if ($user-> validate())
 			{
 				$user->save();
 				$view->set("success", true);
 			}
-			//\Shared\FormTools::debug($user->getErrors(),50000);
+			//\Mk\Shared\FormTools::debug($user->getErrors(),50000);
 			$view->set("errors", $user->getErrors());
 		}
 		//$view->set("errors", '');
@@ -80,10 +80,10 @@ class User_controller extends ControllerDb
 	public function actionLogin()
 	{
 
-		if (RequestMethods::post("login"))
+		if (Inputs::post("login"))
 		{
-			$email = RequestMethods::post("email");
-			$password = RequestMethods::post("password");
+			$email = Inputs::post("email");
+			$password = Inputs::post("password");
 			$view = $this-> getActionView();
 			$error = false;
 			if (empty($email))
@@ -135,14 +135,14 @@ class User_controller extends ControllerDb
 		public function actionSearch()
 		{
 		$view = $this-> getActionView();
-		$query = RequestMethods::post("query");
-		$order = RequestMethods::post("order", "modified");
-		$direction = RequestMethods::post("direction", "desc");
-		$page = RequestMethods::post("page", 1);
-		$limit = RequestMethods::post("limit", 10);
+		$query = Inputs::post("query");
+		$order = Inputs::post("order", "modified");
+		$direction = Inputs::post("direction", "desc");
+		$page = Inputs::post("page", 1);
+		$limit = Inputs::post("limit", 10);
 		$count = 0;
 		$users = false;
-		if (RequestMethods::post("search"))
+		if (Inputs::post("search"))
 		{
 		$where = array(
 		"SOUNDEX(first) = SOUNDEX(?)" => $query,
@@ -172,13 +172,13 @@ class User_controller extends ControllerDb
 		{
 			$view = $this->getActionView();
 			$user = $this->_model;
-			if (RequestMethods::post("update"))
+			if (Inputs::post("update"))
 			{
 				$user = new User(array(
-					"first" => RequestMethods::post("first", $user->first),
-					"last" => RequestMethods::post("last", $user->last),
-					"email" => RequestMethods::post("email", $user->email),
-					"password" => RequestMethods::post("password", $user->password)
+					"first" => Inputs::post("first", $user->first),
+					"last" => Inputs::post("last", $user->last),
+					"email" => Inputs::post("email", $user->email),
+					"password" => Inputs::post("password", $user->password)
 					));
 				if ($user->validate())
 				{

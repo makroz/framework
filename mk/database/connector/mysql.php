@@ -221,44 +221,44 @@ namespace Mk\Database\Connector
 		}
 
 
-public function  getFields($tablename) 
-{
-   
-        $fields = array();
-        $fullmatch         = "/^([^(]+)(\([^)]+\))?(\s(.+))?$/";
-        $charlistmatch     = "/,?'([^']*)'/";
-        $numlistmatch     = "/,?(\d+)/";
-       
-        $fieldsquery .= "DESCRIBE $tablename";
+		public function  getFields($tablename) 
+		{
+
+			$fields = array();
+			$fullmatch         = "/^([^(]+)(\([^)]+\))?(\s(.+))?$/";
+			$charlistmatch     = "/,?'([^']*)'/";
+			$numlistmatch     = "/,?(\d+)/";
+
+			$fieldsquery .= "DESCRIBE $tablename";
         //echo "Mario:{$fieldsquery}";
-        $result_fieldsquery =$this->execute($fieldsquery);
-        while ($row_fieldsquery =$result_fieldsquery->fetch_assoc()) {
-           
+			$result_fieldsquery =$this->execute($fieldsquery);
+			while ($row_fieldsquery =$result_fieldsquery->fetch_assoc()) {
+
            		//print_r($row_fieldsquery);
-            $name     = $row_fieldsquery['Field'];
-            $fields[$name] = array();
-            $fields[$name]["type"]         = "";
-            $fields[$name]["args"]         = array();
-            $fields[$name]["add"]          = "";
-            $fields[$name]["null"]        = $row_fieldsquery['Null'];
-            $fields[$name]["key"]        = $row_fieldsquery['Key'];
-            $fields[$name]["default"]    = $row_fieldsquery['Default'];
-            $fields[$name]["extra"]        = $row_fieldsquery['Extra'];
-           
-            $fulltype     = $row_fieldsquery['Type'];
-            $typeregs = array();
-           
-            if (preg_match($fullmatch, $fulltype, $typeregs)) {
-                $fields[$name]["type"] = $typeregs[1];
-                if ($typeregs[4]) $fields[$name]["add"] = $typeregs[4];
-                $fullargs = $typeregs[2];
-                $argsreg = array();
-                if (preg_match_all($charlistmatch, $fullargs, $argsreg)) {
-                    $fields[$name]["args"] = $argsreg[1];
-                } else {
-                    $argsreg = array();
-                    if (preg_match_all($numlistmatch, $fullargs, $argsreg)) {
-                        $fields[$name]["args"] = $argsreg[1];
+				$name     = $row_fieldsquery['Field'];
+				$fields[$name] = array();
+				$fields[$name]["type"]         = "";
+				$fields[$name]["args"]         = array();
+				$fields[$name]["add"]          = "";
+				$fields[$name]["null"]        = $row_fieldsquery['Null'];
+				$fields[$name]["key"]        = $row_fieldsquery['Key'];
+				$fields[$name]["default"]    = $row_fieldsquery['Default'];
+				$fields[$name]["extra"]        = $row_fieldsquery['Extra'];
+
+				$fulltype     = $row_fieldsquery['Type'];
+				$typeregs = array();
+
+				if (preg_match($fullmatch, $fulltype, $typeregs)) {
+					$fields[$name]["type"] = $typeregs[1];
+					if ($typeregs[4]) $fields[$name]["add"] = $typeregs[4];
+					$fullargs = $typeregs[2];
+					$argsreg = array();
+					if (preg_match_all($charlistmatch, $fullargs, $argsreg)) {
+						$fields[$name]["args"] = $argsreg[1];
+					} else {
+						$argsreg = array();
+						if (preg_match_all($numlistmatch, $fullargs, $argsreg)) {
+							$fields[$name]["args"] = $argsreg[1];
                     } //else die("cant parse type args: $fullargs");
                 }
             } else die("cant parse type: $fulltype");
@@ -266,8 +266,42 @@ public function  getFields($tablename)
         }
 
         return $fields;
-           
+
     }
+
+public function getPrimaryKeyOf($table) {
+  $keys = Array();
+
+  $query = sprintf("SHOW KEYS FROM `%s`", $table);
+  $result = $this->execute($query);
+
+  while ($row = $result->fetch_assoc()) {
+    if ( $row['Key_name'] == 'PRIMARY' )
+      $keys[$row['Seq_in_index'] - 1] = $row['Column_name'];
+  }
+
+  return $keys;
+}
+
+ public   function getTableInformationOf($table) {
+    	$information = array(
+    		"auto"    => "",
+    		"primary" => array(),
+    		"fields"  => array()
+    		);
+
+    	$information['primary'] = $this->getPrimaryKeyOf($table);
+
+    	$result = $this->execute("DESC `$table`");
+    	while ( $field = $result->fetch_assoc() ) {
+    		$information['fields'][] = $field;
+    		if ( $field['Extra'] == "auto_increment" )
+    			$information['auto'] = $field['Field'];
+    	}
+
+    	return $information;
+    }
+
 
 /*
 $resultado->fetch_field_direct(1);
@@ -497,12 +531,50 @@ this way you safely store and work with the original(unescaped) data.
 
 *****
 
+$pp='o\'hara\ab\n\a\"asas"{aa}///';	
+echo "Prueba 1: $pp";
+$user = new \User(array(
+				"first" => $pp,
+				"last" => $pp,
+				"email" => '1',
+				"password" => $pp
+				));
+				$user->save();
+$pp=$this->database->escape($pp);
+$this->database->execute("insert into user (first,last,email,password) values ('$pp','$pp','11','$pp')");
+//echo "insert into `user` (`first`,`last`,`email`,`password`) values (`$pp`,`$pp`,`11`,`$pp`)";
+//echo "insert into `user` (`first`,`last`,`email`,`password`) values (`$pp`,`$pp`,`11`,`$pp`)";
+$pp=$_GET['name'];
+echo "<br>Prueba 2: $pp";
+$user = new \User(array(
+				"first" => $pp,
+				"last" => $pp,
+				"email" => '2',
+				"password" => $pp
+				));
+				$user->save();
+				$pp=$this->database->escape($pp);
+$this->database->execute("insert into user (first,last,email,password) values ('$pp','$pp','22','$pp')");
+Inputs::_escape_request();
+$pp=$_GET['name'];
+echo "<br>Prueba 3: $pp";
+$user = new \User(array(
+				"first" => $pp,
+				"last" => $pp,
+				"email" => '3',
+				"password" => $pp
+				));
+				$user->save();
+				$pp=$this->database->escape($pp);
+$this->database->execute("insert into user (first,last,email,password) values ('$pp','$pp','33','$pp')");
+
+
 
 */
 
 
 
-	}
+}
 }
 
 ?>

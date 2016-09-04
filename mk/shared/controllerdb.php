@@ -1,5 +1,5 @@
 <?php 
-namespace Shared
+namespace Mk\Shared
 {
 	use Mk\Events as Events;
 	use Mk\Router as Router;
@@ -88,14 +88,14 @@ namespace Shared
 		public function search()
 		{
 			$view = $this-> getActionView();
-			$query = RequestMethods::post("query");
-			$order = RequestMethods::post("order", "modified");
-			$direction = RequestMethods::post("direction", "desc");
-			$page = RequestMethods::post("page", 1);
-			$limit = RequestMethods::post("limit", 10);
+			$query = Inputs::post("query");
+			$order = Inputs::post("order", "modified");
+			$direction = Inputs::post("direction", "desc");
+			$page = Inputs::post("page", 1);
+			$limit = Inputs::post("limit", 10);
 			$count = 0;
 			$users = false;
-			if (RequestMethods::post("search"))
+			if (Inputs::post("search"))
 			{
 				$where = array(
 					"SOUNDEX(first) = SOUNDEX(?)" => $query,

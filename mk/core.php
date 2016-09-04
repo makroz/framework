@@ -7,7 +7,10 @@ class Core
 
 	public static function initialize()
 	{
-		define("MODULE_PATH",APP_PATH.DIRECTORY_SEPARATOR.'application'.DIRECTORY_SEPARATOR.'modulos');
+		if (!defined(MODULE_PATH))
+		{
+			define("MODULE_PATH",APP_PATH.DIRECTORY_SEPARATOR.'application'.DIRECTORY_SEPARATOR.'modulos');
+		}
 		self::addPaths(CORE_PATH);
 		self::addPaths("\application\libraries",1);
 		self::addPaths("\application\controllers",1);
@@ -44,7 +47,7 @@ public static function autoload($class)
 	$file = strtolower(str_replace("\\", DIRECTORY_SEPARATOR, trim($class, "\\"))).".php";
 	//echo "$file<br>(".strpos("mk\\",$file).')';
 	
-	if ((strpos($file,"mk\\")===false)and(strpos($file,"shared\\")===false))
+	if ((strpos($file,"mk\\")===false)and(strpos($file,"Mk\Shared\\")===false))
 	{	
 		if (strpos($file,'_controller')>0)
 		{

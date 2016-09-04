@@ -9,28 +9,28 @@ Your account has been updated!
 			<label>
 				First name:
 				<input type="text" name ="first" value="{echo $user-> first}" />
-				{@ echo \Shared\FormTools::errors($errors, "first") %}
+				{@ echo \Mk\Shared\FormTools::errors($errors, "first") %}
 			</label>
 		</li>
 		<li>
 			<label>
 				Last name:
 				<input type="text" name="last" value="{echo $user-> last}" />
-				{% echo \Shared\FormTools::errors($errors, "last") %}
+				{% echo \Mk\Shared\FormTools::errors($errors, "last") %}
 			</label>
 		</li>
 		<li>
 			<label>
 				Email:
 				<input type="text" name="email" value="{echo $user-> email}"/>
-				{% echo \Shared\FormTools::errors($errors, "email") %}
+				{% echo \Mk\Shared\FormTools::errors($errors, "email") %}
 			</label>
 		</li>
 		<li>
 			<label>
 				Password:
 				<input type="password" name="password" value="{echo $user-> password}"/>
-				{% echo \Shared\FormTools::errors($errors, "password") %}
+				{% echo \Mk\Shared\FormTools::errors($errors, "password") %}
 			</label>
 		</li>
 		<li>

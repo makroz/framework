@@ -1,0 +1,58 @@
+{% append js.onready %}
+$(".button-collapse").sideNav();
+{% /append %}
+
+{% var menunavigation=1 %}
+
+
+<!-- <h2 class="header">   Tabla: <span class="grey-text text-lighten-4">{% echo $database.'.' %}</span>{% echo $tableName %}</h2> -->
+
+
+
+<ul id="nav-mobile" class="side-nav" >
+  <li><div class="divider"></div></li>
+  <li><a class="subheader">{% echo strtoupper($tableName) %}</a></li>
+  <li><div class="divider"></div></li>
+  <li class="no-padding">
+   <ul class="collapsible" data-collapsible="expandable">
+
+    {% foreach $field in $table %}
+
+    <li >
+      <div class="collapsible-header waves-effect {% if ($field['key']=='PRI')%}red-text{% /if %} "><i class="tiny material-icons ">{% if ($field['key']=='PRI')%}stars{% /if %}{% if ($field['key']=='MUL')%}vpn_key{% /if %}{% if ($field['key']=='')%}adjust{% /if %}</i>{% echo $field_i; %}</div>
+      <div class="collapsible-body">
+        <p>
+          Tipo:{% echo $field['type']; %} {% if ($field['args'][0]) %} ( {% echo $field['args'][0] %} {% if ($field['args'][1]) %} , {% echo $field['args'][1] %} {% /if %} ) {% /if %}
+          {% if ($field['null']=='NO') %} <br>Null: NO  {% /if %}
+          {% if ($field['default']!='') %} <br>Default: {% echo $field['default'] %}   {% /if %}
+          {% if ($field['extra']!='') %} <br>{% echo $field['extra'] %}   {% /if %}
+        </p>
+      </div>
+    </li>
+    {% /foreach %}
+  </ul>        
+
+</li>
+</ul>
+
+
+<div class="row">
+  <div class="col s12">
+    <ul class="tabs z-depth-1"">
+      <li class="tab col s4"><a class="active" href="#campos">CAMPOS</a></li>
+      <li class="tab col s4"><a  class="" href="#listas">LISTA</a></li>
+      <li class="tab col s4 "><a  class="" href="#formulario">FORMUARIO</a></li>
+    </ul>
+  </div>
+  <div id="campos" class="col s12">
+    
+    {% include campos.html %}
+
+  </div>
+  <div id="listas" class="col s12">Lista</div>
+  <div id="formulario" class="col s12">Formulario</div>
+</div>
+
+
+ 
+
