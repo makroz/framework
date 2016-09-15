@@ -26,6 +26,11 @@ namespace Mk\Template\Implementation
 						"arguments"=>"{element} in {object}",
 						"handler"=>"_each"
 						),
+					"2foreach"=>array(
+						"isolated"=>false,
+						"arguments"=>"{element} in {object}",
+						"handler"=>"_each"
+						),
 					"for"=>array(
 						"isolated"=>false,
 						"arguments"=>"{element} in {object}",

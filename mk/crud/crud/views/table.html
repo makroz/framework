@@ -1,5 +1,85 @@
 {% append js.onready %}
 $(".button-collapse").sideNav();
+$('select').material_select();
+{% /append %}
+
+{% append js.inline %}
+function openDet(id){
+  $('#modal1').attr('data-key',id);
+  $('#modal-tit').html("Detalles del Campo: <span class='red-text'>"+id);
+  $('._pedir').each(function() {
+
+    if ( ($(this).attr('data-type')=='text')||($(this).attr('data-type')=='sel')||($(this).attr('data-type')=='range') ){
+      $(this).val($('#field-'+id+'-'+$(this).attr('id')).val());  
+    }
+
+    if ( ($(this).attr('data-type')=='switch')||($(this).attr('data-type')=='check') ){
+ //alert($('#field-'+id+'-'+$(this).attr('id')).val()+':'+$(this).attr('data-on'));
+      if ($('#field-'+id+'-'+$(this).attr('id')).val()==$(this).attr('data-on')){
+        $(this).attr('checked',true);  
+      }else{
+        $(this).attr('checked',false);  
+      }
+      
+    }
+
+
+
+  });
+
+  $('select').material_select();
+  $('#modal1').openModal();
+  valFunc();
+  Materialize.updateTextFields();
+
+}
+function closeDet(){
+  var id=$('#modal1').attr('data-key');
+
+ $('._pedir').each(function() {
+
+    if ( ($(this).attr('data-type')=='text')||($(this).attr('data-type')=='sel')||($(this).attr('data-type')=='range') ){
+      $('#field-'+id+'-'+$(this).attr('id')).val($(this).val())
+    }
+
+    if ( ($(this).attr('data-type')=='switch')||($(this).attr('data-type')=='check')  ){
+      if ($(this).is(':checked')){
+        $('#field-'+id+'-'+$(this).attr('id')).val($(this).attr('data-on'));
+      }else{
+        $('#field-'+id+'-'+$(this).attr('id')).val($(this).attr('data-off'));
+      }
+      
+    }
+
+  
+  });
+
+
+  $('#modal1').closeModal();
+}
+
+function valFunc(){
+  var valor=$('#funcion').val();
+  //alert(valor);
+  $('#funcion').parent().parent().removeClass('s10').addClass('s12');
+  $('#dec').parent().parent().hide();
+  if (valor=='bdf'){
+    $('#funcion').parent().parent().removeClass('s12').addClass('s10');
+    $('#dec').parent().parent().removeClass('s12').addClass('s2').show();
+  }
+
+  $('#fcustom').parent().hide();
+  if (valor=='custom'){
+    $('#funcion').parent().parent().removeClass('s12').addClass('s10');
+    $('#fcustom').parent().removeClass('s12').addClass('s2').show();
+  }
+  
+}
+
+function clicChecked(id){
+  $('#'+id).attr('checked',!$('#'+id).is(':checked')); 
+  return false;
+}
 {% /append %}
 
 {% var menunavigation=1 %}
@@ -16,7 +96,7 @@ $(".button-collapse").sideNav();
   <li class="no-padding">
    <ul class="collapsible" data-collapsible="expandable">
 
-    {% foreach $field in $table %}
+    {% foreach $field in $_table %}
 
     <li >
       <div class="collapsible-header waves-effect {% if ($field['key']=='PRI')%}red-text{% /if %} "><i class="tiny material-icons ">{% if ($field['key']=='PRI')%}stars{% /if %}{% if ($field['key']=='MUL')%}vpn_key{% /if %}{% if ($field['key']=='')%}adjust{% /if %}</i>{% echo $field_i; %}</div>
@@ -53,6 +133,90 @@ $(".button-collapse").sideNav();
   <div id="formulario" class="col s12">Formulario</div>
 </div>
 
+ <!-- Modal Structure -->
+  <div id="modal1" data-key="" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h4 id="modal-tit">Modal Header</h4>
+      
 
- 
+      <div class="row">
+
+      {% php $ctam='s12'; %}
+  {% foreach $pedir in $_pedir %}
+    
+    {% if ($pedir['type']=='text') %}
+
+        <div class="input-field col {% echo $ctam; %}">
+          <input id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' type="text" class="validate _pedir" data-type="{% echo $pedir['type']; %}" >
+          <label for="{% echo $pedir_i; %}" data-error="{% echo $pedir['error']; %}" data-success="{% echo $pedir['ok']; %}">{% echo $pedir['text']; %}</label>
+        </div>
+
+    {% /if %}
+
+    {% if ($pedir['type']=='sel') %}
+
+  <div class="input-field col {% echo $ctam; %}">
+    <select id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class="validate _pedir" data-type="{% echo $pedir['type']; %}" {% if ($pedir_i=='funcion') %} onchange="valFunc();" {% /if %} >
+      {% echo $pedir['opt']; %}
+    </select>
+    <label   for="{% echo $pedir_i; %}" data-error="{% echo $pedir['error']; %}" data-success="{% echo $pedir['ok']; %}">{% echo $pedir['text']; %}</label>
+  </div>
+
+    {% /if %}
+
+    {% if ($pedir['type']=='range') %}
+
+  <div class="input-field col {% echo $ctam; %}">
+    <p class="range-field">
+      <input type="range" id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class="validate _pedir" data-type="{% echo $pedir['type']; %}"  min="{% echo $pedir['min']; %}" max="{% echo $pedir['max']; %}" >
+    </p>
+    <label  for="{% echo $pedir_i; %}"  data-error="{% echo $pedir['error']; %}" data-success="{% echo $pedir['ok']; %}">{% echo $pedir['text']; %}</label>
+  </div>
+
+    {% /if %}
+
+    {% if ($pedir['type']=='switch') %}
+
+  <div class=" col {% echo $ctam; %}">
+  <label >{% echo $pedir['text']; %}</label>
+    <div class="switch" onclick="clicChecked('{% echo $pedir_i; %}')" >
+    <label>
+      {% echo $pedir['off']; %}
+      <input type="checkbox" id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class=" _pedir" data-type="{% echo $pedir['type']; %}" data-on="{% echo $pedir['onval']; %}" data-off="{% echo $pedir['offval']; %}"  >
+      <span class="lever"></span>
+      {% echo $pedir['on']; %}
+    </label>
+  </div>
+   
+  </div>
+
+    {% /if %}
+
+    {% if ($pedir['type']=='check') %}
+
+ <div class="col {% echo $ctam; %}">
+    <p onclick="clicChecked('{% echo $pedir_i; %}')">
+      <input type="checkbox" id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class=" _pedir" data-type="{% echo $pedir['type']; %}" data-on="{% echo $pedir['onval']; %}" data-off="{% echo $pedir['offval']; %}" />
+      <label   >{% echo $pedir['text']; %}</label>
+    </p>
+  </div>
+   
+    {% /if %}
+
+
+
+  {% /foreach %}
+
+    </div>
+
+   
+    </div>
+    <div class="modal-footer">
+     <button class="modal-action  waves-effect waves-green btn-flat" onclick="closeDet();">Ok</button>
+      
+    </div>
+  </div>
+
+
+
 

@@ -133,6 +133,7 @@
 	},
 	"file_history":
 	[
+		"/D/AppServ/www/framework/framework.sublime-project",
 		"/D/AppServ/www/framework/mk/crud/crud/views/layouts/navigation.html",
 		"/D/AppServ/www/rrhhrafa/modules/sesion.php",
 		"/D/AppServ/www/framework/mk/crud/crud/views/layouts/standard.html",
@@ -212,7 +213,6 @@
 		"/D/AppServ/www/framework/application/plugins/logger/initialize.php",
 		"/D/AppServ/www/framework/mk/cache.php",
 		"/D/AppServ/www/framework/application/plugins/logger/logger.php",
-		"/D/AppServ/www/framework/framework.sublime-project",
 		"/D/AppServ/www/framework/application/controller/users.php",
 		"/D/AppServ/www/rrhhrafa/rrhh/protected/models/CargoEntity.php",
 		"/D/AppServ/www/rrhhrafa/rrhh/protected/modules/user/UserModule.php",

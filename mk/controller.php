@@ -164,11 +164,13 @@ namespace Mk
 
 					$results = $view->render();
 					header("Content-type: {$defaultContentType}");
+					$results=str_replace("\\'", "'", $results);
 					echo $results;
 				}
 				else if ($doAction)
 				{
 					header("Content-type: {$defaultContentType}");
+					$results=str_replace("\\'", "'", $results);
 					echo $results;
 				}
 				$this->setWillRenderLayoutView(false);
