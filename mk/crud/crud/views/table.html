@@ -1,6 +1,32 @@
+{% append style.inline %}
+
+.input-field .postfix {
+    font-size: 2rem;
+    position: absolute;
+    right:0;
+    transition: color 0.2s ease 0s;
+    width: 3rem;
+}
+.input-field .postfix.active {
+color:#26a69a;
+}
+
+.input-field .postfix ~ input, .input-field .postfix ~ textarea, .input-field .postfix ~ label, .input-field .postfix ~ .validate ~ label, .input-field .postfix ~ .autocomplete-content {
+    margin-rigth: 3rem;
+    width: calc(100% - 3rem);
+}
+{% /append %}
+
 {% append js.onready %}
+
 $(".button-collapse").sideNav();
 $('select').material_select();
+$('#n_col').on('change', 'select', function(){ console.log("got you"); });
+$('.campojoin > i').click(function() {
+  openJoin('campojoin');
+});
+
+
 {% /append %}
 
 {% append js.inline %}
@@ -14,18 +40,14 @@ function openDet(id){
     }
 
     if ( ($(this).attr('data-type')=='switch')||($(this).attr('data-type')=='check') ){
- //alert($('#field-'+id+'-'+$(this).attr('id')).val()+':'+$(this).attr('data-on'));
       if ($('#field-'+id+'-'+$(this).attr('id')).val()==$(this).attr('data-on')){
         $(this).attr('checked',true);  
       }else{
         $(this).attr('checked',false);  
       }
-      
     }
-
-
-
   });
+
 
   $('select').material_select();
   $('#modal1').openModal();
@@ -33,6 +55,27 @@ function openDet(id){
   Materialize.updateTextFields();
 
 }
+
+function openJoin(id){
+  $('#modal2').attr('data-key',id);
+
+  var dato=$('#campojoin').val();
+
+  if (dato==''){
+    $('#n_table, #n_col').val(-1);
+
+  }else{
+    var datos=dato.split('.');
+    $('#n_table').val(datos[0]);
+    getCampos(datos[1]);
+    
+  }
+
+  $('#modal2').openModal();
+ $('select').material_select();
+}
+
+
 function closeDet(){
   var id=$('#modal1').attr('data-key');
 
@@ -58,9 +101,20 @@ function closeDet(){
   $('#modal1').closeModal();
 }
 
+function closeJoin(){
+  var id=$('#modal2').attr('data-key');
+  var dato=$('#n_table').val()+'.'+$('#n_col').val();
+  $('#'+id).val( dato );
+
+  
+  Materialize.updateTextFields();
+  $('#modal2').closeModal();
+}
+
 function valFunc(){
   var valor=$('#funcion').val();
   //alert(valor);
+
   $('#funcion').parent().parent().removeClass('s10').addClass('s12');
   $('#dec').parent().parent().hide();
   if (valor=='bdf'){
@@ -73,6 +127,17 @@ function valFunc(){
     $('#funcion').parent().parent().removeClass('s12').addClass('s10');
     $('#fcustom').parent().removeClass('s12').addClass('s2').show();
   }
+
+
+ valor=$('#tipolista').val();
+ // alert(valor);
+  
+  $('#tipolista').parent().parent().removeClass('s6').addClass('s12');
+  $('#campojoin').parent().hide();
+  if (valor=='join'){
+    $('#tipolista').parent().parent().removeClass('s12').addClass('s6');
+    $('#campojoin').parent().removeClass('s12').addClass('s6').show();
+  }
   
 }
 
@@ -80,6 +145,31 @@ function clicChecked(id){
   $('#'+id).attr('checked',!$('#'+id).is(':checked')); 
   return false;
 }
+
+function getCampos(id){
+
+  var tabla=$('#n_table').val();
+  var oldvalue=$('#n_table').attr('oldvalue');
+  if (tabla!='-1'){
+    $.ajax({
+  url: 'index.php?crud=getCampos',
+  data: {
+    table: tabla
+  },
+  success: function( result ) {
+
+    $('#n_col').html(result);
+    if (id!=''){
+    
+      $('#n_col').val(id);
+    }
+    $('select').material_select();
+
+  }
+});
+  }
+}
+
 {% /append %}
 
 {% var menunavigation=1 %}
@@ -134,11 +224,10 @@ function clicChecked(id){
 </div>
 
  <!-- Modal Structure -->
-  <div id="modal1" data-key="" class="modal modal-fixed-footer">
-    <div class="modal-content">
-      <h4 id="modal-tit">Modal Header</h4>
-      
 
+  <div id="modal1" data-key="" class="modal modal-fixed-footer">
+   <h4 id="modal-tit" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);background-color: #fafafa;border-radius:  2px 2px 0 0;height: 56px;position: absolute;top: 0;padding: 4px 6px;width: 100%;">Modal Header</h4>
+    <div class="modal-content" style="margin-top:56px;height:calc(100% - 112px);">
       <div class="row">
 
       {% php $ctam='s12'; %}
@@ -146,7 +235,10 @@ function clicChecked(id){
     
     {% if ($pedir['type']=='text') %}
 
-        <div class="input-field col {% echo $ctam; %}">
+        <div class="input-field col {% echo $ctam; %} {% echo $pedir_i; %}">
+        {% if ($pedir['icon']!='') %}        
+        <i class="material-icons {% echo $pedir['icon-type'];%}" >{% echo $pedir['icon'];%}</i>
+        {% /if %}
           <input id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' type="text" class="validate _pedir" data-type="{% echo $pedir['type']; %}" >
           <label for="{% echo $pedir_i; %}" data-error="{% echo $pedir['error']; %}" data-success="{% echo $pedir['ok']; %}">{% echo $pedir['text']; %}</label>
         </div>
@@ -155,7 +247,7 @@ function clicChecked(id){
 
     {% if ($pedir['type']=='sel') %}
 
-  <div class="input-field col {% echo $ctam; %}">
+  <div class="input-field col {% echo $ctam; %} {% echo $pedir_i; %}">
     <select id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class="validate _pedir" data-type="{% echo $pedir['type']; %}" {% if ($pedir_i=='funcion') %} onchange="valFunc();" {% /if %} >
       {% echo $pedir['opt']; %}
     </select>
@@ -166,7 +258,7 @@ function clicChecked(id){
 
     {% if ($pedir['type']=='range') %}
 
-  <div class="input-field col {% echo $ctam; %}">
+  <div class="input-field col {% echo $ctam; %} {% echo $pedir_i; %}">
     <p class="range-field">
       <input type="range" id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class="validate _pedir" data-type="{% echo $pedir['type']; %}"  min="{% echo $pedir['min']; %}" max="{% echo $pedir['max']; %}" >
     </p>
@@ -177,7 +269,7 @@ function clicChecked(id){
 
     {% if ($pedir['type']=='switch') %}
 
-  <div class=" col {% echo $ctam; %}">
+  <div class=" col {% echo $ctam; %} {% echo $pedir_i; %}">
   <label >{% echo $pedir['text']; %}</label>
     <div class="switch" onclick="clicChecked('{% echo $pedir_i; %}')" >
     <label>
@@ -194,7 +286,7 @@ function clicChecked(id){
 
     {% if ($pedir['type']=='check') %}
 
- <div class="col {% echo $ctam; %}">
+ <div class="col {% echo $ctam; %} {% echo $pedir_i; %}">
     <p onclick="clicChecked('{% echo $pedir_i; %}')">
       <input type="checkbox" id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class=" _pedir" data-type="{% echo $pedir['type']; %}" data-on="{% echo $pedir['onval']; %}" data-off="{% echo $pedir['offval']; %}" />
       <label   >{% echo $pedir['text']; %}</label>
@@ -213,10 +305,49 @@ function clicChecked(id){
     </div>
     <div class="modal-footer">
      <button class="modal-action  waves-effect waves-green btn-flat" onclick="closeDet();">Ok</button>
+     
       
     </div>
   </div>
+  
+ <!-- Modal Structure -->
+  <div id="modal2" data-key="" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h4 id="modal-tit">Escojer Tabla y Campo</h4>
+      
+
+      <div class="row">
 
 
+  <div class="input-field col {% echo $ctam; %}">
+    <select id="n_table" name='n_table' class="validate" onchange="getCampos();"  >
+    {% echo $_tablas; %}
+    </select>
+    <label   for="n_table" >Tabla:</label>
+  </div>
+
+    </div>
+
+   
+      <div class="row">
+
+
+  <div class="input-field col {% echo $ctam; %}">
+  
+    <select id="n_col" name='n_col' class="validate"   >
+    </select>
+    <label   for="n_col" >Columna:</label>
+  </div>
+
+    </div>
+
+
+
+    </div>
+    <div class="modal-footer">
+     <button class="modal-action  waves-effect waves-green btn-flat" onclick="closeJoin();">Ok</button>
+      
+    </div>
+  </div>
 
 

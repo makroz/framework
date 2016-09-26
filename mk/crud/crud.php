@@ -6,6 +6,7 @@ namespace Mk\Crud
 	use Mk\Registry as Registry;
 	use Mk\Shared\ControllerDb as ControllerDb;
 	use Mk\Tools\Form as Form;
+	use Mk\Tools\String as String;
 
 
 	class Crud extends ControllerDb
@@ -31,6 +32,10 @@ namespace Mk\Crud
 
 			parent::__construct($options);
 			$this->_database = Registry::get("database");
+			if (Inputs::getIsAjaxRequest()){
+				$this->setWillRenderActionView(false);
+				$this->setWillRenderLayoutView(false);
+			}
 			//$this->setWillRenderActionView(false);
 			//$this->setWillRenderLayoutView(false);
 			//$this->setDefaultModules(APP_PATH.DIRECTORY_SEPARATOR.'mk');
@@ -40,6 +45,9 @@ namespace Mk\Crud
 
 		public function actionTable()
 		{
+
+			$session = Registry::get("session");
+			$tablas=$session->get('tables');
 
 
 $lfunc['st']='TextoSeguro()';
@@ -83,9 +91,9 @@ $lerr['E']='Error';
 $lerr['H']='Hint';
 */
 
-$ltipolista['defecto']='Defecto';
-$ltipolista['status']='Status';
-$ltipolista['join']='Join';
+//$ltipolista['defecto']='Valor del Dato';
+$ltipolista['status']='Manejar como Status';
+$ltipolista['join']='Dato de Otra Tabla';
 
 
 $lclase['normal']='Normal';
@@ -133,10 +141,22 @@ $lver['1']='Solo Ver';
 
 			$pedir['search']['text']='Se usara en Busquedas?';
 			$pedir['search']['type']='check';
-			$pedir['search']['off']='No';
-			$pedir['search']['on']='Si';
+			//$pedir['search']['off']='No';
+			//$pedir['search']['on']='Si';
 			$pedir['search']['onval']='1';
 			$pedir['search']['offval']='0';
+
+			$pedir['tipolista']['text']='Conteido en Listados';
+			$pedir['tipolista']['type']='sel';
+			$pedir['tipolista']['opt']=Form::getListaSel($ltipolista,'por Defecto');
+
+			$pedir['campojoin']['text']='Tabla y Campo';
+			$pedir['campojoin']['type']='text';
+			$pedir['campojoin']['icon']='search';
+			$pedir['campojoin']['icon-type']='postfix';			
+
+
+
 
 
 
@@ -187,11 +207,26 @@ $lver['1']='Solo Ver';
 				}
 				/// Valores por defecto segun tipo de datos de la BD
 
+				// Valores por defecto segun Nombre de Campo
+				$Name=strtolower($key);
+				if (in_array($Name, array('pk','id'),true)){ 
+
+				}
+
+				$pos=stripos($Name, 'fk_');
+				if ($pos!==0){ 
+					$tablajoin=substr($name,$pos+3);
+					$pedir['tipolista']['val'][$key]='join';
+
+				}
+				/// Valores por defecto segun Nombre de Campo
+
 
 
 				
 			}
 
+			$view->set('_tablas',$tablas);
 			$view->set('_table',$table);
 			$view->set('_pedir',$pedir);
 
@@ -214,11 +249,25 @@ $lver['1']='Solo Ver';
 				//echo "<pre>";print_r($this->database->getFields($row[0]));"</pre>";
 				$tables[$row[0]]=$this->database->getFields($row[0]);
 				//$tables[$row[0]]=$this->database->getTableInformationOf($row[0]);
+				$tabla[$row[0]]=$row[0];
 				
 				$view->set('tables',$tables);
 
 			}
+			$session = Registry::get("session");
+			$session->set('tables',Form::getListaSel($tabla,'...'));
+
 			
+		}
+
+		public function actionGetCampos()
+		{
+			$campos=array();
+			$tabla=Inputs::request('table');
+			if ($tabla!=''){
+				$campos=$this->database->getColsOf($tabla);
+			}
+			echo Form::getListaSel($campos,'...');
 		}
 
 

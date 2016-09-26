@@ -283,7 +283,7 @@ public function getPrimaryKeyOf($table) {
   return $keys;
 }
 
- public   function getTableInformationOf($table) {
+public   function getTableInformationOf($table) {
     	$information = array(
     		"auto"    => "",
     		"primary" => array(),
@@ -297,6 +297,19 @@ public function getPrimaryKeyOf($table) {
     		$information['fields'][] = $field;
     		if ( $field['Extra'] == "auto_increment" )
     			$information['auto'] = $field['Field'];
+    	}
+
+    	return $information;
+    }
+
+
+ public   function getColsOf($table) {
+    	$information = array();
+    	$result = $this->execute("DESC `$table`");
+    	
+    	while ( $field = $result->fetch_assoc() ) {
+    		$name=$field['Field'];
+    		$information[$name] = $name;
     	}
 
     	return $information;
