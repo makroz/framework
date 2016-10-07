@@ -1,13 +1,13 @@
-<div class="row">
+ <div id="campos" class="row">
 
   {% foreach $field in $_table %}
 
-  <div class="col s6 m4 l2 ">
+  <div class="col s6 m4 l2 divcampos">
 
     <div class="card large ">
 
       <div class="card-content  " >
-        <div class=" card-title waves-effect {% if ($field['key']=='PRI')%}red-text{% /if %} z-depth-1 " style="display:block;padding:5px;margin-bottom:5px;" >
+        <div class=" handle card-title waves-effect {% if ($field['key']=='PRI')%}red-text{% /if %} z-depth-1 " style="display:block;padding:5px;margin-bottom:5px;" >
           <i class="tiny material-icons ">{% if ($field['key']=='PRI')%}stars{% /if %} {% if ($field['key']=='MUL')%}vpn_key{% /if %} {% if ($field['key']=='')%}adjust{% /if %}</i>
           {% echo $field_i; %}
         </div>
@@ -31,5 +31,5 @@
 </div>
 
 {% /foreach %}
-</div>
 
+ </div>

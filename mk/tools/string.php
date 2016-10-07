@@ -26,43 +26,54 @@ namespace Mk\Tools
 
 			) 
 		*/
-		public static function getEtiquetas($string,$start,$end){
-			preg_match_all('/' . preg_quote($start, '/') . '(.*?)'. preg_quote($end, '/').'/i', $string, $m);
-			$out = array();
+			public static function getEtiquetas($string,$start,$end){
+				preg_match_all('/' . preg_quote($start, '/') . '(.*?)'. preg_quote($end, '/').'/i', $string, $m);
+				$out = array();
 
-			foreach($m[1] as $key => $value){
-				$type = explode('::',$value);
-				if(sizeof($type)>1){
-					if(!is_array($out[$type[0]]))
-						$out[$type[0]] = array();
-					$out[$type[0]][] = $type[1];
+				foreach($m[1] as $key => $value){
+					$type = explode('::',$value);
+					if(sizeof($type)>1){
+						if(!is_array($out[$type[0]]))
+							$out[$type[0]] = array();
+						$out[$type[0]][] = $type[1];
+					} else {
+						$out[] = $value;
+					}
+				}
+				return $out;
+			}
+
+			public static function stripos_array($haystack, $needles,$what=false) {
+				if ( is_array($needles) ) {
+					foreach ($needles as $str) {
+						if ( is_array($str) ) {
+							$pos = stripos_array($haystack, $str);
+						} else {=stripos($haystack, $needles);
+							$pos = stripos($haystack, $str);
+						}
+						if ($pos !== FALSE) {
+
+							$pos{
+								$pos=array($pos,$str);
+							}
+							return $pos;
+						}
+					}
 				} else {
-					$out[] = $value;
+					$pos=stripos($haystack, $needles);
+					if ($pos !== FALSE) {
+						if ($what){
+							$pos=array($pos,$str);
+						}
+					}
+
+					return $pos;
 				}
 			}
-			return $out;
+
+
+
 		}
-
-		public static function stripos_array($haystack, $needles) {
-    if ( is_array($needles) ) {
-        foreach ($needles as $str) {
-            if ( is_array($str) ) {
-                $pos = strpos_array($haystack, $str);
-            } else {
-                $pos = strpos($haystack, $str);
-            }
-            if ($pos !== FALSE) {
-                return $pos;
-            }
-        }
-    } else {
-        return strpos($haystack, $needles);
-    }
-}
-
-
-
 	}
-}
 
-?>
+	?>
