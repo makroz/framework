@@ -1,6 +1,6 @@
 <?php
 error_reporting( E_ALL ^ E_NOTICE);
-define("DEBUG", 2);
+define("DEBUG", 1);
 define("APP_PATH", dirname(__FILE__));
 define("CORE_PATH", dirname(__FILE__));
 try
@@ -44,7 +44,19 @@ unset($router);
 }
 catch(\Exception $e)
 {
+
+	ini_set('xdebug.var_display_max_depth', 8);
 	//echo "<h3>Error ({$e->getCode()}): </h3><code>".str_replace("\n",'<br>',Mk\Debug::jdebug($e))."</code>";
-	echo "<h3>Error ({$e->getCode()}): </h3>".Mk\Debug::msg($e,$e->getCode());
+	echo "<h3>Error ({$e->getCode()}): </h3>";
+	echo "<table>";
+	echo $e->xdebug_message;
+	echo "</table>";
+	if (DEBUG>2){
+		\Mk\Debug::debug($e,true);
+	}
+	if (DEBUG>3){
+		var_dump($e);
+	}
+	
 }
 ?>

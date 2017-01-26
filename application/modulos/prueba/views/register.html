@@ -1,0 +1,41 @@
+<h1 > Register</h1>
+{% if isset($success) %}
+Your account has been created!
+{% /if %}
+{% else %}
+<form method="post">
+	<ol>
+		<li>
+			<label>
+				First name:
+				<input type="text" name ="first" />
+				{% echo \Mk\Shared\FormTools::errors($errors, "first") %}
+			</label>
+		</li>
+		<li>
+			<label>
+				Last name:
+				<input type="text" name="last" />
+				{% echo \Mk\Shared\FormTools::errors($errors, "last") %}
+			</label>
+		</li>
+		<li>
+			<label>
+				Email:
+				<input type="text" name="email" />
+				{% echo \Mk\Shared\FormTools::errors($errors, "email") %}
+			</label>
+		</li>
+		<li>
+			<label>
+				Password:
+				<input type="password" name="password" />
+				{% echo \Mk\Shared\FormTools::errors($errors, "password") %}
+			</label>
+		</li>
+		<li>
+			<input type="submit" name="register" value="register" />
+		</li>
+	</ol>
+</form>
+{% /else %}

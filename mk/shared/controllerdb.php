@@ -22,7 +22,7 @@ namespace Mk\Shared
 		*/
 		protected $_modelName;
 
-
+ 
 
 		public function __construct($options = array())
 		{
@@ -69,19 +69,19 @@ namespace Mk\Shared
 		public function render()
 		{
 			
-			if ($this-> _model)
-			{
-				if ($this-> getActionView())
-				{
-					$this->getActionView()
-					->set($this->_model->getTable(), $this->_model);
-				}
-				if ($this->getLayoutView())
-				{
-					$this->getLayoutView()
-					->set($this->_model->getTable(), $this->_model);
-				}
-			}
+			// if ($this-> _model)
+			// {
+			// 	if ($this-> getActionView())
+			// 	{
+			// 		$this->getActionView()
+			// 		->set($this->_model->getTable(), $this->_model);
+			// 	}
+			// 	if ($this->getLayoutView())
+			// 	{
+			// 		$this->getLayoutView()
+			// 		->set($this->_model->getTable(), $this->_model);
+			// 	}
+			// }
 			parent::render();
 		}
 

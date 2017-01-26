@@ -1,0 +1,57 @@
+{% append js.inline %}
+
+function clicBotonera(boton){
+var idSel = $(boton).parent().parent().data('cod');
+var idAction = $(boton).data('action');
+var selCount = 1;
+
+if (idSel==undefined){
+	idSel = serializar();
+	selCount = $(".list_check:checked").length;
+}
+
+var options=[];
+	options['cod']=idSel;
+
+	if (idAction=='add'){
+		options=[];
+		
+	}
+
+	if (idAction=='edit'){
+		if (selCount!=1){
+		alert('Debe escoger 1 fila y solo 1');
+		return false;
+		}
+	}
+	if (idAction=='del'){
+		if (selCount==0){
+		alert('Debe escoger al menos 1 fila');
+		return false;
+		}
+	}
+	if (idAction=='ver'){
+		if (selCount==0){
+		alert('Debe escoger al menos 1 fila');
+		return false;
+		}
+	}
+
+	reaction(options,idAction);
+	alert('Action Seleccionada: '+idAction);
+	return false;
+}
+
+{% /append %}
+<li>
+<a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
+</li>
+<li>
+<a class="btn-floating waves-effect waves-light red" title="Elimminar" data-action="del" onclick="clicBotonera(this);"><i class="material-icons">delete</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
+</li>

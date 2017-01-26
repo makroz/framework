@@ -12,6 +12,7 @@ namespace Mk\Database\Query
 			if ($result === false)
 			{
 				$error = $this->connector->lastError;
+				if (DEBUG>0){$error.= "($sql)";}
 				throw $this->_Exception("There was an error with your SQL query: {$error}");
 			}
 			$rows = array();
@@ -19,7 +20,9 @@ namespace Mk\Database\Query
 			{
 				$rows[] = $result->fetch_array(MYSQLI_ASSOC);
 			}
+			//var_dump($rows);echo "<hr>";
 			return $rows;
+
 		}
 	}
 }

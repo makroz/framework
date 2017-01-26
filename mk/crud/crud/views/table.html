@@ -79,10 +79,12 @@ function openDet(id){
     }
 
     if ( ($(this).attr('data-type')=='switch')||($(this).attr('data-type')=='check') ){
+        
       if ($('#field-'+id+'-'+$(this).attr('id')).val()==$(this).attr('data-on')){
-        $(this).attr('checked',true);  
+
+        this.checked=true;  
       }else{
-        $(this).attr('checked',false);  
+        this.checked=false;  
       }
     }
   });
@@ -92,7 +94,7 @@ function openDet(id){
   $('#modal1').openModal();
   valFunc();
   Materialize.updateTextFields();
-
+  return false;
 }
 
 function valFunc(){
@@ -278,7 +280,7 @@ function valTipoLista(){
 
 
 function clicChecked(id){
-  $('#'+id).attr('checked',!$('#'+id).is(':checked')); 
+
   return false;
 }
 
@@ -321,6 +323,10 @@ function addTr(i,valor,texto,tag){
             '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="cDel('+i+');" style="cursor: pointer;" >delete</i> <i class="material-icons handle grey-text text-lighten-1 "  style="cursor: move;" >import_export</i> </td>'+
           '</tr>');
 
+}
+
+function validarFormulario(){
+$('#form1').submit();  
 }
 
 function cAdd(){
@@ -373,25 +379,35 @@ function cAdd(){
 </ul>
 
 
+<form action="index.php?crud=generar" id="form1" name="fom1" method="post">
 <div class="row">
   <div class="col s12">
     <ul class="tabs z-depth-1"">
-      <li class="tab col s4"><a class="active" href="#campos">CAMPOS</a></li>
+      <li class="tab col s4"><a class="active" href="#tabcampos">CAMPOS</a></li>
       <li class="tab col s4"><a  class="" href="#listas">LISTA</a></li>
       <li class="tab col s4 "><a  class="" href="#formulario">FORMUARIO</a></li>
     </ul>
   </div>
-  <div  class="col s12">
- 
-    
-    {% include campos.html %}
+  <div   id="tabcampos" class="col s12">
 
+   <div class="input-field col s6">
+          <input id="singular" name='singular' type="text" class="validate " data-type="text" value="{% echo $tableName %}">
+          <label for="singular" data-error="Debe escribir un nombre en singular" data-success="">Nombre del Modulo en Singular</label>
+   </div>
+   <div class="input-field col s6">
+          <input id="plural" name='plural' type="text" class="validate " data-type="text"  value="{% echo \Mk\Tools\String::Pluralize($tableName); %}" >
+          <label for="plural" data-error="Debe escribir un nombre en plural" data-success="">Nombre del Modulo en plural</label>
+   </div>
  
+    {% include campos.html %}
+   
   </div>
   <div id="listas" class="col s12">Lista</div>
   <div id="formulario" class="col s12">Formulario</div>
 </div>
 
+ </form>
+ 
  <!-- Modal Structure -->
 
   <div id="modal1" data-key="" class="modal modal-fixed-footer">
@@ -473,7 +489,7 @@ function cAdd(){
  <div class="col {% echo $ctam; %} {% echo $pedir_i; %}">
     <p onclick="clicChecked('{% echo $pedir_i; %}')">
       <input type="checkbox" id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class=" _pedir" data-type="{% echo $pedir['type']; %}" data-on="{% echo $pedir['onval']; %}" data-off="{% echo $pedir['offval']; %}" {% echo $pedir['disabled']; %} {% echo $pedir['bind']; %} />
-      <label   >{% echo $pedir['text']; %}</label>
+      <label  for="{% echo $pedir_i; %}" >{% echo $pedir['text']; %}</label>
     </p>
   </div>
    

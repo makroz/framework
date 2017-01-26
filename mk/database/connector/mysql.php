@@ -174,15 +174,67 @@ namespace Mk\Database\Connector
 						}
 						break;
 					}
+					case "varchar":
+					{
+						if ($length !== null && $length <= 255)
+						{
+							$lines[] = "`{$name}` varchar({$length}) DEFAULT NULL";
+						}
+						else
+						{
+							$lines[] = "`{$name}` text";
+						}
+						break;
+					}
+					case "char":
+					{
+						if ($length !== null && $length <= 255)
+						{
+							$lines[] = "`{$name}` char({$length}) DEFAULT NULL";
+						}
+						else
+						{
+							$lines[] = "`{$name}` char(1) DEFAULT NULL";
+						}
+						break;
+					}
 					case "integer":
 					{
 						$lines[] = "`{$name}` int(11) DEFAULT NULL";
 						break;
 					}
+					case "int":
+					{
+						$lines[] = "`{$name}` int(11) DEFAULT NULL";
+						break;
+					}
+
 					case "decimal":
 					{
-						$lines[] = "`{$name}` float DEFAULT NULL";
-						break;
+
+						if ($length !== null && $length <= 255)
+						{
+							$lines[] = "`{$name}` decimal({$length}) DEFAULT NULL";
+						}
+						else
+						{
+							$lines[] = "`{$name}` float DEFAULT NULL";
+						}
+
+					}
+
+					case "float":
+					{
+
+						if ($length !== null && $length <= 255)
+						{
+							$lines[] = "`{$name}` float({$length}) DEFAULT NULL";
+						}
+						else
+						{
+							$lines[] = "`{$name}` float DEFAULT NULL";
+						}
+
 					}
 					case "boolean":
 					{

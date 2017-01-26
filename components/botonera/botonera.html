@@ -1,0 +1,55 @@
+{% append style.inline %}
+.botonera{
+	padding:1em;
+
+}
+
+.botonera-panel > a {
+	margin-right:0.5em;
+	margin-left:0.5em;
+}
+
+.botonera-panel {
+	padding:1em;
+	display:inline-block;	
+	margin-right:0.2em;
+	margin-left:0.2em;
+}
+
+.separador{
+	border-left:1px solid #000;
+	width:5px;
+}
+
+.botonera li{
+display: inline-block;
+margin: 0 0 0 0;
+list-style-type: none;
+margin-right:0.5em;
+margin-left:0.5em;
+}
+
+.botonera ul.pagination{
+	margin:0;
+}
+
+{% /append %}
+
+<div class="botonera z-depth-1" >
+<div class="botonera-panel z-depth-1" >
+[[component:]]botonesedittable[[:component]]
+
+</div>
+<div class="botonera-panel z-depth-1" style="border-right: 0;" >
+<a class="btn-floating  waves-effect waves-light blue" title="Buscar"><i class="material-icons">search</i></a>
+<a class="btn-floating  waves-effect waves-light teal" title="Buscar"><i class="material-icons">print</i></a>
+
+</div>
+
+
+<div class="botonera-panel z-depth-1 right" style="border-right: 0;" >
+
+[[component:]]paginacion[[:component]]
+</div>
+
+</div>

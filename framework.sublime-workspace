@@ -17,7 +17,7 @@
 			],
 			[
 				"for",
-				"foreach	foreach …"
+				"foreach\tforeach …"
 			],
 			[
 				"shared",
@@ -25,7 +25,7 @@
 			],
 			[
 				"hea",
-				"header	Tag"
+				"header\tTag"
 			],
 			[
 				"bac",
@@ -37,7 +37,7 @@
 			],
 			[
 				"di",
-				"div	Tag"
+				"div\tTag"
 			],
 			[
 				"da",

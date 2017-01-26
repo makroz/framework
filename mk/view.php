@@ -33,8 +33,8 @@ namespace Mk
 		{
 
 			
-			$this-> setFile(strtolower(str_replace("/", DIRECTORY_SEPARATOR, trim($this-> getFile() )) ));
-
+			$this->setFile(strtolower(str_replace("/", DIRECTORY_SEPARATOR, trim($this-> getFile() )) ));
+			//echo "File:".$this-> getFile();
 			if (!file_exists($this-> getFile()))
 			{
 

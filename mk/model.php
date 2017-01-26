@@ -26,7 +26,11 @@ namespace Mk
 			"integer",
 			"decimal",
 			"boolean",
-			"datetime"
+			"datetime",
+			"varchar",
+			"char",
+			"tinyint",
+			"float"
 			);
 		/**
 		* @read
@@ -317,15 +321,18 @@ namespace Mk
 			{
 				$query->limit($limit, $page);
 			}
-			$rows = array();
-			$class = get_class($this);
-			foreach ($query->all() as $row)
-			{
-				$rows[] = new $class(
-					$row
-					);
-			}
-			return $rows;
+
+			return $query->all();
+			
+			// $rows = array();
+			// $class = get_class($this);
+			// foreach ($query->all() as $row)
+			// {
+			// 	$rows[] = new $class(
+			// 		$row
+			// 		);
+			// }
+			// return $rows;
 		}
 		public static function count($where = array())
 		{

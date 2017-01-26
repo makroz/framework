@@ -3,27 +3,8 @@ namespace Mk\Shared
 {
 	class Model extends \Mk\Model
 	{
-		/**
-		* @column
-		* @readwrite
-		* @primary
-		* @type autonumber
-		*/
-		protected $_id;
-		/**
-		* @column
-		* @readwrite
-		* @type boolean
-		* @index
-		*/
-		protected $_live;
-		/**
-		* @column
-		* @readwrite
-		* @type boolean
-		* @index
-		*/
-		protected $_deleted;
+		
+
 		/**
 		* @column
 		* @readwrite
@@ -45,8 +26,8 @@ namespace Mk\Shared
 			if (empty($this-> $raw))
 			{
 				$this-> setCreated(date("Y-m-d H:i:s"));
-				$this-> setDeleted(false);
-				$this-> setLive(true);
+				//$this-> setDeleted(false);
+				//$this-> setLive(true);
 			}
 			$this-> setModified(date("Y-m-d H:i:s"));
 			parent::save();

@@ -1,0 +1,12 @@
+[[unique:]]{% php $maxpage=ceil($count / $limit); $minpage=$page-3; if ($minpage<=0){ $minpage=1; } $lastpage=$minpage+4;if($lastpage>$maxpage){ $lastpage=$maxpage;}  %}[[:unique]]
+<ul class="pagination">
+     <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">first_page</i></a></li>
+    <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+
+				{% foreach $_page in range($minpage, $lastpage) %}
+				<li class="{% if $page == $_page %}active{% /if %} waves-effect"><a href="#!">{% echo $_page; %}</a></li>
+				{% /foreach %}
+
+     <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+    <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">last_page</i></a></li>
+</ul>

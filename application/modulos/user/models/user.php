@@ -50,6 +50,35 @@ protected $_email;
 * @label password
 */
 protected $_password;
+
+
+		/**
+		* @column
+		* @readwrite
+		* @type boolean
+		* @index
+		*/
+		protected $_live;
+		/**
+		* @column
+		* @readwrite
+		* @type boolean
+		* @index
+		*/
+		protected $_deleted;
+
+public function save()
+		{
+			$primary = $this-> getPrimaryColumn();
+			$raw = $primary["raw"];
+			if (empty($this-> $raw))
+			{
+				$this-> setDeleted(false);
+				$this-> setLive(true);
+			}
+			parent::save();
+		}
+
 }
 
 

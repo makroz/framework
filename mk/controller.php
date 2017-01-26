@@ -49,7 +49,7 @@ namespace Mk
 		/**
 		* @readwrite
 		*/
-		protected $_defaultLayout = "layouts/standard";
+		protected $_defaultLayout = "standard";
 		/**
 		* @readwrite
 		*/
@@ -63,6 +63,68 @@ namespace Mk
 		*/
 		protected $_name;
 
+		public function getFilenameLayout($file='',$theme=''){
+			$router = Registry::get("router");
+			$controller = $router->getController();
+			$action = $router->getAction();
+
+			$defaultPath = $this->getDefaultPath();
+			$defaultLayout = $this->getDefaultLayout();
+			$defaultExtension = $this->getDefaultExtension();
+			$defaultModule=$this->getDefaultModules();
+			
+			if ($theme==''){
+				$theme='layouts';
+			}
+
+			if ($file==''){
+				$file="{$defaultLayout}.{$defaultExtension}";
+			}
+
+			$filed="{$defaultModule}/{$controller}/views/$theme/$file";
+				if (!file_exists($filed))
+				{
+					$filed=APP_PATH."/{$defaultPath}/$theme/$file";
+				}
+
+			return $filed;
+
+		}
+
+		public function getFilenameAction($file='',$theme=''){
+			$router = Registry::get("router");
+			$controller = $router->getController();
+			$action = $router->getAction();
+
+			$defaultPath = $this->getDefaultPath();
+			$defaultLayout = $this->getDefaultLayout();
+			$defaultExtension = $this->getDefaultExtension();
+			$defaultModule=$this->getDefaultModules();
+
+			if ($theme!=''){
+				$theme=str_replace('\\','',$theme);
+				$theme=str_replace('/','',$theme);
+				$theme.= DIRECTORY_SEPARATOR;
+
+			}
+			$this->_pathModule ="{$defaultModule}/{$controller}/views/$theme";
+
+			if ($file==''){
+				$file="{$action}.{$defaultExtension}";
+			}
+
+			$filed=$this->_pathModule.$file;
+				if (!file_exists($filed))
+				{
+					$this->_pathModule =APP_PATH."/{$defaultPath}/{$controller}/$theme";
+					$filed=$this->_pathModule.$file;
+				}
+
+
+			return $filed;
+
+		}
+
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
@@ -72,21 +134,17 @@ namespace Mk
 			$controller = $router->getController();
 			$action = $router->getAction();
 			
-			$defaultPath = $this->getDefaultPath();
-			$defaultLayout = $this->getDefaultLayout();
-			$defaultExtension = $this->getDefaultExtension();
-			$defaultModule=$this->getDefaultModules();
+			// $defaultPath = $this->getDefaultPath();
+			// $defaultLayout = $this->getDefaultLayout();
+			// $defaultExtension = $this->getDefaultExtension();
+			// $defaultModule=$this->getDefaultModules();
 			$this->addViewData('_action',$action);
 			$this->addViewData('_controller',$controller);
 
 
 			if ($this->getWillRenderLayoutView())
 			{
-				$file="{$defaultModule}/{$controller}/views/{$defaultLayout}.{$defaultExtension}";
-				if (!file_exists($file))
-				{
-					$file=APP_PATH."/{$defaultPath}/{$defaultLayout}.{$defaultExtension}";
-				}
+				$file=$this->getFilenameLayout();
 
 				$view = new View(array(
 					"file" => $file
@@ -96,14 +154,8 @@ namespace Mk
 
 			if ($this->getWillRenderActionView())
 			{
-				$this->_pathModule ="{$defaultModule}/{$controller}/views/";
-				$file=$this->_pathModule."{$action}.{$defaultExtension}";
-				
-				if (!file_exists($file))
-				{
-					$this->_pathModule =APP_PATH."/{$defaultPath}/{$controller}/";
-					$file=$this->_pathModule."{$action}.{$defaultExtension}";
-				}
+
+				$file=$this->getFilenameAction();
 				$view = new View(array(
 					"file" => $file
 					));

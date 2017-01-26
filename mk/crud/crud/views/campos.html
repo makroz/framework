@@ -19,11 +19,11 @@
           {% if ($field['extra']!='') %} <br>{% echo $field['extra'] %}   {% /if %}
         </p>
         {% 2foreach $pedir in $_pedir %}
-          <input type="hidden" id="field-{% echo $field_i; %}-{% echo $pedir_i; %}" name="field['{% echo $field_i; %}']['{% echo $pedir_i; %}']"  value="{% echo $pedir['val'][$field_i]; %}" >
+          <input type="hidden" id="field-{% echo $field_i; %}-{% echo $pedir_i; %}" name="field[{% echo $field_i; %}][{% echo $pedir_i; %}]"  value="{% echo $pedir['val'][$field_i]; %}" >
         {% /2foreach %}
       </div>
       <div class="card-action">
-          <button data-target="modal1" class="modal-trigger waves-effect waves-light btn red" onclick="openDet('{% echo $field_i; %}');">Editar</button>
+          <button type="button" data-target="modal1" class="modal-trigger waves-effect waves-light btn red" onclick="openDet('{% echo $field_i; %}');">Editar</button>
 
       </div>
     
