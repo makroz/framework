@@ -29,7 +29,31 @@ function getSelAjax(id,url,idtarget,valtarget){
   
 }
 
-function reaction(options,newAction='', newModule='',ajax='',callback=null){
+function getAjax(link,method='GET',data={},div='',success=null)
+{
+  if (div!=''){
+    $(div).LoadingOverlay("show");
+  }
+ 
+  $.ajax({
+  method: method,
+  url: link,
+  data: data,
+  success: function(msg){
+      if (div!=''){
+        $(div).LoadingOverlay("hide");
+        $(div).html(msg).LoadingOverlay("hide",true);
+      }
+      
+      if (success){
+        success(msg);
+      }
+     }
+  });
+
+}
+
+function reaction(options,newAction='', newModule='',isajax='',callback=null){
  var opciones='';
  var action=getQueryVariable('url');
 
@@ -57,22 +81,25 @@ if (newAction!=''){
   var search=(action!='')? 'url='+action+opciones+window.location.hash:opciones.substring(1)+window.location.hash;
 //  search=(window.location.href.indexOf('?')!=-1)? window.location.href+opciones : window.location.href+'?'+opciones.substring(1);
   //alert(window.location.pathname+'?'+search);
-  if (ajax==''){
+  if (isajax==''){
   window.location=window.location.pathname+'?'+search;
   }else{
-    if (ajax===true){
+    if (isajax===true){
       return window.location.pathname+'?'+search;
     }else{
       //alert('cargand ajax'+window.location.pathname+'?'+search);
-      if (callback){
-        $(ajax).load(window.location.pathname+'?'+search,callback()); 
-      }else{
+      $(isajax).LoadingOverlay("show");
+      //if (callback){
+        getAjax(window.location.pathname+'?'+search,'GET',{ },isajax,callback);
+        //$(ajax).load(window.location.pathname+'?'+search,callback()); 
+      //}else{
 
-        $(ajax).load(window.location.pathname+'?'+search); 
-      }
+        //$(ajax).load(window.location.pathname+'?'+search); 
+      //}
     }
   }
 }
+
 
 
  function getQueryVariable(variable) {

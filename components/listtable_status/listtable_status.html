@@ -9,11 +9,7 @@ var options=[];
 	options['campos[status]']=status;
 var link=reaction(options,'setData','',true);
 
-$.ajax({
-  method: "GET",
-  url: link,
-  data: { },
-   success: function(msg){
+getAjax(link,'GET',{ },item, function(msg){
      if (msg>=0){
      	var newstatus='0';
      	var icon='E';
@@ -25,9 +21,7 @@ $.ajax({
      	$(item).data('status',newstatus).attr('src','img/'+icon+'.png');
 
      }
-   }
-
-});
+   });
 
 }
 

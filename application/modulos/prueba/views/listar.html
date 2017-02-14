@@ -103,6 +103,7 @@ table.highlight > tbody > tr:hover {
 {% append js.onready %}
 
 	$("select").material_select();
+	
    
 
 initListTable();
@@ -265,11 +266,7 @@ var options=[];
 	options['campos[status]']=status;
 var link=reaction(options,'setData','',true);
 
-$.ajax({
-  method: "GET",
-  url: link,
-  data: { },
-   success: function(msg){
+getAjax(link,'GET',{ },item, function(msg){
      if (msg>=0){
      	var newstatus='0';
      	var icon='E';
@@ -281,9 +278,7 @@ $.ajax({
      	$(item).data('status',newstatus).attr('src','img/'+icon+'.png');
 
      }
-   }
-
-});
+   });
 
 }
 
@@ -371,6 +366,7 @@ $.ajax({
 
 <link href='js/colresize/colResizable.css' rel='stylesheet'>
 <script type='text/javascript' src='js/colresize/colResizable.js'></script>
+<script type='text/javascript' src='js/loadingoverlay/loadingoverlay.min.js'></script>
   
 
 <script type="text/javascript" src="js/printarea/printarea.js"></script>

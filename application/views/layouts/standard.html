@@ -43,7 +43,7 @@
 {% yield js.files %}
 <script >
 $(document).ready(function(){
-
+$('#debug').modal();
 {% yield js.onready %}
 
 });
@@ -53,16 +53,10 @@ $(document).ready(function(){
 <footer>
 	
 </footer>
-<!-- Modal Structure -->
-  <div id="debug" class="modal bottom-sheet">
-    <div class="modal-content">
-      <h4>Datos de Debug</h4>
-      <p><pre>{% echo $_data; %}</pre></p>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">cerrar</a>
-    </div>
-  </div>
+
+
+
+  
 </body>
 </html>
 

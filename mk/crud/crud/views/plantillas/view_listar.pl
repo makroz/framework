@@ -1,5 +1,6 @@
 {% append js.onready %}
 	$("select").material_select();
+	
 {% /append %}
 
 {% append js.files %}

@@ -250,6 +250,14 @@ namespace Mk
 					}
 
 					$results = $view->render();
+
+					if (Inputs::get("_debug",'')=='1'){
+						 $data1=$view->_getData();
+						unset($data1["template"]);
+						$debug=print_r($data1,true);
+						$results.='<div id="debug" class="modal bottom-sheet "><div class="modal-content"><h4>Datos de Debug</h4><p><pre>'.$debug.
+								'</pre></p></div><div class="modal-footer"><a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">cerrar</a></div></div>';
+					}
 				}
 				//\Mk\Shared\FormTools::debug($result,2);
 				if ($doLayout)
@@ -261,12 +269,8 @@ namespace Mk
 					}
 
 					$results = $view->render();
-/*					header("Content-type: {$defaultContentType}");
-					$results=str_replace("\\'", "'", $results);
-					echo $results;
-*/				}
-				//else
-				//if ($doAction)
+				}
+
 				if ($results)
 				{
 					header("Content-type: {$defaultContentType}");
@@ -277,8 +281,9 @@ namespace Mk
 						$runScript=Inputs::get("_runScriptLoad",'');
 						//echo $runScript;
 						$results=\Mk\Tools\String::getEtiquetas($results,'<!-- ajax: -->','<!-- :ajax -->',2,'root',' ');
-						
+					
 					}
+
 					echo $results;
 					if ($runScript!=''){
 							echo "<script type='text/javascript'> $runScript </script>";

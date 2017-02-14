@@ -17,6 +17,10 @@ namespace Mk
 		protected $_template;
 		protected $_data = array();
 
+		public function _getData(){
+			return $this->_data;
+		}
+
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
