@@ -107,8 +107,12 @@ namespace Mk\Crud
 
 
 			$luso['A']='Ambos Grabar y Actualizar';
-			$luso['U']='Solo Actualizar';
-			$luso['I']='Solo Grabar';
+			$luso['M']='Solo Actualizar';
+			$luso['G']='Solo Grabar';
+
+			$lalign['D']='Derecha';
+			$lalign['I']='Izquierda';
+			$lalign['C']='Centrado';
 
 
 			$pedir=array();
@@ -214,7 +218,7 @@ namespace Mk\Crud
 				$pedir['dec']['val'][$key]='0';
 				$pedir['uso']['val'][$key]='A';
 				$pedir['tam']['val'][$key]='100%';
-				$pedir['tamlista']['val'][$key]='100';
+				$pedir['tamlista']['val'][$key]='';
 				$pedir['search']['val'][$key]='1';
 
 
@@ -227,67 +231,59 @@ namespace Mk\Crud
 					
 					
 
-					if ($field['args'][1]>0){
-						$pedir['tamlista']['val'][$key]=($field['args'][1]*5)+20;
-						if ($pedir['tamlista']['val'][$key]>300){$pedir['tamlista']['val'][$key]=300;}
+					if ($field['args'][0]>0){
+						$pedir['tam']['val'][$key]=($field['args'][0]*5)+20;
+						if ($pedir['tam']['val'][$key]>300){$pedir['tam']['val'][$key]=300;}
 					}
 
-					$pedir['tamlista']['val'][$key]=$pedir['tam']['val'][$key];
+					//$pedir['tamlista']['val'][$key]=$pedir['tam']['val'][$key];
+
 					if (in_array($field['type'], array('mediumtext','largetext'),true)){
 						$pedir['usof']['val'][$key]='area';
 						$pedir['tamlista']['val'][$key]='0';
 					}
 
 
-					if ($field['args'][1]==1){
+					if ($field['args'][0]==1){
 						$pedir['usof']['val'][$key]='check';
 						$pedir['tamlista']['val'][$key]='35';
 						$pedir['funcion']['val'][$key]='check';	
 						$pedir['checkvalor']['val'][$key]='1/0';
 						$pedir['tipolista']['val'][$key]='check';
 						
-						if (stripos($campos,'status')!==false){
-							$pedir['tipolista']['val'][$key]='status';
-							$pedir['usof']['val'][$key]='';
-							$pedir['tamlista']['val'][$key]='35';
-							$pedir['funcion']['val'][$key]='custom';
-							$pedir['fcustom']['val'][$key]='E';
-							$pedir['search']['val'][$key]='0';	
-							$pedir['uso']['val'][$key]='I';	
-						}
 					}
 
-					if (($field['args'][1]==8)and(String::stripos_array($campos,array('date','fecha','fec'),true)!==false)){
+					if (($field['args'][0]==8)and(String::stripos_array($campos,array('date','fecha','fec'),true)!==false)){
 						$pedir['usof']['val'][$key]='date';
 						$pedir['tamlista']['val'][$key]='90';
 						$pedir['funcion']['val'][$key]='date';
 
 					}
 
-					if (($field['args'][1]==12)and(String::stripos_array($campos,array('date','fecha','fec'),true)!==false)){
+					if (($field['args'][0]==12)and(String::stripos_array($campos,array('date','fecha','fec'),true)!==false)){
 						$pedir['usof']['val'][$key]='datetime';
 						$pedir['tamlista']['val'][$key]='120';
 						$pedir['funcion']['val'][$key]='datetime';	
 					}
 
-					if (($field['args'][1]==4)and(String::stripos_array($campos,array('time','hora'),true)!==false)){
+					if (($field['args'][0]==4)and(String::stripos_array($campos,array('time','hora'),true)!==false)){
 						$pedir['usof']['val'][$key]='time';
 						$pedir['tamlista']['val'][$key]='50';
 						$pedir['funcion']['val'][$key]='time';	
 					}
 
 					if (stripos($campos,'fecha')!==false){
-						if ($field['args'][1]==12){
+						if ($field['args'][0]==12){
 							$pedir['usof']['val'][$key]='datetime';
 							$pedir['tamlista']['val'][$key]='120';
 							$pedir['funcion']['val'][$key]='datetimeserver';	
 						}
-						if ($field['args'][1]==8){
+						if ($field['args'][0]==8){
 							$pedir['usof']['val'][$key]='date';
 							$pedir['tamlista']['val'][$key]='90';
 							$pedir['funcion']['val'][$key]='dateserver';	
 						}
-						if ($field['args'][1]==12){
+						if ($field['args'][0]==12){
 							$pedir['usof']['val'][$key]='time';
 							$pedir['tamlista']['val'][$key]='50';
 							$pedir['funcion']['val'][$key]='timeserver';	
@@ -368,6 +364,26 @@ namespace Mk\Crud
 					$pedir['funcion']['val'][$key]='-1';
 
 				}
+
+				if (($Name=='created')||($Name=='modified')){
+					$pedir['tipolista']['val'][$key]='-1';
+					$pedir['usof']['val'][$key]='-1';
+
+				}				
+				
+
+				if (($Name=='status')&&($field['args'][0]==1)){
+					$pedir['tipolista']['val'][$key]='status';
+					$pedir['usof']['val'][$key]='-1';
+					$pedir['uso']['val'][$key]='G';
+					$pedir['funcion']['val'][$key]='custom';
+					$pedir['fcustom']['val'][$key]='1';
+					$pedir['tamlista']['val'][$key]='45';
+					$pedir['search']['val'][$key]='0';
+					$pedir['label']['val'][$key]='St';
+
+				}				
+
 				/// Valores por defecto segun Nombre de Campo
 
 
@@ -378,6 +394,12 @@ namespace Mk\Crud
 					$pedir['uso']['val'][$key]='-1';
 					//$pedir['ver']['val'][$key]='1';
 					//$var='cod';
+					if ($Name=='pk'){
+						$pedir['tipolista']['val'][$key]='list';
+						$pedir['tamlista']['val'][$key]='60';
+						$pedir['label']['val'][$key]='Id';
+
+					}
 				}
 
 
@@ -427,9 +449,12 @@ namespace Mk\Crud
 				}
 				if ($fields[$key]['extra']=='auto_increment'){
 				$lines[]='* @type autonumber';
+				$campos[$key]['type']='autonumber';
+
 				}else{
 
 					$lines[]='* @type '.$fields[$key]['type'];
+					$campos[$key]['type']=$fields[$key]['type'];					
 
 					if ($fields[$key]['arg'][0]!=''){
 				
@@ -482,15 +507,15 @@ namespace Mk\Crud
 			$plantilla = str_replace('//<<[CAMPOS]>>//',$txtCampos,$plantilla);
 
 			$dir=MODULE_PATH.DIRECTORY_SEPARATOR.strtolower($table).DIRECTORY_SEPARATOR;
- 			@mkdir ($dir.'modelos', 0700); 
+ 			@mkdir ($dir.'modelos', 0700,true); 
+ 			@mkdir ($dir.'views', 0700,true); 
 
 
-			$gestor = fopen($dir.DIRECTORY_SEPARATOR.'modelos'.DIRECTORY_SEPARATOR.strtolower($table).'.php',"w");
+			$gestor = fopen($dir.'modelos'.DIRECTORY_SEPARATOR.strtolower($table).'.php',"w+");
 			fwrite($gestor,$plantilla, strlen($plantilla));
 			fclose($gestor);
-			$plantilla=str_replace("\n",'<br>',$plantilla);
-			
-			$view->set('mensaje','<code> '.$plantilla.'</code>');
+			//$plantilla=str_replace("\n",'<br />',$plantilla);
+			$view->set('mensaje',nl2br($plantilla));
 
 			//generar vista listar
 
@@ -547,6 +572,16 @@ namespace Mk\Crud
 				}
 
 
+				
+				if (@filesize(CORE_PATH.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.$component.DIRECTORY_SEPARATOR.$component.'.php')>0){
+					$funcionphp='\Components\\'.ucfirst($component).'\\'.ucfirst($component);
+					$funcionphp=new $funcionphp($campos);
+				}else{
+					$funcionphp=null;
+				}
+					
+
+
 				$parametros=array_unique($parametros);
 				echo "<br>Procesado el Componente: $component";
 				$html1=$html;
@@ -562,15 +597,25 @@ namespace Mk\Crud
 								$var1=explode('=',$var1.'=');
 								if ($var1[0]!=''){
 									$html = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$html);
+									$codeUnique['jsinline'][$component] = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$codeUnique['jsinline'][$component]);
+
 								}
+								//$html = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$html);
 							}
 
+							$html=$this->procesaPhpHtml($html,$funcionphp);
 						}
 
+					}else{
+						$html=$this->procesaPhpHtml($html,$funcionphp);
 					}
+
 					echo "<br>---Rendenizado Componente: $tag";
 					
 					$plantilla = str_replace('[[component:]]'.$tag.'[[:component]]',$html,$plantilla);
+				}
+				if ($funcionphp){
+					unset($funcionphp);
 				}
 
 			}
@@ -585,10 +630,31 @@ namespace Mk\Crud
 			$plantilla = "\n".'{% append style.files %}'.implode($codeUnique['stylefiles']," ")."\n".'{% /append %}'."\n".$plantilla;
 
 
-			$gestor = fopen($dir.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'listar.html',"w");
+			$gestor = fopen($dir.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'listar.html',"w+");
 			fwrite($gestor,$plantilla, strlen($plantilla));
 			fclose($gestor);
 
+		}
+
+		private function procesaPhpHtml($html,$funcionphp){
+			if ($funcionphp){
+			$php=\Mk\Tools\String::getEtiquetas($html,'[[php:]]','[[:php]]','1');
+			//print_r($php);
+			//$php=array_unique($php);
+			foreach($php as $key2 => $param2){
+				$param=trim(implode(',',$param2),',');
+				$texto=$funcionphp->$key2($param);
+				echo "<br>EL php es: $texto";
+				if ($param==''){
+					$html = str_replace('[[php:]]'.$key2.'[[:php]]',$texto,$html);
+				}else{
+					$html = str_replace('[[php:]]'.$key2.'::'.$param.'[[:php]]',$texto,$html);
+
+				}
+				
+			}
+			}
+			return $html;
 		}
 
 		private function renderComponente($idComponent,$plantilla,&$codeUnique,&$codeExist){

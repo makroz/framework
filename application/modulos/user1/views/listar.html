@@ -1,0 +1,361 @@
+
+{% append style.files %}       
+{% /append %}
+
+{% append style.inline %}
+
+
+  
+
+.botonera{
+	padding:1em;
+
+}
+
+.botonera-panel > a {
+	margin-right:0.5em;
+	margin-left:0.5em;
+}
+
+.botonera-panel {
+	padding:1em;
+	display:inline-block;	
+	margin-right:0.2em;
+	margin-left:0.2em;
+}
+
+.separador{
+	border-left:1px solid #000;
+	width:5px;
+}
+
+.botonera li{
+display: inline-block;
+margin: 0 0 0 0;
+list-style-type: none;
+margin-right:0.5em;
+margin-left:0.5em;
+}
+
+.botonera ul.pagination{
+	margin:0;
+}
+
+ 
+
+table.highlight > tbody > tr:hover {
+    background-color: #BFBFFF;
+}
+
+.sortable{
+	background-image:url('/components/listtable/img/sort.png');
+	background-repeat: no-repeat;
+    background-position: left;
+	padding-left:19px;
+	cursor:pointer;	
+}
+
+.sort_desc{
+	background-image:url('/components/listtable/img/sort_desc.png');
+}
+
+.sort_asc{
+	background-image:url('/components/listtable/img/sort_asc.png');
+}
+
+.tablaLista th{
+	border-right:1px solid #888888;
+	border-left:1px solid #888888;
+}
+
+.selTR, table.striped > tbody > tr.selTR:nth-child(2n+1), table.striped > tbody > tr.selTR:nth-child(2n+0) {
+    background-color: red;
+}
+    
+{% /append %}
+
+{% append js.onready %}
+
+	$("select").material_select();
+   
+
+$(".tablaLista").colResizable({
+    liveDrag:true,
+    gripInnerHtml:"<div class='grip'></div>", 
+    draggingClass:"dragging",
+    disabledColumns:[0,-1,-2],
+    postbackSafe:false,
+	partialRefresh:true,
+	headerOnly:true
+    
+  }); 
+
+  $('.sortable').click(function() {
+	  sortTable(this);
+	});
+
+    
+{% /append %}
+
+{% append js.inline %}
+
+
+   
+
+
+function sortTable(th){
+var options=[];
+
+	if ($(th).hasClass('sort_asc')){
+		options['direction']='desc';
+	}else{
+		if ($(th).hasClass('sort_desc')){
+			options['direction']='asc';
+		}else{
+			options['order']=$(th).data('field');
+		}
+	}
+
+reaction(options);
+
+}
+
+ 
+
+
+function clicBotonera(boton){
+var idSel = $(boton).parent().parent().data('cod');
+var idAction = $(boton).data('action');
+var selCount = 1;
+
+if (idSel==undefined){
+	idSel = serializar();
+	selCount = $(".list_check:checked").length;
+}
+
+var options=[];
+	options['cod']=idSel;
+
+	if (idAction=='add'){
+		options=[];
+		
+	}
+
+	if (idAction=='edit'){
+		if (selCount!=1){
+		alert('Debe escoger 1 fila y solo 1');
+		return false;
+		}
+	}
+	if (idAction=='del'){
+		if (selCount==0){
+		alert('Debe escoger al menos 1 fila');
+		return false;
+		}
+	}
+	if (idAction=='ver'){
+		if (selCount==0){
+		alert('Debe escoger al menos 1 fila');
+		return false;
+		}
+	}
+
+	reaction(options,idAction);
+	alert('Action Seleccionada: '+idAction);
+	return false;
+}
+
+  
+
+function serializar(){
+var dato='';
+$(".list_check:checked").each(function() {
+	if (dato==''){dato=dato+this.value;}else{dato=dato+','+this.value;}
+ });
+ return dato;
+ 
+}
+
+function clicsel(){
+$(".list_check").parent().parent().removeClass('selTR');
+$(".list_check:checked").each(function () {
+      $(this).parent().parent().addClass('selTR');
+    });
+if (window.selclic){
+		selclic($('.list_check:checked').length,$('.list_check:checked').val(),$('.list_check:checked').attr("tag"));
+}
+
+}
+
+function chequear(d){
+$(".list_check").each(function() {
+   this.checked = d;
+ });
+clicsel();
+}
+
+function clicChecked(id){
+	if (id==0){
+		//$('.list_check').attr('checked',$('#list_check_all').is(':checked')); 
+		chequear($('#list_check_all').is(':checked'));
+	}else{
+	//alert('presono id:'+id+' '+$('#list_check_'+id).is(':checked'));
+	$('#list_check_'+id).attr('checked',!$('#list_check_'+id).is(':checked')); 
+	clicsel();
+	}
+  //$('#'+id).attr('checked',!$('#'+id).is(':checked')); 
+  //return false;
+}
+ 
+{% /append %}
+
+{% append js.files %}
+
+
+   
+
+<link href='js/colresize/colResizable.css' rel='stylesheet'>
+<script type='text/javascript' src='js/colresize/colResizable.js'></script>
+    
+{% /append %}
+ 
+
+ 
+
+
+ 
+
+ 
+
+<div class="mk-section">
+<h1 > {% echo $modTitulo; %}</h1>
+
+</div>
+
+<div class="mk-section">
+ 
+
+<div class="botonera z-depth-1" >
+<div class="botonera-panel z-depth-1" >
+ 
+<li>
+<a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
+</li>
+<li>
+<a class="btn-floating waves-effect waves-light red" title="Elimminar" data-action="del" onclick="clicBotonera(this);"><i class="material-icons">delete</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
+</li>
+
+
+</div>
+<div class="botonera-panel z-depth-1" style="border-right: 0;" >
+<a class="btn-floating  waves-effect waves-light blue" title="Buscar"><i class="material-icons">search</i></a>
+<a class="btn-floating  waves-effect waves-light teal" title="Buscar"><i class="material-icons">print</i></a>
+
+</div>
+
+
+<div class="botonera-panel z-depth-1 right" style="border-right: 0;" >
+
+
+{% php $maxpage=ceil($count / $limit); $minpage=$page-3; if ($minpage<=0){ $minpage=1; } $lastpage=$minpage+4;if($lastpage>$maxpage){ $lastpage=$maxpage;}  %} 
+<ul class="pagination">
+     <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">first_page</i></a></li>
+    <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+
+				{% foreach $_page in range($minpage, $lastpage) %}
+				<li class="{% if $page == $_page %}active{% /if %} waves-effect"><a href="#!">{% echo $_page; %}</a></li>
+				{% /foreach %}
+
+     <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+    <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">last_page</i></a></li>
+</ul>
+</div>
+
+</div>
+
+</div>
+
+{% if $items != false %}
+ 
+
+ 
+
+ 
+
+ 
+
+<table class="striped bordered highlight tablaLista">
+	<thead class="red">
+		<tr>
+			<th  width="30" class="center" > 
+				 
+
+<input type="checkbox" id="{% echo 'list_check_all'; %}" name="{% echo 'list_check_all'; %}"  data-type="{% echo 'check'; %}" data-on="{% echo '1'; %}" data-off="{% echo '0'; %}" onclick="clicChecked('0');" />
+<label for="{% echo 'list_check_all'; %}"></label>
+
+			</th>
+			<th data-field="fff" width="" class="sortable {% if ($order=='fff') %} sort_{% echo $direction; %} {% /if %}" >Fff</th><th data-field="hhhh" width="" class="sortable {% if ($order=='hhhh') %} sort_{% echo $direction; %} {% /if %}" >Hhhh</th><th data-field="mail" width="" class="sortable {% if ($order=='mail') %} sort_{% echo $direction; %} {% /if %}" >Mail</th><th data-field="kkk" width="" class="sortable {% if ($order=='kkk') %} sort_{% echo $direction; %} {% /if %}" >Kkk</th><th data-field="wq" width="120" class="sortable {% if ($order=='wq') %} sort_{% echo $direction; %} {% /if %}" >Wq</th><th data-field="zx" width="0" class="sortable {% if ($order=='zx') %} sort_{% echo $direction; %} {% /if %}" >Zx</th><th data-field="as" width="80" class="sortable {% if ($order=='as') %} sort_{% echo $direction; %} {% /if %}" >As</th><th data-field="asa" width="60" class="sortable {% if ($order=='asa') %} sort_{% echo $direction; %} {% /if %}" >Asa</th><th data-field="dffs" width="80" class="sortable {% if ($order=='dffs') %} sort_{% echo $direction; %} {% /if %}" >Dffs</th><th data-field="dfggffg" width="80" class="sortable {% if ($order=='dfggffg') %} sort_{% echo $direction; %} {% /if %}" >Dfggffg</th>
+			<th data-field="act" width="290">Accion</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		{% php $nr=0; %}
+		{% foreach $row in $items %}
+		{% php $nr=$nr+1; %}
+		<tr>
+
+
+			<td class="center" > 
+				<input type="checkbox" id="list_check_{% echo $row[pk]; %}" name="list_check_{% echo $row[pk]; %}"  class="list_check" onclick="clicChecked('{% echo $row[pk]; %}');" value="{% echo $row[pk] %}" />
+<label for="list_check_{% echo $row[pk]; %}"></label>
+
+			</td>	
+			<td > {% echo $row[fff] %} </td><td > {% echo $row[hhhh] %} </td><td > {% echo $row[mail] %} </td><td > {% echo $row[kkk] %} </td><td > {% echo $row[wq] %} </td><td > {% echo $row[zx] %} </td><td > {% echo $row[as] %} </td><td > {% echo $row[asa] %} </td><td > {% echo $row[dffs] %} </td><td > {% echo $row[dfggffg] %} </td>
+			<td style="overflow: visible;"> 
+				<div style="position: relative;">
+					<div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block;top: -18px;">
+						<a class="btn-floating btn-medium red">
+							<i class="large material-icons">menu</i>
+						</a>
+						<ul style="top: -14px;right: 30px;" data-cod='{% echo $row[pk] %}'>
+							 
+<li>
+<a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
+</li>
+<li>
+<a class="btn-floating waves-effect waves-light red" title="Elimminar" data-action="del" onclick="clicBotonera(this);"><i class="material-icons">delete</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
+</li>
+
+						</ul>
+					</div>
+				</div>
+			</td>
+
+		</tr>
+		{% /foreach %}
+
+		{% foreach $_i in range($nr, $limit-1) %}
+		<tr>
+
+			<td >&nbsp; </td>
+			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
+			<td > </td>
+		</tr>
+		{% /foreach %}
+	</tbody>
+</table>
+   
+{% /if %}

@@ -1,0 +1,44 @@
+{% append js.inline %}
+function serializar(){
+var dato='';
+$(".list_check:checked").each(function() {
+	if (dato==''){dato=dato+this.value;}else{dato=dato+','+this.value;}
+ });
+ return dato;
+ 
+}
+
+function clicsel(){
+$(".list_check").parent().parent().removeClass('selTR');
+$(".list_check:checked").each(function () {
+      $(this).parent().parent().addClass('selTR');
+    });
+if (window.selclic){
+		selclic($('.list_check:checked').length,$('.list_check:checked').val(),$('.list_check:checked').attr("tag"));
+}
+
+}
+
+function chequear(d){
+$(".list_check").each(function() {
+   this.checked = d;
+ });
+clicsel();
+}
+
+function clicChecked(id){
+	if (id==0){
+		//$('.list_check').attr('checked',$('#list_check_all').is(':checked')); 
+		chequear($('#list_check_all').is(':checked'));
+	}else{
+	//alert('presono id:'+id+' '+$('#list_check_'+id).is(':checked'));
+	$('#list_check_'+id).attr('checked',!$('#list_check_'+id).is(':checked')); 
+	clicsel();
+	}
+  //$('#'+id).attr('checked',!$('#'+id).is(':checked')); 
+  //return false;
+}
+{% /append %}
+
+<input type="checkbox" id="{% echo 'list_check_all'; %}" name="{% echo 'list_check_all'; %}"  data-type="{% echo 'check'; %}" data-on="{% echo '1'; %}" data-off="{% echo '0'; %}" onclick="clicChecked('0');" />
+<label for="{% echo 'list_check_all'; %}"></label>

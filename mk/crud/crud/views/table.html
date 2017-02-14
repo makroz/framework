@@ -66,6 +66,8 @@ $('.listalista > i').click(function() {
     opacity: 0.5,
 });
 
+$("#modal1").modal();
+
 {% /append %}
 
 {% append js.inline %}
@@ -91,7 +93,7 @@ function openDet(id){
 
 
   $('select').material_select();
-  $('#modal1').openModal();
+  $('#modal1').modal('open');
   valFunc();
   Materialize.updateTextFields();
   return false;
@@ -118,7 +120,7 @@ function openJoin(id){
     
   }
 
-  $('#modal2').openModal();
+  $('#modal2').modal('open');
  $('select').material_select();
 }
 
@@ -140,7 +142,7 @@ function openLista(id){
 
   $('#bAddLista').data('indice',tr.length);
 
-  $('#modalLista').openModal();
+  $('#modalLista').modal('open');
   $('select').material_select();
   $("#tablalista tbody").sortable({
   axis:'y',
@@ -182,7 +184,7 @@ function closeDet(){
   });
 
 
-  $('#modal1').closeModal();
+  $('#modal1').modal('close');
 }
 
 function closeJoin(){

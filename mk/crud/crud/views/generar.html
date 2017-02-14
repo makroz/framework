@@ -1,2 +1,10 @@
+{% append js.files %}
+<link href='js/prism/prism.css' rel='stylesheet'>
+<script type='text/javascript' src='js/prism/prism.js'></script>
+{% /append %}
+{% append js.onready %}
+
+{% /append %}
+
 {% if error!='' %}{% echo $error; %} <br> {% /if %} 
-< php <br>{% echo $mensaje; %}
+<pre><code class="language-php line-numbers no-whitespace-normalization"> {% echo $mensaje; %}  </code></pre>

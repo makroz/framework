@@ -19,6 +19,7 @@ namespace Mk
 		}
 		public static function trim($array)
 		{
+			//print_r($array);
 			return array_map(function($item) {
 				return trim($item);
 			}, $array);

@@ -1,5 +1,4 @@
 <?php
-
 namespace Mk
 {
 	use Mk\Base as Base;
@@ -62,7 +61,18 @@ namespace Mk
 		* @read
 		*/
 		protected $_name;
+		/**
+		* @readwrite
+		*/
+		protected $_renderAjaxDiv ='';
 
+		public function Setrenderview($t=true){
+			$this->_willRenderActionView=$t;
+			$this->_willRenderLayoutView=$t;
+		}
+
+
+		
 		public function getFilenameLayout($file='',$theme=''){
 			$router = Registry::get("router");
 			$controller = $router->getController();
@@ -124,6 +134,33 @@ namespace Mk
 			return $filed;
 
 		}
+
+		public function changeViewAction($action)
+		{
+
+			if ($this->getWillRenderLayoutView())
+			{
+				$file=$this->getFilenameLayout();
+
+				$view = new View(array(
+					"file" => $file
+					));
+				$this->setLayoutView($view);
+			}
+
+			if ($this->getWillRenderActionView())
+			{
+
+				$file=$this->getFilenameAction($action);
+				$view = new View(array(
+					"file" => $file
+					));
+				$this->setActionView($view);
+				//\MK\Debug::msg($this->getLayoutView()->getFile());
+			}
+		}
+
+
 
 		public function __construct($options = array())
 		{
@@ -188,6 +225,15 @@ namespace Mk
 		{
 			$defaultContentType = $this->getDefaultContentType();
 			$results = null;
+
+			if (\Mk\Tools\App::isAjax()==true){
+				$this->_renderAjaxDiv='ajax';	
+				$_willRenderLayoutView=false;
+			}else{
+				$this->_renderAjaxDiv='';
+			}
+
+
 			$doAction = $this->getWillRenderActionView() && $this->getActionView()->fileExist();
 			$doLayout = $this->getWillRenderLayoutView() && $this->getLayoutView()->fileExist();
 			
@@ -215,16 +261,30 @@ namespace Mk
 					}
 
 					$results = $view->render();
-					header("Content-type: {$defaultContentType}");
+/*					header("Content-type: {$defaultContentType}");
 					$results=str_replace("\\'", "'", $results);
 					echo $results;
-				}
-				else if ($doAction)
+*/				}
+				//else
+				//if ($doAction)
+				if ($results)
 				{
 					header("Content-type: {$defaultContentType}");
 					$results=str_replace("\\'", "'", $results);
+
+
+					if ($this->_renderAjaxDiv!=''){
+						$runScript=Inputs::get("_runScriptLoad",'');
+						//echo $runScript;
+						$results=\Mk\Tools\String::getEtiquetas($results,'<!-- ajax: -->','<!-- :ajax -->',2,'root',' ');
+						
+					}
 					echo $results;
+					if ($runScript!=''){
+							echo "<script type='text/javascript'> $runScript </script>";
+						}
 				}
+
 				$this->setWillRenderLayoutView(false);
 				$this->setWillRenderActionView(false);
 			}

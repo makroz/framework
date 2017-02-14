@@ -11,6 +11,9 @@ class Prueba_controller extends ControllerDb
 		* @readwrite
 		*/
 		//protected $_secureKey='User';
+		//
+		private $_searchMsg='';
+		
 
 
 	public function __construct($options = array())
@@ -23,16 +26,119 @@ class Prueba_controller extends ControllerDb
 
 	}
 
-	
-	public function getParam($name,$Default=''){
+			public function actionSetData(){
+		$this->setRenderView(false);
+
+		$pk =Inputs::get("pk",'');
+		$campos = Inputs::get("campos",array());
+		$campos=array_merge(array("pk"=>$pk),$campos);
+		$modelo = $this->_model;
+		$modelo->saveFromArray($campos);
+		$modelo->loadFromArray($campos);
+
+		if (\Mk\Tools\App::isAjax()==true){
+			echo $pk;
+			return $pk;	
+		}else{
+			header("Location:". $_SERVER['HTTP_REFERER']);
+			exit;
+		}
+		return -1;
+	}
+
+
+	public function getParam($name,$Default='',$controller=''){
+		if ($controller==''){
+			$controller=$this->getName();
+		}		
 		$session = Registry::get("session");
-		$valor = Inputs::get($name, $session->get($name,$Default));
-		$session->set($name,$valor);
+		$valor = Inputs::get($name, $session->get($controller.'_'.$name,$Default));
+
+		$session->set($controller.'_'.$name,$valor);
 		return $valor;
 	}
 
+	public function setParam($name,$valor,$controller=''){
+		if ($controller==''){
+			$controller=$this->getName();
+		}		
+		$session = Registry::get("session");
+		$session->set($controller.'_'.$name,$valor);
+		return true;
+	}
+
+		public function getSearchWhere(){
+
+		$vacio='(pk>0)';
+		
+		if (Inputs::get("no_search",'')==1){
+			$this->_searchMsg='';
+			$this->setParam('search_where','');
+			$this->setParam('search_msg','');
+			return $vacio;
+
+		}
+
+		$campos = Inputs::get("search_campo",array());
+
+		if (sizeof($campos)>0){
+			$cond = Inputs::get("search_cond",array());
+			$search['_sc4'] = Inputs::get("search_search_date",array());
+			$search['_sc1'] = Inputs::get("search_search_text",array());
+			$search['_sc2'] = $search['_sc1'];
+			$join = Inputs::get("search_join",array());
+			$isjoin = Inputs::get("search_isjoin",array());
+
+
+			$columns=$this->_model->getColumns();
+			$joiner='';
+			$where='';
+			$this->_searchMsg='';
+
+			foreach ($campos as $key => $value){
+				$dd=\Mk\Tools\Bd::getTypes($columns[$value]['type']);
+
+				$dato=$this->_model->escape($search[$dd][$key]);
+//				echo "<hr>el dato es:".$dd.'<br>';
+
+				if (($cond[$key]<3)||($cond[$key]>8)){ $dato=strtoupper($dato);}
+				if ($dato!=''){
+					$texto=$this->_cond_search[$cond[$key]];
+					$texto= str_replace("[1]", $value, $texto);
+					$texto= str_replace("[2]", $dato, $texto);
+
+					$msg=$this->_cond_search_msg[$cond[$key]];
+					$msg= str_replace("[1]", $columns[$value]['label'], $msg);
+					$msg= str_replace("[2]", $dato, $msg);
+					
+
+
+					$where.=$joiner."($texto)";
+					$this->_searchMsg.=($joiner=='AND')?' Y ':($joiner=='OR')?' O ':'';
+					$this->_searchMsg.="($msg)";
+					$joiner=($join[$key]==1)?'AND':'OR';
+				}
+			}
+
+			$this->setParam('search_where',stripslashes($where));
+			$this->setParam('search_msg',stripslashes($this->_searchMsg));
+			if ($where==''){
+				$where=$vacio;
+			}
+		}else{
+			$where=$this->getParam("search_where",'');
+			$this->_searchMsg=$this->getParam("search_msg",'');
+			if ($where==''){
+				$where=$vacio;
+			}
+
+		}
+		return $where;
+	}
+
+
+	
 	public function actionListar(){
-		//$session = Registry::get("session");
 
 		$view = $this-> getActionView();
 
@@ -40,16 +146,17 @@ class Prueba_controller extends ControllerDb
 		$direction = $this->getParam("direction",'desc');
 		$page = $this->getParam("page",'1');
 		$limit = $this->getParam("limit",'10');
-
+		$where=$this->getSearchWhere();
 		$items = false;
 		$where = array(
-		"status = ?" => 'E'
+		'?'=>$where
 		);
+
 		$fields = array(
 		"pk", "nombre", "status"
 		);
-		$count = Prueba::count($where);
-		$items = Prueba::all($where, $fields, $order, $direction, $limit, $page);
+		$count = $this->_model->count($where);
+		$items = $this->_model->all($where, $fields, $order, $direction, $limit, $page);
 
 		$view
 		-> set("query", $query)
@@ -58,9 +165,18 @@ class Prueba_controller extends ControllerDb
 		-> set("page", $page)
 		-> set("limit", $limit)
 		-> set("count", $count)
+		-> set("searchMsg", $this->_searchMsg)
 		-> set("modTitulo", "Listado de ".$this->_model->_tPlural)
 		-> set("items", $items);
+
+
+		
+
+
+
 	}
+
+
 
 /*
 	public function actionRegister()

@@ -120,6 +120,7 @@ namespace Mk\Database
 					$limit = "LIMIT {$_limit}";
 				}
 			}
+			//echo "<br>".sprintf($template, $fields, $this->from, $join, $where, $order, $limit)."<br>";
 			return sprintf($template, $fields, $this->from, $join, $where, $order, $limit);
 		}
 		protected function _buildInsert($data)
@@ -267,8 +268,30 @@ namespace Mk\Database
 			$arguments[0] = preg_replace("#\?#", "%s", $arguments[0]);
 			foreach (array_slice($arguments, 1, null, true) as $i =>$parameter)
 			{
-				$arguments[$i] = $this->_quote($arguments[$i]);
+				if ($arguments[0]=='%s'){
+					$arguments[$i] = $arguments[$i];
+				}else{
+					$arguments[$i] = $this->_quote($arguments[$i]);	
+				}
+				
 			}
+			//print_r($arguments);
+			$this->_where[] = call_user_func_array("sprintf", $arguments);
+			return $this;
+		}
+		public function where_1()
+		{
+			$arguments = func_get_args();
+			if (sizeof($arguments) < 1)
+			{
+				throw $this->_Exception("Invalid argument (where)");
+			}
+			$arguments[0] = preg_replace("#\?#", "%s", $arguments[0]);
+			foreach (array_slice($arguments, 1, null, true) as $i =>$parameter)
+			{
+				$arguments[$i] = $arguments[$i];
+			}
+			//print_r($arguments);
 			$this->_where[] = call_user_func_array("sprintf", $arguments);
 			return $this;
 		}

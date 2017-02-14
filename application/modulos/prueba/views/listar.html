@@ -1,38 +1,10 @@
 
-{% append style.files %}    
+{% append style.files %}           
 {% /append %}
 
 {% append style.inline %}
 
-table.highlight > tbody > tr:hover {
-    background-color: #BFBFFF;
-}
 
-
-.sortable{
-	background-image:url('/components/listatable/img/sort.png');
-	background-repeat: no-repeat;
-    background-position: left;
-	padding-left:19px;
-	cursor:pointer;	
-}
-
-.sort_desc{
-	background-image:url('/components/listatable/img/sort_desc.png');
-}
-
-.sort_asc{
-	background-image:url('/components/listatable/img/sort_asc.png');
-}
-
-.tablaLista th{
-	border-right:1px solid #888888;
-	border-left:1px solid #888888;
-}
-
-.selTR, table.striped > tbody > tr.selTR:nth-child(2n+1), table.striped > tbody > tr.selTR:nth-child(2n+0) {
-    background-color: red;
-}
   
 
 .botonera{
@@ -69,32 +41,87 @@ margin-left:0.5em;
 	margin:0;
 }
 
-  
+ 
+
+table.highlight > tbody > tr:hover {
+    background-color: #BFBFFF;
+}
+
+.sortable{
+	background-image:url('/components/listtable/img/sort.png');
+	background-repeat: no-repeat;
+    background-position: left;
+	padding-left:19px;
+	cursor:pointer;	
+}
+
+.sort_desc{
+	background-image:url('/components/listtable/img/sort_desc.png');
+}
+
+.sort_asc{
+	background-image:url('/components/listtable/img/sort_asc.png');
+}
+
+.tablaLista th{
+	border-right:1px solid #888888;
+	border-left:1px solid #888888;
+}
+
+.selTR, table.striped > tbody > tr.selTR:nth-child(2n+1), table.striped > tbody > tr.selTR:nth-child(2n+0) {
+    background-color: red;
+}
+        
+
+	.input-field.col label.labeltop{
+	left: .75rem;
+	position: absolute;
+	top: -14px;
+	font-size: .8rem;
+	color: #9e9e9e;	
+	cursor: text;
+	transition: .2s ease-out;
+	}
+
+	select.browser-default{
+		cursor: pointer;
+	background-color: transparent;
+	border: none;
+	border-bottom: 1px solid #9e9e9e;
+	outline: none;
+	height: 3rem;
+	line-height: 3rem;
+	width: 100%;
+	font-size: 1rem;
+	margin: 0 0 20px 0;
+	padding: 0;
+	display: block;
+	}
+	
 {% /append %}
 
 {% append js.onready %}
 
-$("select").material_select();
+	$("select").material_select();
+   
 
-$(".tablaLista").colResizable({
-    liveDrag:true,
-    gripInnerHtml:"<div class='grip'></div>", 
-    draggingClass:"dragging",
-    disabledColumns:[0,2,3],
-    postbackSafe:false,
-	partialRefresh:true,
-	headerOnly:true
-    
-  }); 
+initListTable();
+   
 
-  $('.sortable').click(function() {
-  sortTable(this);
-	});
+$('#mk_buscar').modal();
+     
 
-    
+	 $('input.datafecha').dateDropper();
+	 _search_campo_change($('#search_campo'));
+
+
+	
 {% /append %}
 
 {% append js.inline %}
+
+
+   
 
 
 function sortTable(th){
@@ -109,52 +136,33 @@ var options=[];
 			options['order']=$(th).data('field');
 		}
 	}
+options['_runScriptLoad']='initListTable();';
 
-reaction(options);
+reaction(options,'','','.listTable');
 
 }
 
-function serializar(){
-var dato='';
-$(".list_check:checked").each(function() {
-	if (dato==''){dato=dato+this.value;}else{dato=dato+','+this.value;}
- });
- return dato;
+function initListTable(){
+
+	$(".tablaLista").colResizable({
+    liveDrag:true,
+    gripInnerHtml:"<div class='grip'></div>", 
+    draggingClass:"dragging",
+    disabledColumns:[0,-1,-2],
+    postbackSafe:false,
+	partialRefresh:true,
+	headerOnly:true
+    
+  }); 
+
+  $('.sortable').click(function() {
+	  sortTable(this);
+	});
+
+	$('#mk_buscar').modal();
+}
+
  
-}
-
-function clicsel(){
-$(".list_check").parent().parent().removeClass('selTR');
-$(".list_check:checked").each(function () {
-      $(this).parent().parent().addClass('selTR');
-    });
-if (window.selclic){
-		selclic($('.list_check:checked').length,$('.list_check:checked').val(),$('.list_check:checked').attr("tag"));
-}
-
-}
-
-function chequear(d){
-$(".list_check").each(function() {
-   this.checked = d;
- });
-clicsel();
-}
-
-function clicChecked(id){
-	if (id==0){
-		//$('.list_check').attr('checked',$('#list_check_all').is(':checked')); 
-		chequear($('#list_check_all').is(':checked'));
-	}else{
-	//alert('presono id:'+id+' '+$('#list_check_'+id).is(':checked'));
-	$('#list_check_'+id).attr('checked',!$('#list_check_'+id).is(':checked')); 
-	clicsel();
-	}
-  //$('#'+id).attr('checked',!$('#'+id).is(':checked')); 
-  //return false;
-}
-
-   
 
 
 function clicBotonera(boton){
@@ -200,13 +208,177 @@ var options=[];
 }
 
  
+
+function printerArea(area){
+	$(area).printArea();
+}
+   
+
+function serializar(){
+var dato='';
+$(".list_check:checked").each(function() {
+	if (dato==''){dato=dato+this.value;}else{dato=dato+','+this.value;}
+ });
+ return dato;
+ 
+}
+
+function clicsel(){
+$(".list_check").parent().parent().removeClass('selTR');
+$(".list_check:checked").each(function () {
+      $(this).parent().parent().addClass('selTR');
+    });
+if (window.selclic){
+		selclic($('.list_check:checked').length,$('.list_check:checked').val(),$('.list_check:checked').attr("tag"));
+}
+
+}
+
+function chequear(d){
+$(".list_check").each(function() {
+   this.checked = d;
+ });
+clicsel();
+}
+
+function clicChecked(id){
+	if (id==0){
+		//$('.list_check').attr('checked',$('#list_check_all').is(':checked')); 
+		chequear($('#list_check_all').is(':checked'));
+	}else{
+	//alert('presono id:'+id+' '+$('#list_check_'+id).is(':checked'));
+	$('#list_check_'+id).attr('checked',!$('#list_check_'+id).is(':checked')); 
+	clicsel();
+	}
+  //$('#'+id).attr('checked',!$('#'+id).is(':checked')); 
+  //return false;
+}
+  
+
+
+function cambiarStatus(item){
+var pk=$(item).data('pk');
+var status=$(item).data('status');
+
+var options=[];
+	options['pk']=pk;
+	options['campos[status]']=status;
+var link=reaction(options,'setData','',true);
+
+$.ajax({
+  method: "GET",
+  url: link,
+  data: { },
+   success: function(msg){
+     if (msg>=0){
+     	var newstatus='0';
+     	var icon='E';
+     	if (status=='0'){
+     		newstatus='1'
+     		icon='X';
+     	}
+     	
+     	$(item).data('status',newstatus).attr('src','img/'+icon+'.png');
+
+     }
+   }
+
+});
+
+}
+
+ 
+
+	function _search_campo_change(elem){
+		var valor=$(elem).val();
+		
+		var tipo= $(elem).find('option[value="' + valor + '"]').attr("class");
+		//alert(valor+':'+tipo); 
+		var fila=$(elem).closest('.row');
+		var cond=$(fila).find('.search_cond');
+		$(cond).find('option').hide();
+		$(cond).find('.'+tipo).show().first().prop("selected","selected").change();;
+		//$(cond).find('.'+tipo).
+		
+		$(fila).find('._sc').hide();
+		$(fila).find('.'+tipo).show();
+
+	}
+
+	function _search_addcampo(elem){
+		var fila=$(elem).closest('.row');
+		if ($(elem).hasClass('blue')){
+			var copia=$(fila).clone();
+			
+			if ($(copia).find('.red').length==0){
+				$(elem).clone().removeClass('blue').addClass('red').html('<i class="material-icons">delete</i>').appendTo($(copia).find('.blue').parent());
+			}
+
+			$(copia).find('.blue').html('<i class="material-icons">add</i>');
+			$(elem).hide().parent().addClass('s1').removeClass('s2');
+			$(fila).find('.search_join').show();
+			$(fila).find('.isjoin').val(1);
+
+			$(copia).find('input:text').val('');
+
+			var i=$(fila).data('count')+1;
+			$(copia).data('count',i);
+			$(copia).find('input, select').each(function(){
+				$(this).prop('id',$(this).prop('id')+i);
+			});
+
+			$(copia).find('label').each(function(){
+				$(this).prop('for',$(this).prop('for')+i);
+			});
+
+			$(copia).appendTo($(fila).parent());
+	
+			_search_campo_change($(copia).find('select:first'));
+			$('input.datafecha').dateDropper();
+		
+		}else{
+			if ($(fila).next().length>0){
+				$(fila).remove();
+			}else{
+				$(fila).prev().find('.blue').show().parent().addClass('s2').removeClass('s1');;
+				$(fila).prev().find('.search_join').hide();
+				$(fila).prev().find('.isjoin').val(0);
+				$(fila).remove();
+
+			}
+
+		}
+
+	}
+
+
+	function _search_buscar(clear=false){
+		//alert($('form#_searchform').serialize());
+		if (clear==true){
+			reaction('&no_search=1&_runScriptLoad=initListTable();','','','.listTable');
+		}else{
+			reaction($('form#_searchform').serialize()+'&_runScriptLoad=initListTable();','','','.listTable');
+		}
+		
+	}
+	
 {% /append %}
 
 {% append js.files %}
 
+
+   
+
 <link href='js/colresize/colResizable.css' rel='stylesheet'>
 <script type='text/javascript' src='js/colresize/colResizable.js'></script>
-    
+  
+
+<script type="text/javascript" src="js/printarea/printarea.js"></script>
+      
+
+	<link href='js/datedropper/datedropper.css' rel='stylesheet'>
+	<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+	
 {% /append %}
  
 
@@ -220,15 +392,15 @@ var options=[];
 <div class="mk-section">
 <h1 > {% echo $modTitulo; %}</h1>
 
-<h1 > [[var:]]text[[:var]]</h1>
-
 </div>
 
+<div class="listTable">
+<!-- ajax: -->
 
 <div class="mk-section">
  
 
-<div class="botonera z-depth-1" >
+<div class="botonera z-depth-1 noprinter" >
 <div class="botonera-panel z-depth-1" >
  
 <li>
@@ -247,8 +419,120 @@ var options=[];
 
 </div>
 <div class="botonera-panel z-depth-1" style="border-right: 0;" >
-<a class="btn-floating  waves-effect waves-light blue" title="Buscar"><i class="material-icons">search</i></a>
-<a class="btn-floating  waves-effect waves-light teal" title="Buscar"><i class="material-icons">print</i></a>
+ 
+
+ 
+
+
+<a class="btn-floating  waves-effect waves-light blue" title="Imprimir" onclick="printerArea('.listTable');"><i class="material-icons">print</i></a>
+ 
+
+
+<a class="btn-floating  waves-effect waves-light blue" title="Buscar" onclick="$('#mk_buscar').modal('open');"><i class="material-icons">search</i></a>
+{% if ($searchMsg!='') %}{% echo $searchMsg; %} <i class="tiny material-icons red white-text" title="Limpiar busqueda" onclick="_search_buscar(true);">close</i>{% /if %}
+	 
+
+	 
+
+
+	 
+
+
+	 
+
+
+	<div id="mk_buscar" class="modal modal-fixed-footer">
+	<form id="_searchform" autocomplete="off">
+	    <div class="modal-content">
+	      <h4>Busqueda</h4>
+
+		  
+
+	      <div class="row search1" data-count='0'>
+
+
+	            <div class="input-field col s3" >
+	    <select id="search_campo" name='search_campo[]' class="_search browser-default" onchange="_search_campo_change(this)" autocomplete='false' >
+
+	      <option value="pk" class="_sc2">Id</option><option value="nombre" class="_sc1">Nombre</option><option value="created" class="_sc4">Created</option><option value="modified" class="_sc4">Modified</option>
+
+	    </select>
+	          <label for="search_campo" class="labeltop">Campo de busqueda</label>
+				</div>
+
+	    <div class="input-field col s3" >
+	    <select id="search_cond" name='search_cond[]' class="_search browser-default search_cond"   >
+
+	      <option value="1" class="_sc1">contiene</option>
+	 	  <option value="2" class="_sc1">no contiene</option>
+	      <option value="3" class="_sc1 _sc2 _sc3 _sc4">igual a</option>
+	      <option value="4" class="_sc1 _sc2 _sc3 _sc4">diferente de</option>
+	      <option value="5" class="_sc2">mayor que</option>
+	      <option value="6" class="_sc2">menor que</option>
+	      <option value="7" class="_sc2">mayor o igual que</option>
+	      <option value="8" class="_sc2">menor o igual que</option>
+	      <option value="9" class="_sc1">empieza por</option>
+	      <option value="10" class="_sc1">no empieza por</option>
+	      <option value="11" class="_sc1">termina por</option>
+	      <option value="12" class="_sc1">no termina por</option>
+		
+
+
+
+	    </select>
+	          <label for="search_cond"  class="labeltop">Condicion de busqueda</label>
+				</div>
+
+				<div class="input-field col s4 _sc  _sc4 oculto" >
+
+	          <input id="search_search_date" name='search_search_date[]' type="text" class="_search datafecha" data-format="d/m/Y"  data-large-mode="true" value=''  >
+	          <label for="search_search_date">Criterio de busqueda Fecha</label>
+
+				</div>
+
+	            <div class="input-field col s4 _sc _sc1 _sc2" >
+
+	          <input id="search_search_text" name='search_search_text[]' type="text" class="_search"  value=''>
+	          <label for="search_search_text">Criterio de busqueda</label>
+
+				</div>
+
+
+	            <div class="input-field col s1 oculto search_join" >
+
+	          <select id="search_join" name='search_join[]' class="_search browser-default" >
+	      <option value="1">y</option>
+	      <option value="2">o</option>
+
+	    </select>
+	          <label for="search_join" class="labeltop">union</label>
+	          <input type="hidden" name="search_isjoin[]" class="isjoin" value="0">
+
+				</div>
+
+				  <div class="input-field col s2" >
+				  <a class="btn-floating  waves-effect waves-light blue search_icon_add" title="Mas criterios" onclick="_search_addcampo(this);"><i class="material-icons">add</i></a>
+				</div>
+
+	      </div>
+
+	       
+
+	    
+
+
+	      
+	    </div>
+	    <div class="modal-footer">
+	      <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat ">Cancel</a><a href="#!" class="modal-action  modal-close waves-effect waves-green btn-flat " onclick="_search_buscar(this.form);">Buscar</a>
+	    </div>
+	    </form>
+	</div>
+
+
+
+
+
 
 </div>
 
@@ -273,92 +557,60 @@ var options=[];
 </div>
 
 </div>
- 
-
-<div class="botonera z-depth-1" >
-<div class="botonera-panel z-depth-1" >
- 
-<li>
-<a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
-</li>
-<li>
-<a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
-</li>
-<li>
-<a class="btn-floating waves-effect waves-light red" title="Elimminar" data-action="del" onclick="clicBotonera(this);"><i class="material-icons">delete</i></a>
-</li>
-<li>
-<a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
-</li>
-
-
-</div>
-<div class="botonera-panel z-depth-1" style="border-right: 0;" >
-<a class="btn-floating  waves-effect waves-light blue" title="Buscar"><i class="material-icons">search</i></a>
-<a class="btn-floating  waves-effect waves-light teal" title="Buscar"><i class="material-icons">print</i></a>
-
-</div>
-
-
-<div class="botonera-panel z-depth-1 right" style="border-right: 0;" >
-
- 
-<ul class="pagination">
-     <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">first_page</i></a></li>
-    <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-
-				{% foreach $_page in range($minpage, $lastpage) %}
-				<li class="{% if $page == $_page %}active{% /if %} waves-effect"><a href="#!">{% echo $_page; %}</a></li>
-				{% /foreach %}
-
-     <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-    <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">last_page</i></a></li>
-</ul>
-</div>
-
-</div>
-
 
 {% if $items != false %}
+ 
 
+ 
+
+ 
+
+ 
 
 
 <table class="striped bordered highlight tablaLista">
-        <thead class="red">
-          <tr>
-          	 <th  width="5%" class="center" > 
+	<thead class="red">
+		<tr>
+			<th  width="30" class="center noprinter" > 
+				 
 
-      <input type="checkbox" id="{% echo 'list_check_all'; %}" name="{% echo 'list_check_all'; %}"  data-type="{% echo 'check'; %}" data-on="{% echo '1'; %}" data-off="{% echo '0'; %}" onclick="clicChecked('0');" />
-      <label for="{% echo 'list_check_all'; %}"></label>
+<input type="checkbox" id="{% echo 'list_check_all'; %}" name="{% echo 'list_check_all'; %}"  data-type="{% echo 'check'; %}" data-on="{% echo '1'; %}" data-off="{% echo '0'; %}" onclick="clicChecked('0');" />
+<label for="{% echo 'list_check_all'; %}"></label>
 
-          	 </th>
-              <th data-field="pk" width="20%" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" >Codigo</th>
-              <th data-field="nombre" width="80%" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" >Nombre</th>
-              <th data-field="status" width="5%" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" >St</th>
-              <th data-field="act" width="20%">Accion</th>
-          </tr>
-        </thead>
+			</th>
+			<th data-field="pk" width="60" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" >Id</th><th data-field="nombre" width="" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" >Nombre</th><th data-field="status" width="45" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" >St</th>
+			<th data-field="act" width="290" class=" noprinter">Accion</th>
+		</tr>
+	</thead>
 
-        <tbody>
-    {% php $nr=0; %}
-	{% foreach $row in $items %}
-	{% php $nr=$nr+1; %}
-	<tr>
-		<td class="center" > 
- <input type="checkbox" id="list_check_{% echo $row[pk]; %}" name="list_check_{% echo $row[pk]; %}"  class="list_check" onclick="clicChecked('{% echo $row[pk]; %}');" value="{% echo $row[pk] %}" />
-      <label for="list_check_{% echo $row[pk]; %}"></label>
-		 </td>	
-		<td > {% echo $row[pk] %} </td>
-		<td > {% echo $row[nombre] %} </td>
-		<td > {% echo $row[status] %} </td>
-		<td style="overflow: visible;"> 
-<div style="position: relative;">
-<div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block;top: -18px;">
-    <a class="btn-floating btn-medium red">
-      <i class="large material-icons">menu</i>
-    </a>
-    <ul style="top: -14px;right: 30px;" data-cod='{% echo $row[pk] %}'>
-       
+	<tbody>
+		{% php $nr=0; %}
+		{% foreach $row in $items %}
+		{% php $nr=$nr+1; %}
+		<tr>
+
+
+			<td class="center noprinter" > 
+				<input type="checkbox" id="list_check_{% echo $row[pk]; %}" name="list_check_{% echo $row[pk]; %}"  class="list_check" onclick="clicChecked('{% echo $row[pk]; %}');" value="{% echo $row[pk] %}" />
+<label for="list_check_{% echo $row[pk]; %}"></label>
+
+			</td>	
+			<td > {% echo $row[pk] %} </td><td > {% echo $row[nombre] %} </td><td > 
+
+{% if ($row[status]=="1") %}
+<img src="img/E.png" title="Click para cambiar" data-status='0' data-pk='$row[pk]' id='img_status_$row[pk]' onclick="cambiarStatus(this);" >
+{% /if %} {% else %}
+<img src="img/X.png" title="Click para cambiar" data-status='1' data-pk='$row[pk]' id='img_status_$row[pk]' onclick="cambiarStatus(this);" >
+{% /else %}
+</td>
+			<td style="overflow: visible;" class="noprinter"> 
+				<div style="position: relative;">
+					<div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block;top: -18px;">
+						<a class="btn-floating btn-medium red">
+							<i class="large material-icons">menu</i>
+						</a>
+						<ul style="top: -14px;right: 30px;" data-cod='{% echo $row[pk] %}'>
+							 
 <li>
 <a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
 </li>
@@ -372,31 +624,28 @@ var options=[];
 <a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
 </li>
 
-    </ul>
-  </div>
-</div>
-		</td>
+						</ul>
+					</div>
+				</div>
+			</td>
 
-	</tr>
-	{% /foreach %}
-
-	{% foreach $_i in range($nr, $limit-1) %}
-		<tr>
-		<td >&nbsp; </td>
-		<td >&nbsp; </td>
-		<td > </td>
-		<td > </td>
-		<td > </td>
 		</tr>
-	{% /foreach %}
-  </tbody>
-      </table>
+		{% /foreach %}
 
+		{% foreach $_i in range($nr, $limit-1) %}
+		<tr class="noprinter">
 
-
-	
-
-	
-       
-
+			<td class="noprinter" >&nbsp; </td>
+			<td > </td><td > </td><td > </td>
+			<td class="noprinter" > </td>
+		</tr>
+		{% /foreach %}
+	</tbody>
+</table>
+   
 {% /if %}
+{% else %}
+No ha ningun campo por mostrar
+{% /else %}
+<!-- :ajax -->
+</div>

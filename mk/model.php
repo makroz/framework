@@ -70,9 +70,46 @@ namespace Mk
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
-			$this->connector->Sync($this);
+			//$this->connector->Sync($this);
 			$this->load();
 		}
+
+		public function escape($dato){
+			return $this->connector->escape($dato);
+		}
+
+		public function loadFromArray($previous){
+			foreach ($previous as $key => $value)
+				{
+					$prop = "_{$key}";
+					if (!empty($previous[$key]) && !isset($this->$prop))
+					{
+						$this->$key = $previous[$key];
+					}
+				}
+			return true;
+		}
+
+		public function loadToArray(){
+			$data=array();
+			foreach ($this->columns as $key => $column)
+			{
+				if (!$column["read"])
+				{
+					$prop = $column["raw"];
+					$data[$key] = $this->$prop;
+					continue;
+				}
+				if ($column != $this->primaryColumn && $column)
+				{
+					$method = "get".ucfirst($key);
+					$data[$key] = $this->$method();
+					continue;
+				}
+			}
+			return $data;
+		}
+
 		public function load()
 		{
 			$primary = $this->primaryColumn;
@@ -125,6 +162,7 @@ namespace Mk
 			}
 			return $query->delete();
 		}
+
 		public function save()
 		{
 			$primary = $this->primaryColumn;
@@ -140,6 +178,9 @@ namespace Mk
 			$data = array();
 			foreach ($this->columns as $key => $column)
 			{
+				/*if (is_array($onlyColumns)&&(!$onlyColumns[$colum["raw"]])){
+					continue;
+				}*/
 				if (!$column["read"])
 				{
 					$prop = $column["raw"];
@@ -160,6 +201,32 @@ namespace Mk
 			}
 			return $result;
 		}
+
+		public function saveFromArray($onlyColumns)
+		{
+			$primary = $this->primaryColumn;
+			$raw = $primary["raw"];
+			$name = $primary["name"];
+			$query = $this->connector
+			->query()
+			->from($this->table);
+			if (!empty($onlyColumns[$name]))
+			{
+				$query->where("{$name} = ?", $onlyColumns[$name]);
+			}
+			$data = array();
+			foreach ($onlyColumns as $key => $column)
+			{
+					$data[$key] = $onlyColumns[$key];
+			}
+			$result = $query->save($data);
+			if ($result > 0)
+			{
+				$this->$raw = $result;
+			}
+			return $result;
+		}
+
 		public function getTable()
 		{
 			if (empty($this->_table))

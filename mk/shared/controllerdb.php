@@ -22,7 +22,43 @@ namespace Mk\Shared
 		*/
 		protected $_modelName;
 
- 
+		/**
+		* @readwrite
+		*/
+		protected $_defaultFields=array ("status"=>"STATUS");
+
+		public  $_cond_search = array(
+			"1" => "UPPER([1]) LIKE ('%[2]%')",
+			"2" => "UPPER([1]) NOT LIKE ('%[2]%')",
+			"3" => "[1]='[2]'",
+			"4" => "[1]<>'[2]'",
+			"5" => "[1]>'[2]'",
+			"6" => "[1]<'[2]'",
+			"7" => "[1]>='[2]'",
+			"8" => "[1]<='[2]'",
+			"9" => "UPPER([1]) LIKE ('[2]%')",
+			"10" => "UPPER([1]) NOT LIKE ('[2]%')",
+			"11" => "UPPER([1]) LIKE ('%[2]')",
+			"12" => "UPPER([1]) NOT LIKE ('%[2]')"
+			);
+
+		public  $_cond_search_msg = array(
+			"1" => "[1] contiene '[2]'",
+			"2" => "[1) no contiene '[2]')",
+			"3" => "[1] es igual a '[2]'",
+			"4" => "[1] es diferente de '[2]'",
+			"5" => "[1] es mayor que '[2]'",
+			"6" => "[1] es menor que '[2]'",
+			"7" => "[1] es mayor o igual que '[2]'",
+			"8" => "[1] es menor o igual que '[2]'",
+			"9" => "[1] empieza por'[2]'",
+			"10" => "[1] no empieza por '[2]'",
+			"11" => "[1] termina en '[2]'",
+			"12" => "[1] no termina en '[2]'"
+			);
+		
+
+ 		
 
 		public function __construct($options = array())
 		{
@@ -38,6 +74,7 @@ namespace Mk\Shared
 			{
 				$this->_modelName=str_replace('_controller','',get_class($this));	
 			}
+
 			if (get_class($this)!=$this->_modelName)
 			{
 				$this->_model= new $this->_modelName();	
@@ -56,6 +93,7 @@ namespace Mk\Shared
 			});
 		}
 
+
 		
 
 /*		public function __destruct()
@@ -66,24 +104,44 @@ namespace Mk\Shared
 		}
 */	
 
+
+
+
+
 		public function render()
 		{
 			
-			// if ($this-> _model)
-			// {
-			// 	if ($this-> getActionView())
-			// 	{
-			// 		$this->getActionView()
-			// 		->set($this->_model->getTable(), $this->_model);
-			// 	}
-			// 	if ($this->getLayoutView())
-			// 	{
-			// 		$this->getLayoutView()
-			// 		->set($this->_model->getTable(), $this->_model);
-			// 	}
-			// }
+/*			if ($this-> _model)
+			{
+				if ($this-> getActionView())
+				{
+					$this->getActionView()
+					->set($this->_model->getTable(), $this->_model);
+				}
+				if ($this->getLayoutView())
+				{
+					$this->getLayoutView()
+					->set($this->_model->getTable(), $this->_model);
+				}
+			}
+*/			
+			if ($this-> _model)
+			{
+				if ($this-> getActionView())
+				{
+					$this->getActionView()
+					->set('_table',$this->_model->getTable());
+				}
+				if ($this->getLayoutView())
+				{
+					$this->getLayoutView()
+					->set('_table',$this->_model->getTable());
+				}
+			}
+
 			parent::render();
 		}
+
 
 		public function search()
 		{
