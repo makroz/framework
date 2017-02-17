@@ -120,3 +120,18 @@ function checkboxSet(id,status){
   $(id).checked=status;
 }
 
+function showMensajes(){
+  $('._msg').each(function(){
+    var title=$(this).prop('title');
+    var content=$(this).html();
+    $.alert({content:content, title:title,type:'red'});
+  });
+  $('._msg').remove();
+
+}
+
+
+function _changeLimitList(elem){
+  var valor=$(elem).val();
+  reaction('limit='+valor,'','','.listTable');
+}

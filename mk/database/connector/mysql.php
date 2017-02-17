@@ -94,6 +94,7 @@ namespace Mk\Database\Connector
 				throw$this->_Exception("Not connected to a valid service");
 			}
 			//$sql=str_replace("'", "`", $sql);
+			\Mk\Events::fire("mk.query.sql.after",  array('type'=>$sql));
 			return $this->_service->query($sql);
 		}
 		// escapes the provided value to make it safe for queries

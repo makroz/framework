@@ -3,7 +3,7 @@ include("logger.php");
 $logger = new Logger(array(
 	"file" =>APP_PATH . "/logs/" . date("Y-m-d") . ".html"
 	));
-// log cache events
+/*// log cache events
 Mk\Events::add("mk.cache.initialize.before", function($type, $options) 
 	use	($logger)
 	{
@@ -20,10 +20,17 @@ Mk\Events::add("mk.configuration.initialize.before", function($type, $options)
 	{
 		$logger-> log("mk.configuration.initialize.before: " . $type);
 	});
+
 Mk\Events::add("mk.configuration.initialize.after", function($type, $options)
 	use ($logger)
 	{
 		$logger->log("mk.configuration.initialize.after: " . $type);
+	});*/
+
+Mk\Events::add("mk.query.sql.after", function($type)
+	use ($logger)
+	{
+		$logger->log("mk.query.sql.after: " . $type);
 	});
 
 	?>

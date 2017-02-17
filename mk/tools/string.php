@@ -54,7 +54,7 @@ namespace Mk\Tools
 				foreach($m[1] as $key => $value){
 					$value=str_replace('[[ln]]',"\n",$value);
 					if ($_type==1){
-						if ((stripos(' ',$value)!==true)and(stripos('::',$value)!==true)){
+						if ((stripos($value,' ')!==true)and(stripos($value,'::')!==true)){
 							$value=$value.'::';
 						}
 					}
@@ -65,7 +65,7 @@ namespace Mk\Tools
 							$out[$type[0]] = array();
 						$key1=$type[0];
 						unset($type[0]);
-						$value1=rtrim(implode($type,'::'),'::');
+						$value1=rtrim(implode('::',$type),'::');
 						if ($_type==2){
 							$out[$key1][$_key]="\n". $value1;
 						}else{
@@ -95,7 +95,7 @@ namespace Mk\Tools
 			}
 
 
-			public static function getEtiquetas1($string,$start,$end,$_type=''){
+			/*public static function getEtiquetas1($string,$start,$end,$_type=''){
 				preg_match_all('/' . preg_quote($start, '/') . '(.*?)'. preg_quote($end, '/').'/i', $string, $m);
 				$out = array();
 
@@ -118,7 +118,7 @@ namespace Mk\Tools
 				}
 				return $out;
 			}
-
+*/
 			public static function stripos_array($haystack, $needles,$what=false) {
 				if ( is_array($needles) ) {
 					foreach ($needles as $str) {

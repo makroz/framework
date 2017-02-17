@@ -4,7 +4,6 @@
 
 {% append style.inline %}
 
-
   
 
 .botonera{
@@ -102,8 +101,12 @@ table.highlight > tbody > tr:hover {
 
 {% append js.onready %}
 
+$(document).ajaxStop(function(){
+    showMensajes();
+});
 	$("select").material_select();
-	
+	showMensajes();
+
    
 
 initListTable();
@@ -121,6 +124,12 @@ $('#mk_buscar').modal();
 
 {% append js.inline %}
 
+    jconfirm.defaults = {
+        title: 'Aviso',
+        
+        boxWidth: '30%',
+        useBootstrap: false
+    };
 
    
 
@@ -166,10 +175,12 @@ function initListTable(){
  
 
 
+
 function clicBotonera(boton){
 var idSel = $(boton).parent().parent().data('cod');
 var idAction = $(boton).data('action');
 var selCount = 1;
+var div=''
 
 if (idSel==undefined){
 	idSel = serializar();
@@ -186,25 +197,46 @@ var options=[];
 
 	if (idAction=='edit'){
 		if (selCount!=1){
-		alert('Debe escoger 1 fila y solo 1');
+		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
 		return false;
 		}
 	}
 	if (idAction=='del'){
 		if (selCount==0){
-		alert('Debe escoger al menos 1 fila');
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
 		return false;
 		}
+		idAction='';
+$.confirm({
+    title: 'Confirmacion',
+    content: '¿Esta seguro de querer borrar los registros marcados?',
+    type:'red',
+    buttons: {
+        confirm: function () {
+            options['_del']='del';
+			idAction='listar';
+			div='.listTable';
+			reaction(options,idAction,'',div);
+        },
+        cancel: function () {
+        	
+        }
+    }
+});
+
+
 	}
 	if (idAction=='ver'){
 		if (selCount==0){
-		alert('Debe escoger al menos 1 fila');
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
 		return false;
 		}
 	}
 
-	reaction(options,idAction);
-	alert('Action Seleccionada: '+idAction);
+	if (idAction!=''){
+	reaction(options,idAction,'',div);
+	//alert('Action Seleccionada: '+idAction);
+	}
 	return false;
 }
 
@@ -361,7 +393,8 @@ getAjax(link,'GET',{ },item, function(msg){
 
 {% append js.files %}
 
-
+<link href='js/confirm/confirm.css' rel='stylesheet'>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
    
 
 <link href='js/colresize/colResizable.css' rel='stylesheet'>
@@ -398,10 +431,12 @@ getAjax(link,'GET',{ },item, function(msg){
 
 <div class="botonera z-depth-1 noprinter" >
 <div class="botonera-panel z-depth-1" >
- 
+
 <li>
 <a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
 </li>
+
+ 
 <li>
 <a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
 </li>
@@ -526,7 +561,7 @@ getAjax(link,'GET',{ },item, function(msg){
 	</div>
 
 
-
+	
 
 
 
@@ -537,6 +572,8 @@ getAjax(link,'GET',{ },item, function(msg){
 
 
 {% php $maxpage=ceil($count / $limit); $minpage=$page-3; if ($minpage<=0){ $minpage=1; } $lastpage=$minpage+4;if($lastpage>$maxpage){ $lastpage=$maxpage;}  %} 
+
+{% if $items != false %}
 <ul class="pagination">
      <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">first_page</i></a></li>
     <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
@@ -547,14 +584,27 @@ getAjax(link,'GET',{ },item, function(msg){
 
      <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
     <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons">last_page</i></a></li>
+    <li class="">{% php $__selected[$limit]="selected='selected'"; %}
+<select id="limit" name="limit" class="browser-default" style="width: 60px;" onchange="_changeLimitList(this);">
+	<option value="10" {% echo $__selected['10'] %} >10</option>
+	<option value="20" {% echo $__selected[20] %} >20</option>
+	<option value="30" {% echo $__selected[30] %} >30</option>
+	<option value="40" {% echo $__selected[40] %} >40</option>
+	<option value="50" {% echo $__selected[50] %} >50</option>
+	<option value="100" {% echo $__selected[100] %} >100</option>
+</select></li>
 </ul>
+
+{% /if %}
+{% else %}
+0 Items
+{% /else %}
 </div>
 
 </div>
 
 </div>
 
-{% if $items != false %}
  
 
  
@@ -608,9 +658,6 @@ getAjax(link,'GET',{ },item, function(msg){
 						<ul style="top: -14px;right: 30px;" data-cod='{% echo $row[pk] %}'>
 							 
 <li>
-<a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
-</li>
-<li>
 <a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
 </li>
 <li>
@@ -639,9 +686,5 @@ getAjax(link,'GET',{ },item, function(msg){
 	</tbody>
 </table>
    
-{% /if %}
-{% else %}
-No ha ningun campo por mostrar
-{% /else %}
 <!-- :ajax -->
 </div>

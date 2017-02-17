@@ -28,10 +28,11 @@ class Prueba_controller extends ControllerDb
 
 			public function actionSetData(){
 		$this->setRenderView(false);
+		$primary = $this->getPrimary();
 
-		$pk =Inputs::get("pk",'');
+		$pk =Inputs::get($primary,'');
 		$campos = Inputs::get("campos",array());
-		$campos=array_merge(array("pk"=>$pk),$campos);
+		$campos=array_merge(array($primary=>$pk),$campos);
 		$modelo = $this->_model;
 		$modelo->saveFromArray($campos);
 		$modelo->loadFromArray($campos);
@@ -141,13 +142,20 @@ class Prueba_controller extends ControllerDb
 	public function actionListar(){
 
 		$view = $this-> getActionView();
-
-		$order = $this->getParam("order",'pk');
+		$primary = $this->getPrimary();
+		$order = $this->getParam("order",$primary);
 		$direction = $this->getParam("direction",'desc');
 		$page = $this->getParam("page",'1');
 		$limit = $this->getParam("limit",'10');
+		
 		$where=$this->getSearchWhere();
+		
+		if ((Inputs::get("_del",'')=='del')&&(Inputs::get("cod",'')!='')){
+			$delete=$this->delete(Inputs::get("cod",''));
+		}
+		
 		$items = false;
+
 		$where = array(
 		'?'=>$where
 		);
@@ -159,7 +167,6 @@ class Prueba_controller extends ControllerDb
 		$items = $this->_model->all($where, $fields, $order, $direction, $limit, $page);
 
 		$view
-		-> set("query", $query)
 		-> set("order", $order)
 		-> set("direction", $direction)
 		-> set("page", $page)

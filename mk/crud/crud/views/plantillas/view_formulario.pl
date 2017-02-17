@@ -2,6 +2,7 @@
 $(document).ajaxStop(function(){
     showMensajes();
 });
+
 	$("select").material_select();
 	showMensajes();
 
@@ -26,12 +27,12 @@ $(document).ajaxStop(function(){
 
 {% /append %}
 
+<div class="listTable">
+<!-- ajax: -->
+
 <div class="mk-section">
 [[component:]]titulos::text={% echo $modTitulo; %}[[:component]]
 </div>
-
-<div class="listTable">
-<!-- ajax: -->
 
 <div class="mk-section">
 [[component:]]botonera[[:component]]

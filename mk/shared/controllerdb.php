@@ -105,8 +105,28 @@ namespace Mk\Shared
 */	
 
 
+		public function getPrimary(){
+			$primary = $this->_model->primaryColumn;
+			$primary = $primary["name"];
+			return $primary;
 
+		}
 
+		public function delete($id){
+		
+		if ($id==''){
+			return 0;
+		}
+		$primary = $this->getPrimary();	
+
+		$where="$primary in ($id)";
+
+		$where = array(
+		'?'=>$where
+		);
+
+		return $this->_model->deleteAll($where);
+		}
 
 		public function render()
 		{

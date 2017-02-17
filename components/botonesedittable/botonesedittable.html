@@ -1,9 +1,11 @@
 {% append js.inline %}
 
+
 function clicBotonera(boton){
 var idSel = $(boton).parent().parent().data('cod');
 var idAction = $(boton).data('action');
 var selCount = 1;
+var div=''
 
 if (idSel==undefined){
 	idSel = serializar();
@@ -20,32 +22,50 @@ var options=[];
 
 	if (idAction=='edit'){
 		if (selCount!=1){
-		alert('Debe escoger 1 fila y solo 1');
+		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
 		return false;
 		}
 	}
 	if (idAction=='del'){
 		if (selCount==0){
-		alert('Debe escoger al menos 1 fila');
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
 		return false;
 		}
+		idAction='';
+$.confirm({
+    title: 'Confirmacion',
+    content: '¿Esta seguro de querer borrar los registros marcados?',
+    type:'red',
+    buttons: {
+        confirm: function () {
+            options['_del']='del';
+			idAction='listar';
+			div='.listTable';
+			reaction(options,idAction,'',div);
+        },
+        cancel: function () {
+        	
+        }
+    }
+});
+
+
 	}
 	if (idAction=='ver'){
 		if (selCount==0){
-		alert('Debe escoger al menos 1 fila');
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
 		return false;
 		}
 	}
 
-	reaction(options,idAction);
-	alert('Action Seleccionada: '+idAction);
+	if (idAction!=''){
+	reaction(options,idAction,'',div);
+	//alert('Action Seleccionada: '+idAction);
+	}
 	return false;
 }
 
 {% /append %}
-<li>
-<a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
-</li>
 <li>
 <a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
 </li>
