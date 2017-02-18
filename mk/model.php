@@ -81,11 +81,14 @@ namespace Mk
 		public function loadFromArray($previous){
 			foreach ($previous as $key => $value)
 				{
+					
 					$prop = "_{$key}";
-					if (!empty($previous[$key]) && !isset($this->$prop))
+					if (!empty($previous[$key]) && property_exists($this, $prop))
 					{
-						$this->$key = $previous[$key];
+						$this->$prop = $previous[$key];
 					}
+
+
 				}
 			return true;
 		}
@@ -100,12 +103,12 @@ namespace Mk
 					$data[$key] = $this->$prop;
 					continue;
 				}
-				if ($column != $this->primaryColumn && $column)
-				{
+				//if ($column != $this->primaryColumn && $column)
+				//{
 					$method = "get".ucfirst($key);
 					$data[$key] = $this->$method();
 					continue;
-				}
+				//}
 			}
 			return $data;
 		}

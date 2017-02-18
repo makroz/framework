@@ -1,0 +1,33 @@
+{% append js.onready %}
+{% /append %}
+
+{% append js.files %}
+{% /append %}
+
+{% append style.inline %}
+{% /append %}
+
+{% append js.inline %}
+function _sendForm(){
+var link=reaction('','','',true);
+$('#frmEdit').attr('action',link);
+alert(link);
+$('#frmEdit').submit();
+
+}
+{% /append %}
+
+
+<form id="frmEdit" action=''  method="post" >
+[[php:]]inputs[[:php]]
+<input type="hidden" name="_save_" value="{% echo $_action; %}">
+</form>
+		
+        <div class="modal-footer" style="position:absolute; bottom:0; ">
+            <div class="row " >
+				<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat " onclick="_sendForm();" >Grabar</a>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " onclick="reaction('','listar');" >Volver</a>
+              </div>
+        </div>
+
+

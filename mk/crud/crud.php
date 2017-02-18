@@ -419,7 +419,7 @@ namespace Mk\Crud
 			$view = $this-> getActionView();
 			$this->addViewData('database',$this->database->getSchema());
 
-			$table=Inputs::get('table',$table=$session->get('table',''));
+			$table=Inputs::get('table',$session->get('table',''));
 			if ($table==''){
 				$view->setFile($this->getFilenameLayout('error.html'));
 				$view->set('error',"No se especifico un Tabla");
@@ -497,32 +497,45 @@ namespace Mk\Crud
 			$view = $this-> getActionView();
 			
 
- 			$file=strtolower($this->getFilenameLayout('model.pl','plantillas'));
+ 			$file=strtolower($this->getFilenameLayout('model.php','plantillas'));
  			//echo "plantilla:".$file;
+
+
 			$gestor = fopen($file,"r");
 			$plantilla = fread($gestor,filesize($file));
 			fclose($gestor);
 			$plantilla = str_replace('//<<[CLASS]>>//',ucfirst($table),$plantilla);
 			$plantilla = str_replace('//<<[CLASS_EXTENDS]>>//','Mk\Shared\Model',$plantilla);
 			$plantilla = str_replace('//<<[CAMPOS]>>//',$txtCampos,$plantilla);
-
 			$dir=MODULE_PATH.DIRECTORY_SEPARATOR.strtolower($table).DIRECTORY_SEPARATOR;
- 			@mkdir ($dir.'modelos', 0700,true); 
- 			@mkdir ($dir.'views', 0700,true); 
-
-
-			$gestor = fopen($dir.'modelos'.DIRECTORY_SEPARATOR.strtolower($table).'.php',"w+");
+ 			@mkdir ($dir.'models', 0700,true); 
+			$gestor = fopen($dir.'models'.DIRECTORY_SEPARATOR.strtolower($table).'.php',"w+");
 			fwrite($gestor,$plantilla, strlen($plantilla));
 			fclose($gestor);
 			//$plantilla=str_replace("\n",'<br />',$plantilla);
 			$view->set('mensaje',nl2br($plantilla));
 
 			//generar vista listar
+ 			$file=strtolower($this->getFilenameLayout('view_listar.html','plantillas'));
+ 			$this->procesaPlantillaView($file,$campos,$table);
 
- 			$file=strtolower($this->getFilenameLayout('view_listar.pl','plantillas'));
- 			//echo "plantilla:".$file;
-			$gestor = fopen($file,"r");
-			$plantilla = fread($gestor,filesize($file));
+ 			$file=strtolower($this->getFilenameLayout('view_formulario.html','plantillas'));
+ 			$this->procesaPlantillaView($file,$campos,$table);
+
+
+
+
+
+
+
+
+
+		}
+
+		private function procesaPlantillaView($filePl,$campos,$table){
+			echo "<h1>Inicia proceso de Vista:</h1><h2>".basename($filePl)."</h2>";
+			$gestor = fopen($filePl,"r");
+			$plantilla = fread($gestor,filesize($filePl));
 			fclose($gestor);
 
 			//$plantilla = str_replace('{% /append %}','[[ /append ]]',$plantilla);
@@ -599,6 +612,8 @@ namespace Mk\Crud
 									$html = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$html);
 									$codeUnique['jsinline'][$component] = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$codeUnique['jsinline'][$component]);
 
+
+
 								}
 								//$html = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$html);
 							}
@@ -610,9 +625,19 @@ namespace Mk\Crud
 						$html=$this->procesaPhpHtml($html,$funcionphp);
 					}
 
+					$compile=\Mk\Tools\String::getEtiquetas($html,'[[compile:]]','[[:compile]]',2,$component,'[[compilando]] ');
+					$vcompile = new \Mk\View();
+					$compile=$vcompile-> render($compile);
+					$compile = str_replace('[% ','{% ',$compile);
+					$compile = str_replace(' %]',' %}',$compile);
+					$compile = str_replace('[[]]','$',$compile);
+					$html = str_replace('[[compilando]]',stripslashes($compile),$html);
+
 					echo "<br>---Rendenizado Componente: $tag";
 					
 					$plantilla = str_replace('[[component:]]'.$tag.'[[:component]]',$html,$plantilla);
+					
+
 				}
 				if ($funcionphp){
 					unset($funcionphp);
@@ -629,8 +654,17 @@ namespace Mk\Crud
 			$plantilla = "\n".'{% append style.inline %}'.implode($codeUnique['styleinline']," ")."\n".'{% /append %}'."\n".$plantilla;
 			$plantilla = "\n".'{% append style.files %}'.implode($codeUnique['stylefiles']," ")."\n".'{% /append %}'."\n".$plantilla;
 
+			$dir=MODULE_PATH.DIRECTORY_SEPARATOR.strtolower($table).DIRECTORY_SEPARATOR;
 
-			$gestor = fopen($dir.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'listar.html',"w+");
+
+			$filePl=explode('_',$filePl);
+			if(sizeOf($filePl)>0){
+				$filePl=$filePl[sizeOf($filePl)-1];
+			}
+
+ 			@mkdir ($dir.'views', 0700,true); 
+ 			echo "<br>Grabado Vista:".$dir.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$filePl;
+			$gestor = fopen($dir.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$filePl,"w+");
 			fwrite($gestor,$plantilla, strlen($plantilla));
 			fclose($gestor);
 

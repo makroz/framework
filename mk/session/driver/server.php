@@ -36,7 +36,8 @@ namespace Mk\Session\Driver
 		}
 		public function __destruct()
 		{
-			session_commit();
+			//echo "finalizando session";
+			//session_commit();
 		}
 	}
 }

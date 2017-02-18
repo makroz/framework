@@ -53,7 +53,7 @@ function getAjax(link,method='GET',data={},div='',success=null)
 
 }
 
-function reaction(options,newAction='', newModule='',isajax='',callback=null){
+function reaction(options,newAction='', newModule='',isajax='',callback=null,method='GET'){
  var opciones='';
  var action=getQueryVariable('url');
 
@@ -90,7 +90,7 @@ if (newAction!=''){
       //alert('cargand ajax'+window.location.pathname+'?'+search);
       $(isajax).LoadingOverlay("show");
       //if (callback){
-        getAjax(window.location.pathname+'?'+search,'GET',{ },isajax,callback);
+        getAjax(window.location.pathname+'?'+search,method,{ },isajax,callback);
         //$(ajax).load(window.location.pathname+'?'+search,callback()); 
       //}else{
 
@@ -134,4 +134,8 @@ function showMensajes(){
 function _changeLimitList(elem){
   var valor=$(elem).val();
   reaction('limit='+valor,'','','.listTable');
+}
+
+function _changePageList(page){
+  reaction('page='+page,'','','.listTable'); 
 }

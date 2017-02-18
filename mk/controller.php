@@ -6,6 +6,8 @@ namespace Mk
 	use Mk\Event as Event;
 	use Mk\Registry as Registry;
 	use Mk\Template as Template;
+	use Mk\Inputs as Inputs;
+	use Mk\Session as Session;
 	//use Mk\Controller\Exception as Exception;
 	class Controller extends Base
 	{
@@ -65,6 +67,28 @@ namespace Mk
 		* @readwrite
 		*/
 		protected $_renderAjaxDiv ='';
+
+
+		public function getParam($name,$Default='',$controller=''){
+		if ($controller==''){
+			$controller=$this->getName();
+		}		
+		$llave=$controller.'_'.$name;
+		$session = Registry::get("session");
+		$valor = Inputs::get($name, $session->get($llave,$Default));
+		$session->set($llave,$valor);
+		return $valor;
+	}
+
+	public function setParam($name,$valor,$controller=''){
+		if ($controller==''){
+			$controller=$this->getName();
+		}		
+		$session = Registry::get("session");
+		$session->set($controller.'_'.$name,$valor);
+		return true;
+	}
+
 
 		public function Setrenderview($t=true){
 			$this->_willRenderActionView=$t;
@@ -227,11 +251,13 @@ namespace Mk
 			$results = null;
 
 			if (\Mk\Tools\App::isAjax()==true){
-				$this->_renderAjaxDiv='ajax';	
+				$this->_renderAjaxDiv='ajax';
+
 				$_willRenderLayoutView=false;
 			}else{
 				$this->_renderAjaxDiv='';
 			}
+			$this->addViewData('isAjax',\Mk\Tools\App::isAjax());
 
 
 			$doAction = $this->getWillRenderActionView() && $this->getActionView()->fileExist();
@@ -248,16 +274,9 @@ namespace Mk
 					foreach ($this->_sharedData as $key => $value) {
 						$view->set($key,$value);
 					}
-
+					 $data1=$view->_getData();
 					$results = $view->render();
-
-					if (Inputs::get("_debug",'')=='1'){
-						 $data1=$view->_getData();
-						unset($data1["template"]);
-						$debug=print_r($data1,true);
-						$results.='<div id="debug" class="modal bottom-sheet "><div class="modal-content"><h4>Datos de Debug</h4><p><pre>'.$debug.
-								'</pre></p></div><div class="modal-footer"><a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">cerrar</a></div></div>';
-					}
+					
 				}
 				//\Mk\Shared\FormTools::debug($result,2);
 				if ($doLayout)
@@ -282,6 +301,20 @@ namespace Mk
 						//echo $runScript;
 						$results=\Mk\Tools\String::getEtiquetas($results,'<!-- ajax: -->','<!-- :ajax -->',2,'root',' ');
 					
+					}
+
+					if ($this->getParam("_debug",'')=='1'){
+						 //$data1=$view->_getData();
+						unset($data1["template"]);
+						$debug=print_r($data1,true);
+						if ($this->_renderAjaxDiv==''){
+						$results.='<div id="debug" class="modal bottom-sheet "><div class="modal-content"><h4>Datos de Debug</h4><p><pre id="debug_content">'.$debug.
+								'</pre></p></div><div class="modal-footer"><a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">cerrar</a></div></div>';
+						}else{
+							$results.='<div id="debug_content1">'.$debug.
+								'</div>'."<script type='text/javascript'>$('#debug_content').html($('#debug_content1').html());$('#debug_content1').remove(); </script>";
+						}
+								
 					}
 
 					echo $results;

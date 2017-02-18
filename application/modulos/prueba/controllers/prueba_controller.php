@@ -48,25 +48,6 @@ class Prueba_controller extends ControllerDb
 	}
 
 
-	public function getParam($name,$Default='',$controller=''){
-		if ($controller==''){
-			$controller=$this->getName();
-		}		
-		$session = Registry::get("session");
-		$valor = Inputs::get($name, $session->get($controller.'_'.$name,$Default));
-
-		$session->set($controller.'_'.$name,$valor);
-		return $valor;
-	}
-
-	public function setParam($name,$valor,$controller=''){
-		if ($controller==''){
-			$controller=$this->getName();
-		}		
-		$session = Registry::get("session");
-		$session->set($controller.'_'.$name,$valor);
-		return true;
-	}
 
 		public function getSearchWhere(){
 
@@ -137,7 +118,35 @@ class Prueba_controller extends ControllerDb
 		return $where;
 	}
 
+	public function actionAdd()
+	{
 
+		//\Mk\Shared\FormTools::init();
+		//print_r($_REQUEST);
+		$this->changeViewAction('formulario.html');
+		$view = $this-> getActionView();
+		if (Inputs::post("_save_"))
+		{
+
+			$this->_model->loadFromArray($_POST);
+			$this->_model->setStatus('1');
+			//print_r($this->_model->loadToArray());
+			if ($this->_model-> validate())
+			{
+				echo "<hr>Todo Ok en validate<hr>";
+				$this->_model->save();
+				$view->set("success", true);
+			}
+			//\Mk\Shared\FormTools::debug($user->getErrors(),50000);
+			$view->set("errors", $this->_model->getErrors());
+		}
+/*		$primary = $this->getPrimary();
+		$this->_model->$primary=0;
+*///		print_r($this->_model->loadToArray());
+		$view
+		-> set("item", $this->_model->loadToArray())
+		-> set("modTitulo", "Adicionar ".$this->_model->_tSingular);
+	}
 	
 	public function actionListar(){
 

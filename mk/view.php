@@ -61,16 +61,17 @@ namespace Mk
 		}
 
 
-		public function render()
+		public function render($content='')
 		{
 
-			
+			if ($content==''){
 			if (!$this->fileexist())
 			{
 
 				return '';
 			}
 			$content = file_get_contents($this-> getFile());
+			}
 			$this-> _template-> parse($content);
 			//\Mk\Shared\FormTools::debug($this-> _template-> process($this-> _data),551);
 

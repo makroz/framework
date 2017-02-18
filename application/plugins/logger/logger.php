@@ -17,6 +17,9 @@ class Logger
 	}
 	protected function _average($values)
 	{
+		if (sizeof($values)<=0){
+		 return 0;
+		}
 		return $this->_sum($values) / sizeof($values);
 	}
 	public function __construct($options)
@@ -46,6 +49,11 @@ class Logger
 			$messages .= $entry["message"] . "<br>";
 			$times[] = $entry["time"] - $last;
 			$last = $entry["time"];
+		}
+		
+		if (sizeof($values)<=0){
+					
+		 return false;
 		}
 		$messages .= "<hr>Average: " . $this->_average($times);
 		$messages .= ", Longest: " . max($times);

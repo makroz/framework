@@ -26,7 +26,6 @@ $cache = new Mk\Cache();
 Mk\Registry::set("cache", $cache->initialize());
 $session = new Mk\Session();
 Mk\Registry::set("session", $session->initialize());
-
 //$ppp=new User_Controller();
 $router = new Mk\Router(array(
 	"url" => isset($_GET["url"]) ? $_GET["url"] : "Home/Index",

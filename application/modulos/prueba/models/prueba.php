@@ -7,7 +7,7 @@ class Prueba extends Mk\Shared\Model
 * @readwrite
 * @primary
 * @type autonumber
-* @label Pk
+* @label Id
 */
 protected $_pk;
 /**
@@ -21,7 +21,7 @@ protected $_nombre;
 * @column
 * @readwrite
 * @type char
-* @label Status
+* @label St
 */
 protected $_status;
 /**

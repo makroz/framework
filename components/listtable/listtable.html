@@ -119,8 +119,8 @@ function initListTable(){
 
 		</tr>
 		{% /foreach %}
-
-		{% foreach $_i in range($nr, $limit-1) %}
+		{% if $nr<$limit %}
+		{% foreach $_i in range($nr+1, $limit) %}
 		<tr class="noprinter">
 
 			<td class="noprinter" >&nbsp; </td>
@@ -128,5 +128,6 @@ function initListTable(){
 			<td class="noprinter" > </td>
 		</tr>
 		{% /foreach %}
+		{% /if %}
 	</tbody>
 </table>
