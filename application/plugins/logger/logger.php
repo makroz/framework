@@ -51,7 +51,7 @@ class Logger
 			$last = $entry["time"];
 		}
 		
-		if (sizeof($values)<=0){
+		if (sizeof($this->_entries)<=0){
 					
 		 return false;
 		}

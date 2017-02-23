@@ -106,6 +106,7 @@ function valFunc(){
 }
 
 function openJoin(id){
+ $('#modal2').modal();
   $('#modal2').attr('data-key',id);
 
   var dato=$('#campojoin').val();
@@ -126,6 +127,7 @@ function openJoin(id){
 
 
 function openLista(id){
+$('#modalLista').modal();
   $('#modalLista').attr('data-key',id);
 
   var dato=$('#listalista').val()+'*';
@@ -159,7 +161,7 @@ function closeLista(){
   cSaveLista();
   
   Materialize.updateTextFields();
-  $('#modalLista').closeModal();
+  $('#modalLista').modal('close');
 }
 
 function closeDet(){
@@ -188,13 +190,14 @@ function closeDet(){
 }
 
 function closeJoin(){
+ 
   var id=$('#modal2').attr('data-key');
   var dato=$('#n_table').val()+'.'+$('#n_col').val();
   $('#'+id).val( dato );
 
   
   Materialize.updateTextFields();
-  $('#modal2').closeModal();
+  $('#modal2').modal('close');
 }
 
 

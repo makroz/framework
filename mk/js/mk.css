@@ -8,3 +8,15 @@ display: none;
 .oculto{
 display: none;	
 }
+.error_input{
+	color: red;
+	font-size: 0.8rem;
+	line-height: 0.8rem;
+	margin-top: -18px;
+}
+.error_input:empty{
+	display: none;
+}
+
+
+

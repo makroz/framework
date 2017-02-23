@@ -483,7 +483,7 @@ namespace Mk
 
 						if (!isset($defined[$function]))
 						{
-							throw $this->_Exception("The {$function} validator is not defined");
+							throw $this->_Exception("The ({$function}) validator is not defined");
 						}
 						$template = $defined[$function];
 						if (!call_user_func_array(array($this, $template["handler"]), $arguments))

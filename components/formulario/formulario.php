@@ -11,11 +11,17 @@ class Formulario
         }
 
     	public function inputs(){
+            //echo "<hr><pre>";print_r($this->campos);echo "</pre>";
 
     		$texto='';
     		foreach ($this->campos as $key => $value) {
     			$class='';
                 $tam='';
+                $onkeypress='';
+                $onblur='';
+                $onchange='';
+                $onclick='';
+
     			if ($value['usof']!='-1'){
     				$this->ncol++;
                     if ($value['tam']==''){
@@ -27,7 +33,80 @@ class Formulario
                         $tam=$value['tam'];
                     }
 
-    				$texto.="[[component:]]form_input::id={$key}&label={$value['label']}&tipo={$value['usof']}&tam={$tam}&clase={$class}[[:component]] ";
+                    $dataon='';
+                    if($value['usof']=='check'){
+                        $dataon=explode('/',$value['checkvalor'].'/');
+                        if ($dataon[0]!=''){
+                            $dataon=$dataon[0];
+                        }else{
+                            $dataon='1';
+                        }
+                        $dataon='&dataon='.$dataon;
+                    }
+
+                    $dec='';
+                    if($value['usof']=='float'){
+                        if ($value['dec']>0){
+                            $dec=$value['dec'];
+                        }else{
+                            $dec='0';
+                        }
+                        $dec='&decimal='.$dec;
+                        $onkeypress.=" return soloNum(event,this);";
+                        $onblur.=" _refreshFloat(this);";
+
+
+                    }
+
+                    $options='';
+                    if($value['usof']=='selec'){
+                        if ($value['listalista']!=''){
+                            $opt=explode('*',$value['listalista'].'*');
+                            $options.="<option value='' disabled selected='selected'> Seleccione {$value['label']}...";
+                            foreach ($opt as $key1 => $value1){
+                                if ($value1!=''){
+                                    $opt1=explode('|',$value1.'||');
+                                    if ($opt1[0]!=''){
+                                        if ($opt1[1]==''){
+                                            $opt1[1]=$opt1[0];
+                                        }
+
+                                        $options.="<option value='{$opt1[0]}' ";
+                                        if ($opt1[2]!=''){
+                                            $options.=" data-tag='{$opt1[2]}' ";
+                                        }
+                                        $options.=">{$opt1[1]}</option>";
+                                    }
+                                }
+                            }
+                            $options='&options='.$options;
+                        }
+                    }
+
+
+                    $validate='';
+                    if ($value['validate']!=''){
+                        if (stripos($value['validate'],'required')!==false){
+                            $validate.=" required ";
+                        }
+                        $validate.="data-validate='".$value['validate']."'";
+                        
+
+                    }
+                    $validate='&validate='.$validate;
+
+                    $eventos='';
+                    if ($onkeypress!=''){
+                        $eventos.=" onkeypress='{$onkeypress}' ";
+                    }
+                    if ($onblur!=''){
+                        $eventos.=" onblur='{$onblur}' ";
+                    }
+
+                    if ($eventos!=''){
+                        $eventos="&eventos={$eventos}";
+                    }
+    				$texto.="[[component:]]form_input::id={$key}&label={$value['label']}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$dataon}{$dec}{$options}{$validate}{$eventos}[[:component]] ";
     			}
     		}
 			//return '{% php print_r($_data); %}'.$texto;

@@ -24,11 +24,27 @@ class Listtable
 			return $texto;
     	}
     	public function filas(){
+
+
+        $anexos['base']['labelon']='Si';
+        $anexos['base']['labeloff']='No';
+        $anexos['base']['dataon']=1;
+
+        $anexos['tipo']['optionsl']="<option value='X' >Unico</option><option value='U' >Unidad</option><option value='P' >Peso</option><option value='D' >Distancia</option><option value='V' >Volumen</option><option value='T' >Tiempo</option>";
+        $anexos['tipo']['options']['X']='Unico';
+        $anexos['tipo']['options']['U']='Unidad';
+        $anexos['tipo']['options']['P']='Peso';
+        $anexos['tipo']['options']['D']='Distancia';
+        $anexos['tipo']['options']['V']='Volumen';
+        $anexos['tipo']['options']['T']='Tiempo';
+
+
     		$texto='';
     		foreach ($this->campos as $key => $value) {
     			/*if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
     				$texto.='<td > {% echo $row['.$key.'] %} </td>';
     			}*/
+                $key1="&key={$key}";
     			switch ($value['tipolista']) {
     				case '-1':
     					//nada
@@ -37,12 +53,44 @@ class Listtable
     					//nada
     					break;
     				case 'status':
-    					//print_r($value);
-    					$texto.='<td >[[component:]]listtable_status::status='.$value['fcustom'].'[[:component]]</td>';	
+                        $status="&status={$value['fcustom']}";
+                        $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$status}{$key1}[[:component]]";  
     					break;
+
+                    case 'check':
+                        $dataon='';
+                        $aux=explode('/',$value['checkvalor'].'/');
+                        if ($aux[0]==''){
+                            $aux[0]='1';
+                        }
+                        if ($aux[1]==''){
+                            $aux[1]='0';
+                        }
+                        $dataon='&dataon='.$aux[0];
+
+                        $labelon='';
+                        $labeloff='';
+
+                        $aux=explode('/',$value['checklista'].'/');
+                        if ($aux[0]==''){
+                            $aux[0]='Si';
+                        }
+                        if ($aux[1]==''){
+                            $aux[1]='No';
+                        }
+                        $labelon='&labelon='.$aux[0];
+                        $labeloff='&labeloff='.$aux[1];
+                        $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$dataon}{$labelon}{$labeloff}{$key1}[[:component]]";  
+                        break;
+
+                     case 'lista':
+                         $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$key1}[[:component]]";  
+                        break;
     				
     				default:
-    					$texto.='<td > {% echo $row['.$key.'] %} </td>';
+
+                        $texto.="[[component:]]listtable_col::tipo=default{$key1}[[:component]]";  
+    					
     					break;
     			}
 

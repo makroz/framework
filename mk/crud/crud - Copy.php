@@ -474,23 +474,18 @@ namespace Mk\Crud
 
 				$validate='';
 				if ($field['required']==1){
-					$validate.= " required";
-				}
-
-				if (($field['usof']=='int')||($field['usof']=='float')){
-					if ($validate!='') { $validate.=',';}
-					$validate.= " numeric";
+					$validate.= "required";
 				}
 
 				if ($validate!=''){
 					$lines[]='* @validate '.$validate;	
 				}
 				
-				$campos[$key]['validate']=$validate;
+				
 				
 				$lines[]='*/';
 				$lines[]='protected $_'.$key.';';
-				$txtCampos.=implode($lines,PHP_EOL).PHP_EOL;
+				$txtCampos.=implode($lines,"\n")."\n";
 				//print_r($field);
 				//echo "<hr>";
 				unset($lines);
@@ -517,7 +512,7 @@ namespace Mk\Crud
 			$gestor = fopen($dir.'models'.DIRECTORY_SEPARATOR.strtolower($table).'.php',"w+");
 			fwrite($gestor,$plantilla, strlen($plantilla));
 			fclose($gestor);
-			//$plantilla=str_replace(PHP_EOL,'<br />',$plantilla);
+			//$plantilla=str_replace("\n",'<br />',$plantilla);
 			$view->set('mensaje',nl2br($plantilla));
 
 			//generar vista listar
@@ -664,34 +659,19 @@ namespace Mk\Crud
 		}//while
 
 
-			$plantilla = PHP_EOL.'{% append js.files %}'.implode($codeUnique['jsfiles']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
-			$plantilla = PHP_EOL.'{% append js.inline %}'.implode($codeUnique['jsinline']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
-			$plantilla = PHP_EOL.'{% append js.onready %}'.implode($codeUnique['jsonready']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
-			$plantilla = PHP_EOL.'{% append style.inline %}'.implode($codeUnique['styleinline']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
-			$plantilla = PHP_EOL.'{% append style.files %}'.implode($codeUnique['stylefiles']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
+			$plantilla = "\n".'{% append js.files %}'.implode($codeUnique['jsfiles']," ")."\n".'{% /append %}'."\n".$plantilla;
+			$plantilla = "\n".'{% append js.inline %}'.implode($codeUnique['jsinline']," ")."\n".'{% /append %}'."\n".$plantilla;
+			$plantilla = "\n".'{% append js.onready %}'.implode($codeUnique['jsonready']," ")."\n".'{% /append %}'."\n".$plantilla;
+			$plantilla = "\n".'{% append style.inline %}'.implode($codeUnique['styleinline']," ")."\n".'{% /append %}'."\n".$plantilla;
+			$plantilla = "\n".'{% append style.files %}'.implode($codeUnique['stylefiles']," ")."\n".'{% /append %}'."\n".$plantilla;
 
-
-			while (stripos($plantilla,'  '.PHP_EOL)!==false){
-				$plantilla = str_replace('  '.PHP_EOL,PHP_EOL,$plantilla);
+			while (stripos($plantilla," \n")!==false){
+				$plantilla = str_replace(" \n","\n",$plantilla);
 			}
 
-			while (stripos($plantilla,' '.PHP_EOL)!==false){
-				$plantilla = str_replace(' '.PHP_EOL,PHP_EOL,$plantilla);
+			while (stripos($plantilla,"\n\n")!==false){
+				$plantilla = str_replace("\n\n","\n",$plantilla);
 			}
-
-			while (stripos($plantilla,'	'.PHP_EOL)!==false){
-				$plantilla = str_replace('	'.PHP_EOL,PHP_EOL,$plantilla);
-			}
-
-			while (stripos($plantilla,PHP_EOL.PHP_EOL.PHP_EOL)!==false){
-				$plantilla = str_replace(PHP_EOL.PHP_EOL.PHP_EOL,PHP_EOL,$plantilla);
-			}
-
-			while (stripos($plantilla,PHP_EOL.PHP_EOL)!==false){
-				$plantilla = str_replace(PHP_EOL.PHP_EOL,PHP_EOL,$plantilla);
-			}
-
-
 			$dir=MODULE_PATH.DIRECTORY_SEPARATOR.strtolower($table).DIRECTORY_SEPARATOR;
 
 

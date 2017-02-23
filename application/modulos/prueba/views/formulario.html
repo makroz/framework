@@ -1,129 +1,88 @@
 
-{% append style.files %}   
+{% append style.files %}
 {% /append %}
-
 {% append style.inline %}
 
   
 
- 
 {% /append %}
-
 {% append js.onready %}
 
 $(document).ajaxStop(function(){
     showMensajes();
 });
-
 	$("select").material_select();
 	showMensajes();
-
   
 
- 
 {% /append %}
-
 {% append js.inline %}
 
     jconfirm.defaults = {
         title: 'Aviso',
-        
         boxWidth: '30%',
         useBootstrap: false
     };
-
   
 
-function _sendForm(){
-var link=reaction('','','',true);
-$('#frmEdit').attr('action',link);
-alert(link);
-$('#frmEdit').submit();
-
-}
- 
 {% /append %}
-
 {% append js.files %}
 
 <link href='js/confirm/confirm.css' rel='stylesheet'>
 <script type='text/javascript' src='js/confirm/confirm.js'></script>
   
 
- 
 {% /append %}
- 
-
- 
-
-
- 
-
- 
-View Formulario
 <div class="container">
 <!-- ajax: -->
-
 <div class="mk-section">
 <h1 > {% echo $modTitulo; %}</h1>
-
 </div>
-
 <div class="mk-section">
- 
-
- 
-
- 
-
- 
-
-
 <form id="frmEdit" action=''  method="post" >
 
 
-
-
-
-
-
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
-
-
-
  
- 
-
-
-
 
 	<div class="row">
 		<div class="input-field col s12">
-	          <input placeholder="Nombre" id="nombre" name="nombre" type="text" class="validate" width="" value='{% echo $item[nombre]; %}' >
+	          <input id="nombre" name="nombre" type="text" class="alfa" width="" value='{% echo $item[nombre]; %}'  required data-validate=' required' [[var:]]eventos[[:var]] >
 	          <label for="nombre">Nombre</label>
-		</div>	
+	          <div class="error_input">{$errors[nombre][0]}</div>
+		</div>
 	</div>
-
-
-
-
-
  
+
+<div class="row">
+	<div class="input-field col ">
+      <input type="checkbox" id="base" name='base' class="check" value="1" {% if ($item[base])=="1" %} checked="checked" {% /if %} [[var:]]eventos[[:var]] />
+     <label for="base">Base</label>
+     <div class="error_input">{$errors[base][0]}</div>
+     </div>
+</div>
  
+
+	<div class="row">
+		<div class="input-field col s12">
+<select id="tipo" name="tipo" class="select"  required data-validate=' required' [[var:]]eventos[[:var]] >
+      <option value='' disabled selected='selected'> Seleccione Tipo...<option value='X' >Unico</option><option value='U' >Unidad</option><option value='P' >Peso</option><option value='D' >Distancia</option><option value='V' >Volumen</option><option value='T' >Tiempo</option>
+    </select>
+    	          <label for="tipo">Tipo</label>
+    	          <div class="error_input">{$errors[tipo][0]}</div>
+		</div>
+	</div>
+ 
+
+	<div class="row">
+		<div class="input-field col s12">
+	          <input id="relBase" name="relBase" type="text" class="float" data-decimal='2' width="" value='{% echo $item[relBase]; %}'  required data-validate=' required, numeric'  onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  >
+	          <label for="relBase">RelBase</label>
+	          <div class="error_input">{$errors[relBase][0]}</div>
+		</div>
+	</div>
 <input type="hidden" name="_save_" value="{% echo $_action; %}">
 </form>
-		
-        <div class="modal-footer" style="position:absolute; bottom:0; ">
-            <div class="row " >
-				<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat " onclick="_sendForm();" >Grabar</a>
-				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " onclick="reaction('','listar');" >Volver</a>
-              </div>
-        </div>
-
-
-
 </div>
-
-            
 <!-- :ajax -->
 </div>

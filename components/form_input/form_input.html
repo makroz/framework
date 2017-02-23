@@ -4,8 +4,9 @@
 [* if '[[var:]]tipo[[:var]]'=='alfa' *]
 	<div class="row">
 		<div class="input-field col [[var:]]clase[[:var]]">
-	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' >
+	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]validate[[:var]] [[var:]]eventos[[:var]] >
 	          <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
+	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
 	</div>
 [* /if *]
@@ -18,8 +19,9 @@
 
 <div class="row">
 	<div class="input-field col [[var:]]clase[[:var]]">
-      <input type="checkbox" id="[[var:]]id[[:var]]" name='[[var:]]id[[:var]]' class="check" value="[[var:]]dataon[[:var]]" {% if ($item[[[var:]]id[[:var]]])=="[[var:]]dataon[[:var]]" %} checked="checked" {% /if %}  />
+      <input type="checkbox" id="[[var:]]id[[:var]]" name='[[var:]]id[[:var]]' class="check" value="[[var:]]dataon[[:var]]" {% if ($item[[[var:]]id[[:var]]])=="[[var:]]dataon[[:var]]" %} checked="checked" {% /if %} [[var:]]eventos[[:var]] />
      <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
+     <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
      </div>
 </div>
 
@@ -29,8 +31,9 @@
 
 	<div class="row">
 		<div class="input-field col [[var:]]clase[[:var]]">
-	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="float" data-decimal='[[var:]]decimal[[:var]]' width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' >
+	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="float" data-decimal='[[var:]]decimal[[:var]]' width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]validate[[:var]] [[var:]]eventos[[:var]] >
 	          <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
+	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
 	</div>
 
@@ -40,10 +43,11 @@
 
 	<div class="row">
 		<div class="input-field col [[var:]]clase[[:var]]">
-<select id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" class="select"  >
+<select id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" class="select" [[var:]]validate[[:var]] [[var:]]eventos[[:var]] >
       [[var:]]options[[:var]]
     </select>
     	          <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
+    	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
 	</div>
 

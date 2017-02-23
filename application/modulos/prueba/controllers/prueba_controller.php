@@ -164,15 +164,38 @@ class Prueba_controller extends ControllerDb
 		}
 		
 		$items = false;
+		/*[[anexos:]]*/
+		//$campo=new stdClass();
+		$anexos['base']['labelon']='Si';
+		$anexos['base']['labeloff']='No';
+		$anexos['base']['dataon']=1;
+
+		$anexos['tipo']['optionsl']="<option value='X' >Unico</option><option value='U' >Unidad</option><option value='P' >Peso</option><option value='D' >Distancia</option><option value='V' >Volumen</option><option value='T' >Tiempo</option>";
+		$anexos['tipo']['options']['X']='Unico';
+		$anexos['tipo']['options']['U']='Unidad';
+		$anexos['tipo']['options']['P']='Peso';
+		$anexos['tipo']['options']['D']='Distancia';
+		$anexos['tipo']['options']['V']='Volumen';
+		$anexos['tipo']['options']['T']='Tiempo';
+		
+
+
+
+		/*[[:anexos]]*/
+
 
 		$where = array(
 		'?'=>$where
 		);
 
 		$fields = array(
-		"pk", "nombre", "status"
+		"*"
 		);
 		$count = $this->_model->count($where);
+		if ($page>($count/$limit)){
+			$page=1;
+		}
+
 		$items = $this->_model->all($where, $fields, $order, $direction, $limit, $page);
 
 		$view
@@ -183,6 +206,7 @@ class Prueba_controller extends ControllerDb
 		-> set("count", $count)
 		-> set("searchMsg", $this->_searchMsg)
 		-> set("modTitulo", "Listado de ".$this->_model->_tPlural)
+		-> set("anexos", $anexos)
 		-> set("items", $items);
 
 

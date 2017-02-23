@@ -15,8 +15,32 @@ protected $_pk;
 * @readwrite
 * @type varchar
 * @label Nombre
+* @validate  required
 */
 protected $_nombre;
+/**
+* @column
+* @readwrite
+* @type char
+* @label Base
+*/
+protected $_base;
+/**
+* @column
+* @readwrite
+* @type char
+* @label Tipo
+* @validate  required
+*/
+protected $_tipo;
+/**
+* @column
+* @readwrite
+* @type float
+* @label RelBase
+* @validate  required, numeric
+*/
+protected $_relBase;
 /**
 * @column
 * @readwrite
@@ -27,7 +51,6 @@ protected $_status;
 /**
 * @column
 * @readwrite
-* @index
 * @type datetime
 * @label Created
 */
@@ -39,8 +62,8 @@ protected $_created;
 * @label Modified
 */
 protected $_modified;
-public $_tSingular='prueba';
-public $_tPlural='pruebas';
+public $_tSingular='unidad';
+public $_tPlural='Uniades';
 
 
 }

@@ -2,6 +2,8 @@
 $(document).ajaxStop(function(){
     showMensajes();
 });
+
+	$('#mk_formulario').modal();
 	$("select").material_select();
 	showMensajes();
 
@@ -40,3 +42,16 @@ $(document).ajaxStop(function(){
 [[component:]]listtable[[:component]]   
 <!-- :ajax -->
 </div>
+
+	<div id="mk_formulario" class="modal modal-fixed-footer">
+	    <div class="modal-content">
+	      prueba de formulario
+	    </div>
+	    
+
+<div class="modal-footer" >
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" class=" modal-action  waves-effect waves-green btn-flat " onclick="_sendForm('#frmEdit');" >Grabar</a>
+        </div>
+
+	</div>

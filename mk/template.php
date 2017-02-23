@@ -276,8 +276,19 @@ namespace Mk
 			$tree = $this->_tree($array["all"]);
 			$this->_code = $this->header.$this->_script($tree).$this->footer;
 			//\Mk\Debug::msg($this->code);
-			$this->_function = create_function("\$_data", $this->code);
-			
+/*				echo "<hr>Error en tenplate:<br> ";print_r($this->code);
+				echo "<hr>con los datos :<br> <pre>";print_r($_data);echo "</pre>";
+*/			
+			try
+			{
+				$this->_function = create_function("\$_data", $this->code);
+			}
+			catch(\Exception $e)
+			{
+				echo "<hr>Error en tenplate:<br> ";print_r($this->code);
+				//echo "<hr>con los datos :<br> <pre>";print_r($this->_data);echo "</pre>";
+				throw $this->_Exception($e);
+			}
 			return $this;
 		}
 		public function process($data = array())

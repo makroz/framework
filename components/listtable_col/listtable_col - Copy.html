@@ -1,0 +1,59 @@
+[[compile:]]
+
+
+{% if '[[var:]]tipo[[:var]]'=='status' %}
+
+[% append js.inline %]
+
+function cambiarStatus(item){
+var pk=[[]](item).data('pk');
+var status=[[]](item).data('status');
+
+var options=[];
+	options['pk']=pk;
+	options['campos[status]']=status;
+var link=reaction(options,'setData','',true);
+
+getAjax(link,'GET',{ },item, function(msg){
+     if (msg>=0){
+     	var newstatus='0';
+     	var icon='E';
+     	if (status=='0'){
+     		newstatus='[[var:]]status[[:var]]'
+     		icon='X';
+     	}
+     	
+     	[[]](item).data('status',newstatus).attr('src','img/'+icon+'.png');
+
+     }
+   });
+
+}
+
+[% /append %]
+<td >
+[% if ([[]]row[[[]]key]=="[[var:]]status[[:var]]") %]
+     <img src="img/E.png" title="Click para cambiar" data-status='0' data-pk='[[]]row[pk]' id='img_status_[[]]row[pk]' onclick="cambiarStatus(this);" >
+[% /if %]
+[% else %]
+     <img src="img/X.png" title="Click para cambiar" data-status='[[var:]]status[[:var]]' data-pk='[[]]row[pk]' id='img_status_[[]]row[pk]' onclick="cambiarStatus(this);" >
+[% /else %]
+</td>
+{% /if %}
+
+{% if '[[var:]]tipo[[:var]]'=='check' %}
+<td > 
+     [% if [[var:]]dataon[[:var]]==[[]]row[[[]]key]) %] 
+          [[var:]]labelon[[:var]]
+     [% /if %]
+     [% else %]
+          [[var:]]labeloff[[:var]]
+     [% /else %]
+</td>
+{% /if %}
+
+{% if '[[var:]]tipo[[:var]]'=='lista' %}
+<td > 
+     {% echo [[]]anexos[ [[]]key ]['options'][ [[]]row[ [[]]key ]]; %}
+</td>
+{% /if %}
