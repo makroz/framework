@@ -284,6 +284,8 @@ namespace Mk
 						$write = !empty($propertyMeta["@write"]) || $readwrite;
 						$validate = !empty($propertyMeta["@validate"])? $propertyMeta["@validate"] : false;
 						$label = $first($propertyMeta, "@label");
+
+
 						if (!in_array($type, $types))
 						{
 							throw $this->_Exception("{$type} is not a valid type");
@@ -304,6 +306,22 @@ namespace Mk
 							"validate" => $validate,
 							"label" => $label
 							);
+
+						if (!empty($propertyMeta["@uso"])){
+							$columns[$name]['uso']=$first($propertyMeta, "@uso");	
+						}
+						 
+						if (!empty($propertyMeta["@funcion"])){
+							$columns[$name]['funcion']=$first($propertyMeta, "@funcion");
+						}
+						if (!empty($propertyMeta["@fcustom"])){
+							$columns[$name]['fcustom']=$first($propertyMeta, "@fcustom");
+						}
+						 
+						if (!empty($propertyMeta["@checkvalor"])){
+							$columns[$name]['checkvalor']=$first($propertyMeta, "@checkvalor");
+						}
+
 					}
 				}
 				if ($primaries !== 1)
@@ -326,7 +344,7 @@ namespace Mk
 		{
 			if (!isset($this->_primary))
 			{
-				$primary;
+				//$primary;
 				foreach ($this->columns as $column)
 				{
 					if ($column["primary"])
@@ -432,7 +450,7 @@ namespace Mk
 		}
 		protected function _validateNumeric($value)
 		{
-			return StringMethods::match($value, "#^([0–9]+)$#");
+			return StringMethods::match($value, "^(\d|-)?(\d|,)*\.?\d*$");
 		}
 		protected function _validateAlphaNumeric($value)
 		{

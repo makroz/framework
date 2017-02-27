@@ -44,15 +44,24 @@ function getAjax(link,method='GET',data={},div='',success=null)
   url: link,
   data: data,
   success: function(msg){
+
       if (div!=''){
-        $(div).LoadingOverlay("hide");
-        $(div).html(msg).LoadingOverlay("hide",true);
-        $("select").material_select();
+        $(div).LoadingOverlay("hide",true);
       }
       
       if (success){
-        success(msg);
+        if (success(msg)<0){
+          div='';
+        }
       }
+
+      if (div!=''){
+        $(div).html(msg);
+      }
+
+        $("select").material_select();
+         Materialize.updateTextFields();
+
      }
   });
 
@@ -219,7 +228,11 @@ $(campos).each(function(){
     
   }
 });
-  alert('error='+error);
+
+if (error==0){
+  return true;
+}
+  //alert('error='+error);
   return false;
 }
 
@@ -272,12 +285,21 @@ function _refreshFloat(id){
 }
 
 
-function _sendForm(f){
-  var link=reaction('','','',true);
-  $(f).attr('action',link);
+function _sendForm(f,isAjax, success){
+  var action=$(f).data('_action');
+  $(f).attr('action',reaction('','','',true));
+
   //alert(link);
   if (_formValidate($(f))){
-  $(f).submit();
+    if (!isAjax){
+      isAjax=0;
+    }
+    if (isAjax==1){
+      reaction($(f).serialize(),action,'','#mk_formulario .modal-content',success,'POST');
+    }else{
+      //$(f).submit();
+      alert('submit'+isAjax);
+    }
   }
 
 }

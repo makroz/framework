@@ -14,7 +14,7 @@ namespace Mk\Tools
 
 		public static function getListaSel($lista=null,$msg="Selecconar...",$sel='',$datas=''){
 			$r='';
-			if ($msg!=''){$r.="<option value='-1'>$msg</option>";}
+			if ($msg!=''){$r.="<option value=''>$msg</option>";}
 			if (is_array($lista)){
 				foreach ($lista as $key => $val){
 					if (is_array($val)){
@@ -39,6 +39,19 @@ namespace Mk\Tools
 			}
 			return $r;
 		}
+
+		public static function fbd($valor='0'){
+			$valor=trim($valor);
+			$valor=str_replace(',','.',$valor);
+			return $valor;
+		}
+
+		public static function st($valor=''){
+			$valor=trim($valor);
+			$valor=mysql_real_escape_string($valor);
+			return $valor;
+		}
+
 
 
 

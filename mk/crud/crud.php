@@ -77,9 +77,6 @@ namespace Mk\Crud
 			$lfunc['timesystem']='HoraServer()';
 			$lfunc['check']='Check()';
 
-			$luso['A']='Ambos Grabar y Actualizar';
-			$luso['U']='Solo Actualizar';
-			$luso['I']='Solo Grabar';
 
 			$lusof['alfa']='Alfanumerico';
 			$lusof['area']='TextArea';
@@ -217,7 +214,7 @@ namespace Mk\Crud
 				$pedir['funcion']['val'][$key]='-1';
 				$pedir['dec']['val'][$key]='0';
 				$pedir['uso']['val'][$key]='A';
-				$pedir['tam']['val'][$key]='100%';
+				$pedir['tam']['val'][$key]='s12';
 				$pedir['tamlista']['val'][$key]='';
 				$pedir['search']['val'][$key]='1';
 
@@ -232,15 +229,15 @@ namespace Mk\Crud
 					
 
 					if ($field['args'][0]>0){
-						$pedir['tam']['val'][$key]=($field['args'][0]*5)+20;
-						if ($pedir['tam']['val'][$key]>300){$pedir['tam']['val'][$key]=300;}
+						$pedir['tamlista']['val'][$key]=($field['args'][0]*5)+20;
+						if ($pedir['tamlista']['val'][$key]>200){$pedir['tamlista']['val'][$key]='';}
 					}
 
 					//$pedir['tamlista']['val'][$key]=$pedir['tam']['val'][$key];
 
 					if (in_array($field['type'], array('mediumtext','largetext'),true)){
 						$pedir['usof']['val'][$key]='area';
-						$pedir['tamlista']['val'][$key]='0';
+						$pedir['tamlista']['val'][$key]='';
 					}
 
 
@@ -319,10 +316,17 @@ namespace Mk\Crud
 					$pedir['usof']['val'][$key]=$field['type'];
 					if ($field['type']=='timestamp'){
 						$pedir['usof']['val'][$key]='date';
+						$pedir['funcion']['val'][$key]='date';
 					}
 					if ($field['type']=='datetime'){
 						$pedir['tamlista']['val'][$key]='120';
+						$pedir['funcion']['val'][$key]='datetime';
 					}
+					if ($field['type']=='time'){
+						$pedir['tamlista']['val'][$key]='60';
+						$pedir['funcion']['val'][$key]='time';
+					}
+
 				}
 				/// Valores por defecto segun tipo de datos de la BD
 
@@ -365,12 +369,19 @@ namespace Mk\Crud
 
 				}
 
-				if (($Name=='created')||($Name=='modified')){
+				if ($Name=='created'){
 					$pedir['tipolista']['val'][$key]='-1';
 					$pedir['usof']['val'][$key]='-1';
-
+					$pedir['uso']['val'][$key]='G';
+					$pedir['funcion']['val'][$key]='datetimesystem';
 				}				
 				
+				if ($Name=='modified'){
+					$pedir['tipolista']['val'][$key]='-1';
+					$pedir['usof']['val'][$key]='-1';
+					$pedir['uso']['val'][$key]='A';
+					$pedir['funcion']['val'][$key]='datetimesystem';
+				}				
 
 				if (($Name=='status')&&($field['args'][0]==1)){
 					$pedir['tipolista']['val'][$key]='status';
@@ -468,6 +479,19 @@ namespace Mk\Crud
 
 					}
 
+				}
+
+				if ((trim($field['uso'])!='-1')&&(trim($field['uso'])!='')){
+					$lines[]='* @uso '.$field['uso'];
+					$lines[]='* @funcion '.$field['funcion'];
+
+					if ($field['funcion']=='check'){
+						$lines[]='* @checkvalor '.$field['checkvalor'];
+					}
+
+					if ($field['funcion']=='custom'){
+						$lines[]='* @fcustom '.$field['fcustom'];
+					}
 				}
 
 				$lines[]='* @label '.$field['label'];

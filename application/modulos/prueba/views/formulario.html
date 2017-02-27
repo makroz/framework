@@ -39,7 +39,8 @@ $(document).ajaxStop(function(){
 <h1 > {% echo $modTitulo; %}</h1>
 </div>
 <div class="mk-section">
-<form id="frmEdit" action=''  method="post" >
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target=''  >
 
 
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
@@ -66,7 +67,7 @@ $(document).ajaxStop(function(){
 	<div class="row">
 		<div class="input-field col s12">
 <select id="tipo" name="tipo" class="select"  required data-validate=' required' [[var:]]eventos[[:var]] >
-      <option value='' disabled selected='selected'> Seleccione Tipo...<option value='X' >Unico</option><option value='U' >Unidad</option><option value='P' >Peso</option><option value='D' >Distancia</option><option value='V' >Volumen</option><option value='T' >Tiempo</option>
+      <option value='' disabled {% if $item[tipo]=='' %}selected='selected' {% /if %} > Seleccione Tipo...<option value='X' {% if $item[tipo]=='X' %}selected='selected' {% /if %} >Unico</option><option value='U' {% if $item[tipo]=='U' %}selected='selected' {% /if %} >Unidad</option><option value='P' {% if $item[tipo]=='P' %}selected='selected' {% /if %} >Peso</option><option value='D' {% if $item[tipo]=='D' %}selected='selected' {% /if %} >Distancia</option><option value='V' {% if $item[tipo]=='V' %}selected='selected' {% /if %} >Volumen</option><option value='T' {% if $item[tipo]=='T' %}selected='selected' {% /if %} >Tiempo</option>
     </select>
     	          <label for="tipo">Tipo</label>
     	          <div class="error_input">{$errors[tipo][0]}</div>
@@ -81,6 +82,12 @@ $(document).ajaxStop(function(){
 	          <div class="error_input">{$errors[relBase][0]}</div>
 		</div>
 	</div>
+ 
+
+ 
+
+ 
+
 <input type="hidden" name="_save_" value="{% echo $_action; %}">
 </form>
 </div>

@@ -26,6 +26,20 @@ $(document).ajaxStop(function(){
         useBootstrap: false
     };
 
+function grabado(msg){
+if (msg=='ok'){
+	$('#mk_formulario').modal('close');
+	reaction('','','','.listTable');	
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}	
+return -1;
+}
+
+
 {% /append %}
 
 <div class="mk-section">
@@ -45,13 +59,13 @@ $(document).ajaxStop(function(){
 
 	<div id="mk_formulario" class="modal modal-fixed-footer">
 	    <div class="modal-content">
-	      prueba de formulario
+	      
 	    </div>
 	    
 
 <div class="modal-footer" >
 				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
-				<a href="#!" class=" modal-action  waves-effect waves-green btn-flat " onclick="_sendForm('#frmEdit');" >Grabar</a>
+				<a href="#!" class=" modal-action  waves-effect waves-green btn-flat " onclick="_sendForm('#frmEdit',1,grabado);" >Grabar</a>
         </div>
 
 	</div>

@@ -62,7 +62,7 @@ class Formulario
                     if($value['usof']=='selec'){
                         if ($value['listalista']!=''){
                             $opt=explode('*',$value['listalista'].'*');
-                            $options.="<option value='' disabled selected='selected'> Seleccione {$value['label']}...";
+                            $options.="<option value='' disabled {% if \$item[{$key}]=='' %}selected='selected' {% /if %} > Seleccione {$value['label']}...";
                             foreach ($opt as $key1 => $value1){
                                 if ($value1!=''){
                                     $opt1=explode('|',$value1.'||');
@@ -71,7 +71,7 @@ class Formulario
                                             $opt1[1]=$opt1[0];
                                         }
 
-                                        $options.="<option value='{$opt1[0]}' ";
+                                        $options.="<option value='{$opt1[0]}' {% if \$item[{$key}]=='{$opt1[0]}' %}selected='selected' {% /if %} ";
                                         if ($opt1[2]!=''){
                                             $options.=" data-tag='{$opt1[2]}' ";
                                         }

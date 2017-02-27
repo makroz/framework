@@ -5,6 +5,9 @@
 {% /append %}
 
 {% append style.inline %}
+
+
+
 {% /append %}
 
 {% append js.inline %}
@@ -14,8 +17,8 @@
 
 
 {% /append %}
-
-<form id="frmEdit" action=''  method="post" >
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target=''  >
 [[php:]]inputs[[:php]]
 <input type="hidden" name="_save_" value="{% echo $_action; %}">
 </form>

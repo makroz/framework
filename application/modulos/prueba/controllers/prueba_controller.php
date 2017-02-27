@@ -71,7 +71,6 @@ class Prueba_controller extends ControllerDb
 			$join = Inputs::get("search_join",array());
 			$isjoin = Inputs::get("search_isjoin",array());
 
-
 			$columns=$this->_model->getColumns();
 			$joiner='';
 			$where='';
@@ -118,36 +117,179 @@ class Prueba_controller extends ControllerDb
 		return $where;
 	}
 
+	public function beforeSave(){
+
+		return true;
+	}
+
+	public function afterSave(){
+		return true;
+	}
+
+	public function _verificarDatos($action){
+			$model=$this->_model;
+			if ($action=='add'){
+							
+
+				//$model->setStatus('1');
+	
+				foreach ($model->columns as $key => $campo) {
+					$prop = $campo["name"];
+
+					//print_r($model->$prop+'::'+$pro);
+
+
+					if (($campo['uso']=='A')||($campo['uso']=='G')){
+
+						switch ($campo['funcion']) {
+							case 'st':
+								$model->$prop=\Mk\Tools\Form::st($model->$prop);
+								break;
+							case 'bdf':
+								$model->$prop=\Mk\Tools\Form::fbd($model->$prop);
+								break;
+							case 'datetime':
+								# code...
+								break;
+							case 'date':
+								# code...
+								break;
+							case 'time':
+								# code...
+								break;
+							case 'custom':
+								if (stripos($campo['fcustom'],'(')===false){
+									$model->$prop=$campo['fcustom'];	
+								}else{
+									$func=str_replace('()','',$campo['fcustom']);
+									$model->$prop=$func($model->$prop);
+								}
+								break;
+							case 'datetimesystem':
+								if ($campo['type']=='char')
+								{
+									$model->$prop=date('YmdHis');
+								}else{
+									$model->$prop=date("Y-m-d H:i:s");
+								}
+								break;
+							case 'datesystem':
+								if ($campo['type']=='char')
+								{
+									$model->$prop=date('Ymd');
+								}else{
+									$model->$prop=date("Y-m-d");
+								}
+								break;
+							case 'timesystem':
+								if ($campo['type']=='char')
+								{
+									$model->$prop=date('His');
+								}else{
+									$model->$prop=date("H:i:s");
+								}
+								break;
+							case 'check':
+								$checkvalor=explode('/',$campo['checkvalor'].'/0');
+								if (is_null($model->$prop)){
+									$model->$prop=$checkvalor[1];
+								}else{
+									if ($model->$prop!=$checkvalor[0]){
+										$model->$prop=$checkvalor[1];
+									}
+								}
+								break;
+
+							default:
+								# code...
+								break;
+						}
+
+					}else{
+						//print_r($model->$prop+':'+$pro);
+						if ($this->getPrimary()!=$prop){
+							$model->$prop='';	
+						}
+						
+					}
+					
+				}
+			}else{
+				//modificar
+			}
+
+		$this->_model=$model;
+		return true;
+	}
+
+	public function actionSave(){
+		if (Inputs::request("_save_"))
+		{
+			$view = $this-> getActionView();
+
+			$this->_model->loadFromArray($_REQUEST);
+			$this->_verificarDatos(Inputs::request("_save_"));
+
+
+			if ($this->_model-> validate())
+			{
+				$this->beforeSave();
+				$this->_model->save();
+				$this->afterSave();
+				$view->set("success", true);
+			}
+			$view->set("errors", $this->_model->getErrors());
+
+			if (\Mk\Tools\App::isAjax()==true){
+				if ($view->get('success')==true){
+					$this->setRenderView(false);
+					echo "ok";
+				}else{
+					$this->setRenderView(false);
+					echo json_encode($this->_model->getErrors());
+				}
+			}else{
+				if ($view->get('success')==true){
+					$this->changeViewAction('listar.html');
+					actionListar();
+				}
+			}
+		}
+
+	}
+
 	public function actionAdd()
 	{
 
 		//\Mk\Shared\FormTools::init();
-		//print_r($_REQUEST);
 		$this->changeViewAction('formulario.html');
 		$view = $this-> getActionView();
-		if (Inputs::post("_save_"))
-		{
-
-			$this->_model->loadFromArray($_POST);
-			$this->_model->setStatus('1');
-			//print_r($this->_model->loadToArray());
-			if ($this->_model-> validate())
-			{
-				echo "<hr>Todo Ok en validate<hr>";
-				$this->_model->save();
-				$view->set("success", true);
-			}
-			//\Mk\Shared\FormTools::debug($user->getErrors(),50000);
-			$view->set("errors", $this->_model->getErrors());
-		}
-/*		$primary = $this->getPrimary();
-		$this->_model->$primary=0;
-*///		print_r($this->_model->loadToArray());
+		$this->actionSave();
 		$view
 		-> set("item", $this->_model->loadToArray())
 		-> set("modTitulo", "Adicionar ".$this->_model->_tSingular);
 	}
 	
+	public function getAnexos(){
+
+	$anexos= array();
+	/*[[anexos:]]*/
+		$anexos['base']['labelon']='Si';
+		$anexos['base']['labeloff']='No';
+		$anexos['base']['dataon']=1;
+
+		$anexos['tipo']['optionsl']="<option value='X' >Unico</option>".PHP_EOL."<option value='U' >Unidad</option>".PHP_EOL."<option value='P' >Peso</option>".PHP_EOL."<option value='D' >Distancia</option>".PHP_EOL."<option value='V' >Volumen</option>".PHP_EOL."<option value='T' >Tiempo</option>";
+		$anexos['tipo']['options']['X']='Unico';
+		$anexos['tipo']['options']['U']='Unidad';
+		$anexos['tipo']['options']['P']='Peso';
+		$anexos['tipo']['options']['D']='Distancia';
+		$anexos['tipo']['options']['V']='Volumen';
+		$anexos['tipo']['options']['T']='Tiempo';
+	/*[[:anexos]]*/
+
+		return $anexos;
+
+	}
 	public function actionListar(){
 
 		$view = $this-> getActionView();
@@ -164,25 +306,8 @@ class Prueba_controller extends ControllerDb
 		}
 		
 		$items = false;
-		/*[[anexos:]]*/
-		//$campo=new stdClass();
-		$anexos['base']['labelon']='Si';
-		$anexos['base']['labeloff']='No';
-		$anexos['base']['dataon']=1;
 
-		$anexos['tipo']['optionsl']="<option value='X' >Unico</option><option value='U' >Unidad</option><option value='P' >Peso</option><option value='D' >Distancia</option><option value='V' >Volumen</option><option value='T' >Tiempo</option>";
-		$anexos['tipo']['options']['X']='Unico';
-		$anexos['tipo']['options']['U']='Unidad';
-		$anexos['tipo']['options']['P']='Peso';
-		$anexos['tipo']['options']['D']='Distancia';
-		$anexos['tipo']['options']['V']='Volumen';
-		$anexos['tipo']['options']['T']='Tiempo';
-		
-
-
-
-		/*[[:anexos]]*/
-
+		$anexos=$this->getAnexos();
 
 		$where = array(
 		'?'=>$where
@@ -209,144 +334,7 @@ class Prueba_controller extends ControllerDb
 		-> set("anexos", $anexos)
 		-> set("items", $items);
 
-
-		
-
-
-
 	}
-
-
-
-/*
-	public function actionRegister()
-	{
-
-
-		$view = $this-> getActionView();
-		if (Inputs::post("register"))
-		{
-
-			$user = new User(array(
-				"first" => Inputs::post("first"),
-				"last" => Inputs::post("last"),
-				"email" => Inputs::post("email"),
-				"password" => Inputs::post("password")
-				));
-			if ($user-> validate())
-			{
-				$user->save();
-				$view->set("success", true);
-			}
-			//\Mk\Shared\FormTools::debug($user->getErrors(),50000);
-			$view->set("errors", $user->getErrors());
-		}
-		//$view->set("errors", '');
-	}*/
-
-
-/*	public function actionLogin()
-	{
-
-		if (Inputs::post("login"))
-		{
-			$email = Inputs::post("email");
-			$password = Inputs::post("password");
-			$view = $this-> getActionView();
-			$error = false;
-			if (empty($email))
-			{
-				$view-> set("email_error", "Email not provided");
-				$error = true;
-			}
-			if (empty($password))
-			{
-				$view-> set("password_error", "Password not provided");
-				$error = true;
-			}
-
-			if (!$error)
-			{
-				$session = Registry::get("session");
-				$user = new $this->_modelName();
-				$user = $user->first(array(
-					"email = ?" => $email,
-					"password = ?" => $password,
-					"live = ?" => true,
-					"deleted = ?" => false
-					));
-				//echo '<hr>Modelo '.$this->_modelName.' User:';print_r($user);
-				if (!empty($user))
-				{
-					
-					$this-> _setLoged($user->id);
-					header("Location: index.php?url={$this->_secureKey}/profile");
-					exit();
-				}
-				else
-				{
-					$this-> _setLoged(false);
-					$view-> set("password_error", "Email address and/or password are incorrect");
-				}
-			}
-		}
-	}
-*/
-		/**
-		* @before _secure
-		*/	
-/*	public function actionProfile()
-	{
-		$this-> getActionView()-> set("user", $this->getModel());
-	}
-
-	*/	
-
-		/**
-		* @before _secure
-		*/
-/*		public function actionSettings()
-		{
-			$view = $this->getActionView();
-			$user = $this->_model;
-			if (Inputs::post("update"))
-			{
-				$user = new User(array(
-					"first" => Inputs::post("first", $user->first),
-					"last" => Inputs::post("last", $user->last),
-					"email" => Inputs::post("email", $user->email),
-					"password" => Inputs::post("password", $user->password)
-					));
-				if ($user->validate())
-				{
-					$user->save();
-					$view->set("success", true);
-				}
-				$view-> set("errors", $user->getErrors());
-			}
-		}
-*/		
-/*
-		public function actionLogout()
-		{
-			$this-> _setLoged(false);
-			header("Location: index.php?url=user/login");
-			exit();
-		}
-
-		*/
-
-	/*	public function _admin()
-		{
-			if (!$this-> _model-> admin)
-			{
-				throw $this->_Execption("Not a valid admin user account",1);
-			}
-		}*/
-
-
 
 }
-
-
 ?>
