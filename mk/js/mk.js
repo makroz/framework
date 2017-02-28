@@ -286,7 +286,7 @@ function _refreshFloat(id){
 
 
 function _sendForm(f,isAjax, success){
-  var action=$(f).data('_action');
+  //var action=$(f).data('_action');
   $(f).attr('action',reaction('','','',true));
 
   //alert(link);
@@ -295,7 +295,7 @@ function _sendForm(f,isAjax, success){
       isAjax=0;
     }
     if (isAjax==1){
-      reaction($(f).serialize(),action,'','#mk_formulario .modal-content',success,'POST');
+      reaction($(f).serialize(),'save','','#mk_formulario .modal-content',success,'POST');
     }else{
       //$(f).submit();
       alert('submit'+isAjax);

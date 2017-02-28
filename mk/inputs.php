@@ -77,24 +77,6 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
 			return $default;
 		}
 
-/**
-	 * Returns whether this is an AJAX (XMLHttpRequest) request.
-	 * @return boolean whether this is an AJAX (XMLHttpRequest) request.
-	 */
-	public static function getIsAjaxRequest()
-	{
-		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']==='XMLHttpRequest';
-	}
-
-	/**
-	 * Returns whether this is an Adobe Flash or Adobe Flex request.
-	 * @return boolean whether this is an Adobe Flash or Adobe Flex request.
-	 * @since 1.1.11
-	 */
-	public static function getIsFlashRequest()
-	{
-		return isset($_SERVER['HTTP_USER_AGENT']) && (stripos($_SERVER['HTTP_USER_AGENT'],'Shockwave')!==false || stripos($_SERVER['HTTP_USER_AGENT'],'Flash')!==false);
-	}
 
 
 

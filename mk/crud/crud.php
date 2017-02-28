@@ -32,7 +32,7 @@ namespace Mk\Crud
 
 			parent::__construct($options);
 			$this->_database = Registry::get("database");
-			if (Inputs::getIsAjaxRequest()){
+			if (\Mk\Tools\App::isAjax()==true){
 				$this->setWillRenderActionView(false);
 				$this->setWillRenderLayoutView(false);
 			}
@@ -257,20 +257,20 @@ namespace Mk\Crud
 
 					}
 
-					if (($field['args'][0]==12)and(String::stripos_array($campos,array('date','fecha','fec'),true)!==false)){
+					if (($field['args'][0]==14)and(String::stripos_array($campos,array('date','fecha','fec'),true)!==false)){
 						$pedir['usof']['val'][$key]='datetime';
 						$pedir['tamlista']['val'][$key]='120';
 						$pedir['funcion']['val'][$key]='datetime';	
 					}
 
-					if (($field['args'][0]==4)and(String::stripos_array($campos,array('time','hora'),true)!==false)){
+					if (($field['args'][0]==6)and(String::stripos_array($campos,array('time','hora'),true)!==false)){
 						$pedir['usof']['val'][$key]='time';
 						$pedir['tamlista']['val'][$key]='50';
 						$pedir['funcion']['val'][$key]='time';	
 					}
 
 					if (stripos($campos,'fecha')!==false){
-						if ($field['args'][0]==12){
+						if ($field['args'][0]==14){
 							$pedir['usof']['val'][$key]='datetime';
 							$pedir['tamlista']['val'][$key]='120';
 							$pedir['funcion']['val'][$key]='datetimeserver';	
@@ -280,7 +280,7 @@ namespace Mk\Crud
 							$pedir['tamlista']['val'][$key]='90';
 							$pedir['funcion']['val'][$key]='dateserver';	
 						}
-						if ($field['args'][0]==12){
+						if ($field['args'][0]==6){
 							$pedir['usof']['val'][$key]='time';
 							$pedir['tamlista']['val'][$key]='50';
 							$pedir['funcion']['val'][$key]='timeserver';	

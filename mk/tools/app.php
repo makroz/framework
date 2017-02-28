@@ -21,7 +21,28 @@ namespace Mk\Tools
 
 		}
 
-		
+	/**
+	 * Returns whether this is an Adobe Flash or Adobe Flex request.
+	 * @return boolean whether this is an Adobe Flash or Adobe Flex request.
+	 * @since 1.1.11
+	 */
+	public static function isFlash()
+	{
+		return isset($_SERVER['HTTP_USER_AGENT']) && (stripos($_SERVER['HTTP_USER_AGENT'],'Shockwave')!==false || stripos($_SERVER['HTTP_USER_AGENT'],'Flash')!==false);
+	}
+
+
+		public static function getConfig($file='param'){
+			$parsed=array();
+			$configuration = Registry::get("configuration");
+				if ($configuration)
+				{
+					$configuration = $configuration-> initialize();
+					$parsed = $configuration-> parse("configuration/{$file}");
+
+				}
+			return parsed;
+		}
 
 
 

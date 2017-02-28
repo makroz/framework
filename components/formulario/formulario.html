@@ -12,6 +12,18 @@
 
 {% append js.inline %}
 
+function grabado(msg){
+if (msg=='ok'){
+	$('#mk_formulario').modal('close');
+	reaction('','','','.listTable');	
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}	
+return -1;
+}
 
 
 
@@ -20,7 +32,7 @@
 <div class="errorList"></div>
 <form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target=''  >
 [[php:]]inputs[[:php]]
-<input type="hidden" name="_save_" value="{% echo $_action; %}">
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>
 
 		

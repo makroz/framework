@@ -25,6 +25,18 @@ $(document).ajaxStop(function(){
     };
   
 
+function grabado(msg){
+if (msg=='ok'){
+	$('#mk_formulario').modal('close');
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
 {% /append %}
 {% append js.files %}
 
@@ -35,10 +47,9 @@ $(document).ajaxStop(function(){
 {% /append %}
 <div class="container">
 <!-- ajax: -->
-<div class="mk-section">
+<div class="titulo">
 <h1 > {% echo $modTitulo; %}</h1>
 </div>
-<div class="mk-section">
 <div class="errorList"></div>
 <form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target=''  >
 
@@ -88,8 +99,7 @@ $(document).ajaxStop(function(){
 
  
 
-<input type="hidden" name="_save_" value="{% echo $_action; %}">
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>
-</div>
 <!-- :ajax -->
 </div>

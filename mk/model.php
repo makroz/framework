@@ -99,7 +99,7 @@ namespace Mk
 			{
 				if (!$column["read"])
 				{
-					$prop = $column["raw"];
+					$prop = "_{$key}";
 					$data[$key] = $this->$prop;
 					continue;
 				}
@@ -131,10 +131,11 @@ namespace Mk
 				}
 				foreach ($previous as $key => $value)
 				{
-					$prop = "_{$key}";
-					if (!empty($previous->$key) && !isset($this->$prop))
+					//$prop = "_{$key}";
+					if (!isset($this->$key))
 					{
-						$this->$key = $previous->$key;
+
+						$this->$key = $value;
 					}
 				}
 			}

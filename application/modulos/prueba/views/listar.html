@@ -54,7 +54,9 @@ table.highlight > tbody > tr:hover {
 .selTR, table.striped > tbody > tr.selTR:nth-child(2n+1), table.striped > tbody > tr.selTR:nth-child(2n+0) {
     background-color: red;
 }
-        
+ 
+
+         
 
 	.input-field.col label.labeltop{
 	left: .75rem;
@@ -91,10 +93,12 @@ $(document).ajaxStop(function(){
    
 
 initListTable();
+ 
+
    
 
 $('#mk_buscar').modal();
-     
+      
 
 	 $('input.datafecha').dateDropper();
 	 _search_campo_change($('#search_campo'));
@@ -106,18 +110,6 @@ $('#mk_buscar').modal();
         boxWidth: '30%',
         useBootstrap: false
     };
-function grabado(msg){
-if (msg=='ok'){
-	$('#mk_formulario').modal('close');
-	reaction('','','','.listTable');
-}else{
-	var error=JSON.parse(msg);
-	$.each(error, function(i, item) {
-		$('#'+i).parent().find('.error_input').html(item);
-	});
-}
-return -1;
-}
    
 
 function sortTable(th){
@@ -151,6 +143,60 @@ function initListTable(){
 }
  
 
+function grabado(msg){
+if (msg=='ok'){
+	$('#mk_formulario').modal('close');
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
+ 
+
+function _fillForm(msg){
+if (msg=='error'){
+	$('#mk_formulario').modal('close');
+	alert('error');
+}else{
+	var datos=JSON.parse(msg);
+	$.each(datos, function(i, item) {
+		var type=$('#'+i).prop("tagName");
+		if (type=='INPUT'){
+			var type2=$('#'+i).prop("type");
+			if (type2=='checkbox'){
+				if (item==1){
+					item=true;
+				}else{
+					item=false;
+				}
+				$('#'+i).prop('checked', item);
+			}else{
+				$('#'+i).val(item);
+			}
+		}
+		if (type=='SELECT'){
+			$('#'+i).find('option[value="'+item+'"]').prop('selected', true);
+		}
+		//alert(i+' es :'+$('#'+i).prop("tagName"));
+	});
+	$("select").material_select();
+}
+return -1;
+}
+function _openForm(f, idAction,tit){
+		//var f=$('#mk_formulario');
+		$(f).find('input').val('');
+		$(f).find('select option:eq(0)').prop('selected', true);
+		$("select").material_select();
+		$(f).find('.check').prop('checked', false);
+		$(f).find('.error_input').html('');
+		$(f).find('#_save_').val(idAction);
+		$(f).find('.titulo > h1 ').html(tit);
+}
 function clicBotonera(boton){
 var idSel = $(boton).parent().parent().data('cod');
 var idAction = $(boton).data('action');
@@ -163,9 +209,10 @@ if (idSel==undefined){
 var options=[];
 	options['cod']=idSel;
 	if (idAction=='add'){
-		options=[];
+		//options=[];
+		_openForm('#mk_formulario',idAction,'Adicionar');
 		$('#mk_formulario').modal('open');
-		reaction(options,idAction,'','#mk_formulario .modal-content');
+		//reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
 	}
 	if (idAction=='edit'){
@@ -173,6 +220,12 @@ var options=[];
 		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
 		return false;
 		}
+		//options=[];
+		_openForm('#mk_formulario',idAction,'Editar');
+		$('#mk_formulario').modal('open');
+		reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
+		//reaction(options,idAction,'','#mk_formulario .modal-content');
+		return false;
 	}
 	if (idAction=='del'){
 		if (selCount==0){
@@ -272,7 +325,7 @@ getAjax(link,'GET',{ },item, function(msg){
      }
    });
 }
- 
+  
 
 	function _search_campo_change(elem){
 		var valor=$(elem).val();
@@ -338,10 +391,12 @@ getAjax(link,'GET',{ },item, function(msg){
 <link href='js/colresize/colResizable.css' rel='stylesheet'>
 <script type='text/javascript' src='js/colresize/colResizable.js'></script>
 <script type='text/javascript' src='js/loadingoverlay/loadingoverlay.min.js'></script>
+ 
+
   
 
 <script type="text/javascript" src="js/printarea/printarea.js"></script>
-      
+       
 
 	<link href='js/datedropper/datedropper.css' rel='stylesheet'>
 	<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
@@ -552,6 +607,60 @@ getAjax(link,'GET',{ },item, function(msg){
 </div>
 	<div id="mk_formulario" class="modal modal-fixed-footer">
 	    <div class="modal-content">
+	    <div class="titulo">
+			<h1 > Adicionar</h1>
+		</div>
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target=''  >
+
+
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
+ 
+
+	<div class="row">
+		<div class="input-field col s12">
+	          <input id="nombre" name="nombre" type="text" class="alfa" width="" value='{% echo $item[nombre]; %}'  required data-validate=' required' [[var:]]eventos[[:var]] >
+	          <label for="nombre">Nombre</label>
+	          <div class="error_input">{$errors[nombre][0]}</div>
+		</div>
+	</div>
+ 
+
+<div class="row">
+	<div class="input-field col ">
+      <input type="checkbox" id="base" name='base' class="check" value="1" {% if ($item[base])=="1" %} checked="checked" {% /if %} [[var:]]eventos[[:var]] />
+     <label for="base">Base</label>
+     <div class="error_input">{$errors[base][0]}</div>
+     </div>
+</div>
+ 
+
+	<div class="row">
+		<div class="input-field col s12">
+<select id="tipo" name="tipo" class="select"  required data-validate=' required' [[var:]]eventos[[:var]] >
+      <option value='' disabled {% if $item[tipo]=='' %}selected='selected' {% /if %} > Seleccione Tipo...<option value='X' {% if $item[tipo]=='X' %}selected='selected' {% /if %} >Unico</option><option value='U' {% if $item[tipo]=='U' %}selected='selected' {% /if %} >Unidad</option><option value='P' {% if $item[tipo]=='P' %}selected='selected' {% /if %} >Peso</option><option value='D' {% if $item[tipo]=='D' %}selected='selected' {% /if %} >Distancia</option><option value='V' {% if $item[tipo]=='V' %}selected='selected' {% /if %} >Volumen</option><option value='T' {% if $item[tipo]=='T' %}selected='selected' {% /if %} >Tiempo</option>
+    </select>
+    	          <label for="tipo">Tipo</label>
+    	          <div class="error_input">{$errors[tipo][0]}</div>
+		</div>
+	</div>
+ 
+
+	<div class="row">
+		<div class="input-field col s12">
+	          <input id="relBase" name="relBase" type="text" class="float" data-decimal='2' width="" value='{% echo $item[relBase]; %}'  required data-validate=' required, numeric'  onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  >
+	          <label for="relBase">RelBase</label>
+	          <div class="error_input">{$errors[relBase][0]}</div>
+		</div>
+	</div>
+ 
+
+ 
+
+ 
+
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
+</form>
 	    </div>
 <div class="modal-footer" >
 				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>

@@ -26,7 +26,27 @@ class Prueba_controller extends ControllerDb
 
 	}
 
-			public function actionSetData(){
+	public function actionGetItem(){
+		$this->setRenderView(false);
+		$primary = $this->getPrimary();
+		$pk =Inputs::request('cod','');
+		$modelo = $this->_model;
+		$modelo->$primary=$pk;
+		$modelo->load();
+		//echo "<pre>";print_r($modelo);echo "</pre>";
+		$data=$modelo->loadToArray();
+
+		if (\Mk\Tools\App::isAjax()==true){
+			echo json_encode($data);
+			return $pk;	
+		}else{
+			echo "<pre>";print_r($data);echo "</pre>";
+			exit;
+		}
+		return -1;
+	}
+
+	public function actionSetData(){
 		$this->setRenderView(false);
 		$primary = $this->getPrimary();
 
@@ -129,97 +149,102 @@ class Prueba_controller extends ControllerDb
 	public function _verificarDatos($action){
 			$model=$this->_model;
 			if ($action=='add'){
-							
-
-				//$model->setStatus('1');
-	
-				foreach ($model->columns as $key => $campo) {
-					$prop = $campo["name"];
-
-					//print_r($model->$prop+'::'+$pro);
-
-
-					if (($campo['uso']=='A')||($campo['uso']=='G')){
-
-						switch ($campo['funcion']) {
-							case 'st':
-								$model->$prop=\Mk\Tools\Form::st($model->$prop);
-								break;
-							case 'bdf':
-								$model->$prop=\Mk\Tools\Form::fbd($model->$prop);
-								break;
-							case 'datetime':
-								# code...
-								break;
-							case 'date':
-								# code...
-								break;
-							case 'time':
-								# code...
-								break;
-							case 'custom':
-								if (stripos($campo['fcustom'],'(')===false){
-									$model->$prop=$campo['fcustom'];	
-								}else{
-									$func=str_replace('()','',$campo['fcustom']);
-									$model->$prop=$func($model->$prop);
-								}
-								break;
-							case 'datetimesystem':
-								if ($campo['type']=='char')
-								{
-									$model->$prop=date('YmdHis');
-								}else{
-									$model->$prop=date("Y-m-d H:i:s");
-								}
-								break;
-							case 'datesystem':
-								if ($campo['type']=='char')
-								{
-									$model->$prop=date('Ymd');
-								}else{
-									$model->$prop=date("Y-m-d");
-								}
-								break;
-							case 'timesystem':
-								if ($campo['type']=='char')
-								{
-									$model->$prop=date('His');
-								}else{
-									$model->$prop=date("H:i:s");
-								}
-								break;
-							case 'check':
-								$checkvalor=explode('/',$campo['checkvalor'].'/0');
-								if (is_null($model->$prop)){
-									$model->$prop=$checkvalor[1];
-								}else{
-									if ($model->$prop!=$checkvalor[0]){
-										$model->$prop=$checkvalor[1];
-									}
-								}
-								break;
-
-							default:
-								# code...
-								break;
-						}
-
-					}else{
-						//print_r($model->$prop+':'+$pro);
-						if ($this->getPrimary()!=$prop){
-							$model->$prop='';	
-						}
-						
-					}
-					
-				}
+				$action='G';
 			}else{
-				//modificar
+				$action='M';
 			}
 
-		$this->_model=$model;
-		return true;
+			foreach ($model->columns as $key => $campo) {
+				$prop = $campo["name"];
+
+				if (($campo['uso']=='A')||($campo['uso']==$action)){
+
+					switch ($campo['funcion']) {
+						case 'st':
+							$model->$prop=\Mk\Tools\Form::tbd($model->$prop);
+							break;
+						case 'bdf':
+							$model->$prop=\Mk\Tools\Form::fbd($model->$prop);
+							break;
+						case 'datetime':
+							if ($campo['type']=='char'){
+								$model->$prop=\Mk\Tools\Form::dateToDb($model->$prop,true);
+							}else{
+								$model->$prop=\Mk\Tools\Form::dateToDbDate($model->$prop,true);
+							}
+							break;
+						case 'date':
+							if ($campo['type']=='char'){
+								$model->$prop=\Mk\Tools\Form::dateToDb($model->$prop);
+							}else{
+								$model->$prop=\Mk\Tools\Form::dateToDbDate($model->$prop);
+							}
+							break;
+						case 'time':
+							if ($campo['type']=='char'){
+								$model->$prop=\Mk\Tools\Form::timeToDb($model->$prop);
+							}else{
+								$model->$prop=\Mk\Tools\Form::timeToDbDate($model->$prop);
+							}
+							break;
+						case 'custom':
+							if (stripos($campo['fcustom'],'(')===false){
+								$model->$prop=$campo['fcustom'];	
+							}else{
+								$func=str_replace('()','',$campo['fcustom']);
+								$model->$prop=$func($model->$prop);
+							}
+							break;
+						case 'datetimesystem':
+							if ($campo['type']=='char')
+							{
+								$model->$prop=date('YmdHis');
+							}else{
+								$model->$prop=date("Y-m-d H:i:s");
+							}
+							break;
+						case 'datesystem':
+							if ($campo['type']=='char')
+							{
+								$model->$prop=date('Ymd');
+							}else{
+								$model->$prop=date("Y-m-d");
+							}
+							break;
+						case 'timesystem':
+							if ($campo['type']=='char')
+							{
+								$model->$prop=date('His');
+							}else{
+								$model->$prop=date("H:i:s");
+							}
+							break;
+						case 'check':
+							$checkvalor=explode('/',$campo['checkvalor'].'/0');
+							if (is_null($model->$prop)){
+								$model->$prop=$checkvalor[1];
+							}else{
+								if ($model->$prop!=$checkvalor[0]){
+									$model->$prop=$checkvalor[1];
+								}
+							}
+							break;
+
+						default:
+							# code...
+							break;
+					}
+
+				}else{
+					//print_r($model->$prop+':'+$pro);
+					if ($this->getPrimary()!=$prop){
+						$model->$prop='';	
+					}
+				}
+			}
+
+	$this->_model=$model;
+	return true;
 	}
 
 	public function actionSave(){
@@ -331,6 +356,7 @@ class Prueba_controller extends ControllerDb
 		-> set("count", $count)
 		-> set("searchMsg", $this->_searchMsg)
 		-> set("modTitulo", "Listado de ".$this->_model->_tPlural)
+		-> set("modSingular",$this->_model->_tSingular)
 		-> set("anexos", $anexos)
 		-> set("items", $items);
 

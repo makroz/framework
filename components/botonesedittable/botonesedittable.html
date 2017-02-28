@@ -1,6 +1,50 @@
 {% append js.inline %}
 
 
+function _fillForm(msg){
+if (msg=='error'){
+	$('#mk_formulario').modal('close');
+	alert('error');	
+}else{
+	var datos=JSON.parse(msg);
+	$.each(datos, function(i, item) {
+		var type=$('#'+i).prop("tagName");
+		if (type=='INPUT'){
+			var type2=$('#'+i).prop("type");
+			if (type2=='checkbox'){
+				if (item==1){
+					item=true;
+				}else{
+					item=false;
+				}
+				$('#'+i).prop('checked', item);
+			}else{
+				$('#'+i).val(item);
+			}
+
+		}
+		if (type=='SELECT'){
+			$('#'+i).find('option[value="'+item+'"]').prop('selected', true);
+		}
+		//alert(i+' es :'+$('#'+i).prop("tagName"));	
+	});
+	$("select").material_select();
+
+}	
+return -1;
+}
+
+function _openForm(f, idAction,tit){
+		//var f=$('#mk_formulario');
+		$(f).find('input').val('');
+		$(f).find('select option:eq(0)').prop('selected', true);
+		$("select").material_select();
+		$(f).find('.check').prop('checked', false);
+		$(f).find('.error_input').html('');
+		$(f).find('#_save_').val(idAction);
+		$(f).find('.titulo > h1 ').html(tit);		
+}
+
 function clicBotonera(boton){
 var idSel = $(boton).parent().parent().data('cod');
 var idAction = $(boton).data('action');
@@ -16,11 +60,11 @@ var options=[];
 	options['cod']=idSel;
 
 	if (idAction=='add'){
-		options=[];
+		//options=[];
+		_openForm('#mk_formulario',idAction,'Adicionar');
 		$('#mk_formulario').modal('open');
-		reaction(options,idAction,'','#mk_formulario .modal-content');
+		//reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
-		
 	}
 
 	if (idAction=='edit'){
@@ -28,6 +72,13 @@ var options=[];
 		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
 		return false;
 		}
+
+		//options=[];
+		_openForm('#mk_formulario',idAction,'Editar');
+		$('#mk_formulario').modal('open');
+		reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
+		//reaction(options,idAction,'','#mk_formulario .modal-content');
+		return false;
 	}
 	if (idAction=='del'){
 		if (selCount==0){
