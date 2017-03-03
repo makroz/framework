@@ -53,7 +53,7 @@ var options=[];
 			options['order']=$(th).data('field');
 		}
 	}
-options['_runScriptLoad']='initListTable();';
+
 
 reaction(options,'','','.listTable');
 
@@ -131,3 +131,8 @@ function initListTable(){
 		{% /if %}
 	</tbody>
 </table>
+<!-- onlyajax: -->
+<script type="text/javascript">
+	initListTable();
+</script>
+<!-- :onlyajax --> 

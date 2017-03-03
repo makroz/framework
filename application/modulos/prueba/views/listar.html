@@ -123,7 +123,6 @@ var options=[];
 			options['order']=$(th).data('field');
 		}
 	}
-options['_runScriptLoad']='initListTable();';
 reaction(options,'','','.listTable');
 }
 function initListTable(){
@@ -188,7 +187,6 @@ if (msg=='error'){
 return -1;
 }
 function _openForm(f, idAction,tit){
-		//var f=$('#mk_formulario');
 		$(f).find('input').val('');
 		$(f).find('select option:eq(0)').prop('selected', true);
 		$("select").material_select();
@@ -196,6 +194,7 @@ function _openForm(f, idAction,tit){
 		$(f).find('.error_input').html('');
 		$(f).find('#_save_').val(idAction);
 		$(f).find('.titulo > h1 ').html(tit);
+		$(f).modal('open');
 }
 function clicBotonera(boton){
 var idSel = $(boton).parent().parent().data('cod');
@@ -209,9 +208,8 @@ if (idSel==undefined){
 var options=[];
 	options['cod']=idSel;
 	if (idAction=='add'){
-		//options=[];
-		_openForm('#mk_formulario',idAction,'Adicionar');
-		$('#mk_formulario').modal('open');
+		options=[];
+		_openForm('#mk_formulario',idAction,'Adicionar unidad');
 		//reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
 	}
@@ -220,11 +218,9 @@ var options=[];
 		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
 		return false;
 		}
-		//options=[];
-		_openForm('#mk_formulario',idAction,'Editar');
-		$('#mk_formulario').modal('open');
-		reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
-		//reaction(options,idAction,'','#mk_formulario .modal-content');
+		_openForm('#mk_formulario',idAction,'Editar unidad');
+		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
+		reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
 	}
 	if (idAction=='del'){
@@ -603,6 +599,11 @@ getAjax(link,'GET',{ },item, function(msg){
 		{% /if %}
 	</tbody>
 </table>
+<!-- onlyajax: -->
+<script type="text/javascript">
+	initListTable();
+</script>
+<!-- :onlyajax -->
 <!-- :ajax -->
 </div>
 	<div id="mk_formulario" class="modal modal-fixed-footer">

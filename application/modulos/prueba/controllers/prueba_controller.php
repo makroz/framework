@@ -283,6 +283,28 @@ class Prueba_controller extends ControllerDb
 
 	}
 
+
+	public function actionEdit()
+	{
+
+		//\Mk\Shared\FormTools::init();
+		$this->changeViewAction('formulario.html');
+
+		$view = $this-> getActionView();
+		$this->actionSave();
+
+		$primary = $this->getPrimary();
+		$pk =Inputs::request('cod','');
+		$modelo = $this->_model;
+		$modelo->$primary=$pk;
+		$modelo->load();
+
+
+		$view
+		-> set("item", $this->_model->loadToArray())
+		-> set("modTitulo", "Editar ".$this->_model->_tSingular);
+	}
+	
 	public function actionAdd()
 	{
 

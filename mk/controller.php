@@ -300,7 +300,11 @@ namespace Mk
 						$runScript=Inputs::get("_runScriptLoad",'');
 						//echo $runScript;
 						$results=\Mk\Tools\String::getEtiquetas($results,'<!-- ajax: -->','<!-- :ajax -->',2,'root',' ');
+						$x=\Mk\Tools\String::getEtiquetas($results,'<!-- notajax: -->','<!-- :notajax -->',2,'root',' ');
 					
+					}else{
+
+						$x=\Mk\Tools\String::getEtiquetas($results,'<!-- onlyajax: -->','<!-- :onlyajax -->',2,'root',' ');
 					}
 
 					if ($this->getParam("_debug",'')=='1'){

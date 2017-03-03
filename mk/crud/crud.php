@@ -423,7 +423,8 @@ namespace Mk\Crud
 		}
 
 		public function actionGenerar(){
-
+			global $variables;
+			$variables=array();
 			$session = Registry::get("session");
 			$tablas=$session->get('tables');
 
@@ -523,6 +524,8 @@ namespace Mk\Crud
 			$txtCampos.="public \$_tSingular='".Inputs::post('singular')."';\n";
 			$txtCampos.="public \$_tPlural='".Inputs::post('plural')."';\n";
 
+			$variables['_modSingular_']=Inputs::post('singular');
+
 			$view = $this-> getActionView();
 			
 
@@ -562,7 +565,9 @@ namespace Mk\Crud
 		}
 
 		private function procesaPlantillaView($filePl,$campos,$table){
+			global $variables;
 			echo "<h1>Inicia proceso de Vista:</h1><h2>".basename($filePl)."</h2>";
+			
 			$gestor = fopen($filePl,"r");
 			$plantilla = fread($gestor,filesize($filePl));
 			fclose($gestor);
@@ -628,6 +633,7 @@ namespace Mk\Crud
 				echo "<br>Procesado el Componente: $component";
 				$html1=$html;
 				//print_r($parametros);
+				
 				foreach($parametros as $key => $param){
 					$html=$html1;
 					$tag=$component;
@@ -693,7 +699,11 @@ namespace Mk\Crud
 			$plantilla = PHP_EOL.'{% append js.onready %}'.implode($codeUnique['jsonready']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
 			$plantilla = PHP_EOL.'{% append style.inline %}'.implode($codeUnique['styleinline']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
 			$plantilla = PHP_EOL.'{% append style.files %}'.implode($codeUnique['stylefiles']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
-
+			
+			foreach ($variables as $key => $value) {
+				$plantilla = str_replace('[[var:]]'.$key.'[[:var]]',$value,$plantilla);
+			}
+			
 
 			while (stripos($plantilla,'  '.PHP_EOL)!==false){
 				$plantilla = str_replace('  '.PHP_EOL,PHP_EOL,$plantilla);
