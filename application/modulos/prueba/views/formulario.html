@@ -51,54 +51,63 @@ return -1;
 <h1 > {% echo $modTitulo; %}</h1>
 </div>
 <div class="errorList"></div>
-<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target=''  >
+<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target='' class="$_action" >
 
 
-	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
  
 
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 	<div class="row">
 		<div class="input-field col s12">
-	          <input id="nombre" name="nombre" type="text" class="alfa" width="" value='{% echo $item[nombre]; %}'  required data-validate=' required' [[var:]]eventos[[:var]] >
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'  required data-validate=' required' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="nombre">Nombre</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
 		</div>
 	</div>
  
 
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 <div class="row">
-	<div class="input-field col ">
-      <input type="checkbox" id="base" name='base' class="check" value="1" {% if ($item[base])=="1" %} checked="checked" {% /if %} [[var:]]eventos[[:var]] />
+	<div class="input-field col s12">
+	 {% if $_action!='ver' %}
+      <input type="checkbox" id="base" name='base' class="check $clasver" value="1" {% if ($item[base]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  />
+  {% /if %}
+     {% else %}
+     <input id="base" name="base" type="text" class="alfa $clasver" width="" value='{% php if ($item[base]=="1"){ $_valor= $anexos[base][labelon]; } else { $_valor=$anexos[base][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
+     {% /else %}
      <label for="base">Base</label>
      <div class="error_input">{$errors[base][0]}</div>
      </div>
 </div>
  
 
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 	<div class="row">
 		<div class="input-field col s12">
-<select id="tipo" name="tipo" class="select"  required data-validate=' required' [[var:]]eventos[[:var]] >
-      <option value='' disabled {% if $item[tipo]=='' %}selected='selected' {% /if %} > Seleccione Tipo...<option value='X' {% if $item[tipo]=='X' %}selected='selected' {% /if %} >Unico</option><option value='U' {% if $item[tipo]=='U' %}selected='selected' {% /if %} >Unidad</option><option value='P' {% if $item[tipo]=='P' %}selected='selected' {% /if %} >Peso</option><option value='D' {% if $item[tipo]=='D' %}selected='selected' {% /if %} >Distancia</option><option value='V' {% if $item[tipo]=='V' %}selected='selected' {% /if %} >Volumen</option><option value='T' {% if $item[tipo]=='T' %}selected='selected' {% /if %} >Tiempo</option>
+		 {% if $_action!='ver' %}
+		<select id="tipo" name="tipo" class="select $clasver"  required data-validate=' required' [[var:]]eventos[[:var]]  >
+      <option value='' disabled {% if $item[tipo]=='' %}selected='selected' {% /if %} > Seleccione Tipo...<option value='X' {% if $item[tipo]=='X' %}selected='selected' {% /if %} >Unico</option><option value='U' {% if $item[tipo]=='U' %}selected='selected' {% /if %} >Unidad</option><option value='P' {% if $item[tipo]=='P' %}selected='selected' {% /if %} >Peso</option><option value='L' {% if $item[tipo]=='L' %}selected='selected' {% /if %} >Longitud</option><option value='V' {% if $item[tipo]=='V' %}selected='selected' {% /if %} >Volumen</option><option value='T' {% if $item[tipo]=='T' %}selected='selected' {% /if %} >Tiempo</option>
     </select>
+     {% /if %}
+     {% else %}
+     <input id="tipo" name="tipo" type="text" class="alfa $clasver" width="" value='{% echo $anexos[tipo][options][$item[tipo]]; %}'  disabled="disabled"  >
+     {% /else %}
     	          <label for="tipo">Tipo</label>
     	          <div class="error_input">{$errors[tipo][0]}</div>
 		</div>
 	</div>
  
 
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 	<div class="row">
 		<div class="input-field col s12">
-	          <input id="relBase" name="relBase" type="text" class="float" data-decimal='2' width="" value='{% echo $item[relBase]; %}'  required data-validate=' required, numeric'  onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  >
+	          <input id="relBase" name="relBase" type="text" class="float $clasver" data-decimal='2' width="" value='{% echo $item[relBase]; %}'  required data-validate=' required, numeric'  onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="relBase">RelBase</label>
 	          <div class="error_input">{$errors[relBase][0]}</div>
 		</div>
 	</div>
- 
-
- 
-
- 
-
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>
 <!-- :ajax -->

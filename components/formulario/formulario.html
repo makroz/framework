@@ -30,7 +30,7 @@ return -1;
 
 {% /append %}
 <div class="errorList"></div>
-<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target=''  >
+<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target='' class="$_action" >
 [[php:]]inputs[[:php]]
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>

@@ -3,8 +3,6 @@ initListTable();
 {% /append %}
 
 {% append js.files %}
-<link href='js/colresize/colResizable.css' rel='stylesheet'>
-<script type='text/javascript' src='js/colresize/colResizable.js'></script>
 <script type='text/javascript' src='js/loadingoverlay/loadingoverlay.min.js'></script>
 {% /append %}
 
@@ -60,17 +58,6 @@ reaction(options,'','','.listTable');
 }
 
 function initListTable(){
-
-	$(".tablaLista").colResizable({
-    liveDrag:true,
-    gripInnerHtml:"<div class='grip'></div>", 
-    draggingClass:"dragging",
-    disabledColumns:[0,-1,-2],
-    postbackSafe:false,
-	partialRefresh:true,
-	headerOnly:true
-    
-  }); 
 
   $('.sortable').click(function() {
 	  sortTable(this);

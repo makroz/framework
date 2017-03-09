@@ -37,14 +37,38 @@ return -1;
 function _openForm(f, idAction,tit){
 		$(f).find('input').val('');
 		$(f).find('select option:eq(0)').prop('selected', true);
-		$("select").material_select();
+		
 		$(f).find('.check').prop('checked', false);
 		$(f).find('.error_input').html('');
 		$(f).find('#_save_').val(idAction);
 		$(f).find('.titulo > h1 ').html(tit);
+
+		if (idAction=='ver'){
+			$('#btnSave').hide();
+			$('#btnPrint').show();
+			$(f).data('ultAction',idAction);
+		}else{
+			$('#btnPrint').hide();
+			$('#btnSave').show();
+			$('#mk_formulario  .modal-footer').find('.pag').html('');
+			if ((idAction=='add')&&($(f).data('ultAction')=='ver')){
+				reaction('',idAction,'','#mk_formulario .modal-content');
+			}
+			$(f).data('ultAction',idAction);
+		}
+
+
+		$("select").material_select();
+		Materialize.updateTextFields();
 		$(f).modal('open');		
 }
 
+
+function verItem(id){
+	$('.mk_pag').removeClass('active');
+	$('.mk_pag:contains("'+id+'")').addClass('active');
+	reaction('cod='+id,'ver','','#mk_formulario .modal-content');
+}
 function clicBotonera(boton){
 var idSel = $(boton).parent().parent().data('cod');
 var idAction = $(boton).data('action');
@@ -82,30 +106,42 @@ var options=[];
 		return false;
 		}
 		idAction='';
-$.confirm({
-    title: 'Confirmacion',
-    content: '¿Esta seguro de querer borrar los registros marcados?',
-    type:'red',
-    buttons: {
-        confirm: function () {
-            options['_del']='del';
-			idAction='listar';
-			div='.listTable';
-			reaction(options,idAction,'',div);
-        },
-        cancel: function () {
-        	
-        }
-    }
-});
-
-
+		$.confirm({
+		    title: 'Confirmacion',
+		    content: '¿Esta seguro de querer borrar los registros marcados?',
+		    type:'red',
+		    buttons: {
+		        confirm: function () {
+		            options['_del']='del';
+					idAction='listar';
+					div='.listTable';
+					reaction(options,idAction,'',div);
+		        },
+		        cancel: function () {
+		        	
+		        }
+		    }
+		});
 	}
+
 	if (idAction=='ver'){
 		if (selCount==0){
 		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
 		return false;
 		}
+		var pag='';
+		if (selCount>1){
+
+			var cods=idSel.split(',');
+			$.each(cods,function(i,item){
+				pag=pag+'<span class="mk_pag" onclick="verItem('+item+');" >'+item+'</span>';
+			});
+		}
+		$('#mk_formulario  .modal-footer').find('.pag').html(pag);
+		_openForm('#mk_formulario',idAction,'Ver [[var:]]_modSingular_[[:var]]',true);
+
+		reaction(options,idAction,'','#mk_formulario .modal-content');
+		return false;
 	}
 
 	if (idAction!=''){

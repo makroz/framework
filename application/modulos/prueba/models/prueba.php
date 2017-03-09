@@ -78,8 +78,8 @@ protected $_created;
 * @label Modified
 */
 protected $_modified;
-public $_tSingular='unidad';
-public $_tPlural='Uniades';
+public $_tSingular='prueba';
+public $_tPlural='pruebas';
 
 
 }

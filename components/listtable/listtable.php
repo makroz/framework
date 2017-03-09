@@ -17,7 +17,7 @@ class Listtable
     			//
     			if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
     				$this->ncol++;
-    				$texto.='<th data-field="'.$key.'" width="'.$value['tamlista'].'" class="sortable {% if ($order==\''.$key.'\') %} sort_{% echo $direction; %} {% /if %}" >'.$value['label'].'</th>';
+    				$texto.='<th data-field="'.$key.'" width="'.$value['tamlista'].'" class="sortable {% if ($order==\''.$key.'\') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos['.$key.'][label] %} </th>';
     			}
     		}
 			//return '{% php print_r($_data); %}'.$texto;

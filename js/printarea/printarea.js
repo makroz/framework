@@ -97,10 +97,11 @@
             .filter(function(){ // this filter contributed by "mindinquiring"
                     var media=''; 
                     media= $(this).attr("media");
-                    if (media){
+                    //if (media){
                     //alert(media);
-                    return (media.toLowerCase() == "" || media.toLowerCase() == "print")
-                    }
+                    //return (media.toLowerCase() == "" || media.toLowerCase() == "print")
+                    //}
+                    return true;
                 })
             .each(function(){
                     head += '<link type="text/css" rel="stylesheet" href="' + $(this).attr("href") + '" >';
