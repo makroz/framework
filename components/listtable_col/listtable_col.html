@@ -46,11 +46,11 @@ getAjax(link,'GET',{ },item, function(msg){
 
 [* if '[[var:]]tipo[[:var]]'=='check' *]
 <td > 
-     {% if ([[var:]]dataon[[:var]]==$row[[[var:]]key[[:var]]]) %} 
-          [[var:]]labelon[[:var]]
+     {% if ($anexos[[[var:]]key[[:var]]]['dataon']==$row[[[var:]]key[[:var]]]) %} 
+          {% echo $anexos[[[var:]]key[[:var]]]['labelon']; %}
      {% /if %}
      {% else %}
-          [[var:]]labeloff[[:var]]
+          {% echo $anexos[[[var:]]key[[:var]]]['labeloff']; %}
      {% /else %}
 </td>
 

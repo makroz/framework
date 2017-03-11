@@ -58,8 +58,10 @@ namespace Mk\Tools
 							$value=$value.'::';
 						}
 					}
+
+
 					$type = explode('::',$value);
-					if(sizeof($type)>1){
+					if((sizeof($type)>1)&&($_type!=3)){
 						$type[0] = trim(str_replace("\n",'',$type[0]));
 						if(!is_array($out[$type[0]]))
 							$out[$type[0]] = array();
@@ -76,7 +78,7 @@ namespace Mk\Tools
 						}
 						
 					} else {
-						if ($_type==2){
+						if ($_type!=1){
 							$out[$_key] .="\n".$value; 
 						}else{
 							$out[] =$value; 
@@ -88,7 +90,7 @@ namespace Mk\Tools
 					}
 				}
 				
-				if ($_type==2){
+				if ($_type!=1){
 					$out= $out[$_key];	
 				}
 				return $out;

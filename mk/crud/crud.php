@@ -444,7 +444,7 @@ namespace Mk\Crud
 			$campos=Inputs::post('field');
 			
 			$fields=$this->database->getFields($table);
-			//print_r($fields);
+			$anexos=array();
 			$txtCampos='';
 			foreach ($campos as $key => $field){
 				
@@ -485,10 +485,10 @@ namespace Mk\Crud
 				if ((trim($field['uso'])!='-1')&&(trim($field['uso'])!='')){
 					$lines[]='* @uso '.$field['uso'];
 					$lines[]='* @funcion '.$field['funcion'];
-
+/*
 					if ($field['funcion']=='check'){
 						$lines[]='* @checkvalor '.$field['checkvalor'];
-					}
+					}*/
 
 					if ($field['funcion']=='custom'){
 						$lines[]='* @fcustom '.$field['fcustom'];
@@ -515,11 +515,65 @@ namespace Mk\Crud
 				
 				$lines[]='*/';
 				$lines[]='protected $_'.$key.';';
+
+
+				if ($field['usof']=='check'){
+
+                    $aux=explode('/',$field['checkvalor'].'/');
+                    if ($aux[0]==''){
+                        $aux[0]='1';
+                    }
+                    if ($aux[1]==''){
+                        $aux[1]='0';
+                    }
+                    $anexos[]='$anexos'."['{$key}']['dataon']='{$aux[0]}';";
+
+                    $labelon='';
+                    $labeloff='';
+
+                    $aux=explode('/',$field['checklista'].'/');
+                    if ($aux[0]==''){
+                        $aux[0]='Si';
+                    }
+                    if ($aux[1]==''){
+                        $aux[1]='No';
+                    }
+                    $anexos[]='$anexos'."['{$key}']['labelon']='{$aux[0]}';";
+                    $anexos[]='$anexos'."['{$key}']['labeloff']='{$aux[1]}';";
+					
+				}
+
+				if ($field['usof']=='selec'){
+					echo "<hr>".$field['listalista'].'<hr>';
+					$aux=explode('*',$field['listalista'].'*');
+					foreach ($aux as $key2 => $value2) {
+						if (trim($value2)!=''){
+							$aux1=explode('|',$value2.'||');
+							if ($aux1[0]==''){
+								$aux1[0]=$aux1[1];
+							}
+							if ($aux1[1]==''){
+								$aux1[1]=$aux1[0];
+							}
+							if (trim($aux1[0])!=''){
+								 $anexos[]='$anexos'."['{$key}']['options']['{$aux1[0]}']='{$aux1[1]}';";
+								 if (trim($aux1[2])!=''){
+								 	$anexos[]='$anexos'."['{$key}']['optionsTag']['{$aux1[0]}']='{$aux1[2]};'";
+								 }
+							}
+
+						}
+					}
+				}
+
+
+
 				$txtCampos.=implode($lines,PHP_EOL).PHP_EOL;
 				//print_r($field);
 				//echo "<hr>";
 				unset($lines);
 			}
+
 
 			$txtCampos.="public \$_tSingular='".Inputs::post('singular')."';\n";
 			$txtCampos.="public \$_tPlural='".Inputs::post('plural')."';\n";
@@ -527,7 +581,18 @@ namespace Mk\Crud
 			$variables['_modSingular_']=Inputs::post('singular');
 
 			$view = $this-> getActionView();
+
+
+
+			$crudConfig=json_encode($_REQUEST);
+			$dir=MODULE_PATH.DIRECTORY_SEPARATOR.strtolower($table).DIRECTORY_SEPARATOR.'configuration';
+ 			@mkdir ($dir,0700,true); 
+			$gestor = fopen($dir.DIRECTORY_SEPARATOR.'config-'.date('Ymd-His').'.crud',"w+");
+			fwrite($gestor,$crudConfig, strlen($crudConfig));
+			fclose($gestor);
 			
+			//print_r($crudConfig);
+
 
  			$file=strtolower($this->getFilenameLayout('model.php','plantillas'));
  			//echo "plantilla:".$file;
@@ -544,6 +609,23 @@ namespace Mk\Crud
 			$gestor = fopen($dir.'models'.DIRECTORY_SEPARATOR.strtolower($table).'.php',"w+");
 			fwrite($gestor,$plantilla, strlen($plantilla));
 			fclose($gestor);
+
+
+			$anexos=implode($anexos,PHP_EOL."\t\t").PHP_EOL;
+
+			$file=strtolower($this->getFilenameLayout('controller.php','plantillas'));
+			$gestor = fopen($file,"r");
+			$plantilla = fread($gestor,filesize($file));
+			fclose($gestor);
+			$plantilla = str_replace('//<<[CLASS]>>//',ucfirst($table).'_controller',$plantilla);
+			$plantilla = str_replace('//<<[ANEXOS]>>//',$anexos,$plantilla);
+			$dir=MODULE_PATH.DIRECTORY_SEPARATOR.strtolower($table).DIRECTORY_SEPARATOR;
+ 			@mkdir ($dir.'controllers', 0700,true); 
+			$gestor = fopen($dir.'controllers'.DIRECTORY_SEPARATOR.strtolower($table).'_controller.php',"w+");
+			fwrite($gestor,$plantilla, strlen($plantilla));
+			fclose($gestor);
+
+
 			//$plantilla=str_replace(PHP_EOL,'<br />',$plantilla);
 			$view->set('mensaje',nl2br($plantilla));
 
@@ -553,14 +635,6 @@ namespace Mk\Crud
 
  			$file=strtolower($this->getFilenameLayout('view_formulario.html','plantillas'));
  			$this->procesaPlantillaView($file,$campos,$table);
-
-
-
-
-
-
-
-
 
 		}
 
@@ -660,26 +734,36 @@ namespace Mk\Crud
 						$html=$this->procesaPhpHtml($html,$funcionphp);
 					}
 
+					$compile=\Mk\Tools\String::getEtiquetas($html,'[[compile:]]','[[:compile]]',3,$component,'[[compilando]] ');
+					//$compile=$compile[0];
 
-					$compile=\Mk\Tools\String::getEtiquetas($html,'[[compile:]]','[[:compile]]',2,$component,'[[compilando]] ');
+					/*if ($component=='form_input'){
+						echo "<hr><div style='color:blue;'>Comienza input form</div><hr>".print_r($compile,true)."<hr>";
+					}
+*/
 
-					$compile = str_replace('$$','[[*]]',$compile);
-					$compile = str_replace('{% ','[% ',$compile);
-					$compile = str_replace(' %}',' %]',$compile);
-					$compile = str_replace('$','[[]]',$compile);
-					$compile = str_replace('[[*]]','$',$compile);
+					if (trim($compile)!=''){
+						$compile = str_replace('$$','[[*]]',$compile);
+						$compile = str_replace('{% ','[% ',$compile);
+						$compile = str_replace(' %}',' %]',$compile);
+						$compile = str_replace('$','[[]]',$compile);
+						$compile = str_replace('[[*]]','$',$compile);
+						//$compile = str_replace('\\','[[**]]',$compile);
+	
+						$compile = str_replace('[* ','{% ',$compile);
+						$compile = str_replace(' *]',' %}',$compile);
+	
+						$vcompile = new \Mk\View();
+						$compile=$vcompile-> render($compile);
+						$compile = str_replace('[% ','{% ',$compile);
+						$compile = str_replace(' %]',' %}',$compile);
+						$compile = str_replace('[[]]','$',$compile);
+						//$compile = str_replace('[[**]]','\\',$compile);
+						echo "<br><span style='color:red;'> Compilado</span>";
+						$html = str_replace('[[compilando]]',stripslashes($compile),$html);
+					}
 
-					$compile = str_replace('[* ','{% ',$compile);
-					$compile = str_replace(' *]',' %}',$compile);
-
-					$vcompile = new \Mk\View();
-					$compile=$vcompile-> render($compile);
-					$compile = str_replace('[% ','{% ',$compile);
-					$compile = str_replace(' %]',' %}',$compile);
-					$compile = str_replace('[[]]','$',$compile);
-					$html = str_replace('[[compilando]]',stripslashes($compile),$html);
-
-					echo "<br>---Rendenizado Componente: $tag";
+					echo "<br>---Renderizado Componente: $tag";
 					
 					$plantilla = str_replace('[[component:]]'.$tag.'[[:component]]',$html,$plantilla);
 					
@@ -834,7 +918,7 @@ namespace Mk\Crud
 		}
 
 
-		
+
 
 
 	}

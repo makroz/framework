@@ -337,6 +337,27 @@ public static function dbDateToDate($fec='',$hora=false,  $formato=''){
 			return  $date;
 		}
 
+		public static function getOptions($items=array(),$sel='',$msg='Selecione...'){
+			$r='';
+			if (trim($msg!='')){
+				$r.="<option value='' disabled ";
+				if (trim($sel)==''){
+					$r.=" selected='selected' ";
+				}
+				 $r.=" > {$msg} </option>";
+			}
+			if (is_array($items)){
+				foreach ($items as $key => $value) {
+					$r.="<option value='{$key}' ";
+					if (trim($sel)==$key){
+						$r.=" selected='selected' ";
+					}
+					 $r.=" > {$value} </option>";
+				}
+
+			}
+			return $r;
+		}
 
 
 

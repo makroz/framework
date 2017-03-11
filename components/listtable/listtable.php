@@ -25,20 +25,6 @@ class Listtable
     	}
     	public function filas(){
 
-
-        $anexos['base']['labelon']='Si';
-        $anexos['base']['labeloff']='No';
-        $anexos['base']['dataon']=1;
-
-        $anexos['tipo']['optionsl']="<option value='X' >Unico</option><option value='U' >Unidad</option><option value='P' >Peso</option><option value='D' >Distancia</option><option value='V' >Volumen</option><option value='T' >Tiempo</option>";
-        $anexos['tipo']['options']['X']='Unico';
-        $anexos['tipo']['options']['U']='Unidad';
-        $anexos['tipo']['options']['P']='Peso';
-        $anexos['tipo']['options']['D']='Distancia';
-        $anexos['tipo']['options']['V']='Volumen';
-        $anexos['tipo']['options']['T']='Tiempo';
-
-
     		$texto='';
     		foreach ($this->campos as $key => $value) {
     			/*if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
@@ -58,7 +44,7 @@ class Listtable
     					break;
 
                     case 'check':
-                        $dataon='';
+/*                        $dataon='';
                         $aux=explode('/',$value['checkvalor'].'/');
                         if ($aux[0]==''){
                             $aux[0]='1';
@@ -81,6 +67,8 @@ class Listtable
                         $labelon='&labelon='.$aux[0];
                         $labeloff='&labeloff='.$aux[1];
                         $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$dataon}{$labelon}{$labeloff}{$key1}[[:component]]";  
+*/
+                        $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$key1}[[:component]]";  
                         break;
 
                      case 'lista':

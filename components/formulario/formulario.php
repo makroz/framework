@@ -60,7 +60,7 @@ class Formulario
 
                     $options='';
                     if($value['usof']=='selec'){
-                        if ($value['listalista']!=''){
+                        /*if ($value['listalista']!=''){
                             $opt=explode('*',$value['listalista'].'*');
                             $options.="<option value='' disabled {% if \$item[{$key}]=='' %}selected='selected' {% /if %} > Seleccione {$value['label']}...";
                             foreach ($opt as $key1 => $value1){
@@ -80,7 +80,8 @@ class Formulario
                                 }
                             }
                             $options='&options='.$options;
-                        }
+                        }*/
+                        //$options='&options='.$options;
                     }
 
 

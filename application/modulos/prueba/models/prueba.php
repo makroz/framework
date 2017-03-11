@@ -17,7 +17,6 @@ protected $_pk;
 * @uso A
 * @funcion st
 * @label Nombre
-* @validate  required
 */
 protected $_nombre;
 /**
@@ -26,7 +25,6 @@ protected $_nombre;
 * @type char
 * @uso A
 * @funcion check
-* @checkvalor 1/0
 * @label Base
 */
 protected $_base;
@@ -47,7 +45,7 @@ protected $_tipo;
 * @uso A
 * @funcion bdf
 * @label RelBase
-* @validate  required, numeric
+* @validate  numeric
 */
 protected $_relBase;
 /**

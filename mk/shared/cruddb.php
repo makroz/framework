@@ -342,11 +342,10 @@ namespace Mk\Shared
 	{
 		$this->beforeVer();
 		$this->actionEdit();
-		$anexos=$this->getAnexos();
 		$view = $this-> getActionView();
 		$view
 		-> set("item", $this->_model->loadToArray())
-		-> set("anexos", $anexos)
+		-> set("anexos", $this->getAnexos($this->_model->getColumns()))
 		-> set("modTitulo", "Ver ".$this->_model->_tSingular);
 		$this->afterVer();
 	}
@@ -377,6 +376,7 @@ namespace Mk\Shared
 
 		$view
 		-> set("item", $this->_model->loadToArray())
+		-> set("anexos", $this->getAnexos($this->_model->getColumns()))
 		-> set("modTitulo", "Editar ".$this->_model->_tSingular);
 		$this->afterEdit();
 	}
@@ -398,6 +398,7 @@ namespace Mk\Shared
 		$this->actionSave();
 		$view
 		-> set("item", $this->_model->loadToArray())
+		-> set("anexos", $this->getAnexos($this->_model->getColumns()))
 		-> set("modTitulo", "Adicionar ".$this->_model->_tSingular);
 		$this->afterAdd();
 	}

@@ -71,6 +71,39 @@ $("#modal1").modal();
 {% /append %}
 
 {% append js.inline %}
+
+function cargarConfig(){
+  var plantilla=prompt('Ingrese la Plantilla:','');
+  if (plantilla!=''){
+
+    var datos=JSON.parse(plantilla);
+  
+  $.each(datos, function(i, item) {
+    if (i=='field'){
+      $.each(item, function(i1,item1){
+        if (jQuery.type(item1)=='object'){
+          $.each(item1, function(i2,item2){
+           // alert('#'+i+'-'+i1+'-'+i2+':'+$('#'+i+'-'+i1+'-'+i2).val());
+            $('#'+i+'-'+i1+'-'+i2).val(item2);      
+           // alert('#'+i+'-'+i1+'-'+i2+':'+$('#'+i+'-'+i1+'-'+i2).val());
+          });
+        }
+      });
+    }else{
+      if (jQuery.type(item)=='string'){
+        $('#'+i+'.plantilla').val(item);  
+      }
+    }
+  });
+  
+  }
+
+  $('select').material_select();
+   Materialize.updateTextFields();
+  
+}
+
+
 function openDet(id){
   $('#modal1').attr('data-key',id);
   $('#modal-tit').html("Detalles del Campo: <span class='red-text'>"+id);
@@ -396,11 +429,11 @@ function cAdd(){
   <div   id="tabcampos" class="col s12">
 
    <div class="input-field col s6">
-          <input id="singular" name='singular' type="text" class="validate " data-type="text" value="{% echo $tableName %}">
+          <input id="singular" name='singular' type="text" class="validate plantilla " data-type="text" value="{% echo $tableName %}">
           <label for="singular" data-error="Debe escribir un nombre en singular" data-success="">Nombre del Modulo en Singular</label>
    </div>
    <div class="input-field col s6">
-          <input id="plural" name='plural' type="text" class="validate " data-type="text"  value="{% echo \Mk\Tools\String::Pluralize($tableName); %}" >
+          <input id="plural" name='plural' type="text" class="validate plantilla" data-type="text"  value="{% echo \Mk\Tools\String::Pluralize($tableName); %}" >
           <label for="plural" data-error="Debe escribir un nombre en plural" data-success="">Nombre del Modulo en plural</label>
    </div>
  
