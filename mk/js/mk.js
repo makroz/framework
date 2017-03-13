@@ -297,8 +297,7 @@ function _sendForm(f,isAjax, success){
     if (isAjax==1){
       reaction($(f).serialize(),'save','','#mk_formulario .modal-content',success,'POST');
     }else{
-      //$(f).submit();
-      alert('submit'+isAjax);
+      $(f).submit();
     }
   }
 

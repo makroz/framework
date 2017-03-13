@@ -51,7 +51,7 @@ return -1;
 <h1 > {% echo $modTitulo; %}</h1>
 </div>
 <div class="errorList"></div>
-<form id="frmEdit" data-_action='{$_action}' action=''  method="post" data-target='' class="$_action" >
+<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
 
 
 {% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
@@ -112,14 +112,16 @@ return -1;
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>
 <!-- notajax: -->
+{% if ('[[var:]]mostrar[[:var]]'!='1') %}
 <div class="modal-footer" >
 <div class="pag white-text" style="float: left;"></div>
 				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
-				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat " onclick="_sendForm('#frmEdit',1,grabado);" >Grabar</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat " onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
 				{% if ($_action=='ver') %}
 				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
 				{% /if %}
         </div>
+{% /if %}
 <!-- :notajax -->
 <!-- :ajax -->
 </div>

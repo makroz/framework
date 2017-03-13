@@ -321,8 +321,14 @@ namespace Mk\Shared
 				}
 			}else{
 				if ($view->get('success')==true){
-					$this->changeViewAction('listar.html');
-					actionListar();
+					$router = Registry::get("router");
+					$controller = $router->getController();
+					header("Location: index.php?url={$controller}/listar");
+				exit();
+					//$this->changeViewAction('listar.html');
+					//$this->actionListar();
+				}else{
+					$this->changeViewAction('formulario.html');
 				}
 			}
 		}
