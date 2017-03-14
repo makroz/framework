@@ -168,6 +168,11 @@ namespace Mk\Template\Implementation
 				$key = $this-> _getKey($key);
 			}
 			//\Mk\Debug::msg(print_r($key,true).": $value");
+			
+			$vcompile = new \Mk\View();
+			$value=stripslashes($vcompile-> render($value));
+
+
 			$this->_setValue($key, $value);
 		}
 

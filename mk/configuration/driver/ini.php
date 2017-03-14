@@ -24,7 +24,9 @@ namespace Mk\Configuration\Driver
 			}
 			return $config;
 		}
-		public function parse($path)
+
+
+		public function parse($path,$type=1)
 		{
 			if (empty($path))
 			{
@@ -33,12 +35,12 @@ namespace Mk\Configuration\Driver
 
 			if (!isset($this->_parsed[$path]))
 			{
-				if (!file_exists("{$path}.ini")){
-					throw $this->_Exception("el Archivo ({$path}.ini) NO existe");	
+				if (!file_exists(APP_PATH."/{$path}.ini")){
+					throw $this->_Exception("el Archivo (".APP_PATH."/{$path}.ini) NO existe");	
 				}
 				$config = array();
 				ob_start();
-				include("{$path}.ini");
+				include(APP_PATH."/{$path}.ini");
 				$string = ob_get_contents();
 				ob_end_clean();
 				//print_r($string );
@@ -53,9 +55,14 @@ namespace Mk\Configuration\Driver
 				{
 					$config = $this->_pair($config, $key, $value);
 				}
-				$this->_parsed[$path] = ArrayMethods::toObject($config);
+
+				$this->_parsed[$path] = $config;
 			}
-			return $this->_parsed[$path];
+			if ($type==1){
+				return ArrayMethods::toObject($this->_parsed[$path]);
+			}else{
+				return $this->_parsed[$path];
+			}
 		}
 	}
 }

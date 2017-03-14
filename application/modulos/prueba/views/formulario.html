@@ -18,6 +18,13 @@ $(document).ajaxStop(function(){
 {% /append %}
 {% append js.inline %}
 
+<?php
+if ($_action)=='ver'{
+?>
+	alert('esto es ver');
+<?php
+}
+?>
     jconfirm.defaults = {
         title: 'Aviso',
         boxWidth: '30%',

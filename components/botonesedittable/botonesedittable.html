@@ -69,6 +69,7 @@ function verItem(id){
 	$('.mk_pag:contains("'+id+'")').addClass('active');
 	reaction('cod='+id,'ver','','#mk_formulario .modal-content');
 }
+
 function clicBotonera(boton){
 var idSel = $(boton).parent().parent().data('cod');
 var idAction = $(boton).data('action');

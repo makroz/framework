@@ -1,5 +1,4 @@
 <?php  
-
 namespace Mk\Tools
 {
 	class App
@@ -32,16 +31,16 @@ namespace Mk\Tools
 	}
 
 
-		public static function getConfig($file='param'){
+		public static function getConfig($file='param',$type=1){
 			$parsed=array();
-			$configuration = Registry::get("configuration");
+			$configuration = \Mk\Registry::get("configuration");
 				if ($configuration)
 				{
 					$configuration = $configuration-> initialize();
-					$parsed = $configuration-> parse("configuration/{$file}");
+					$parsed = $configuration-> parse("configuration/{$file}",$type);
 
 				}
-			return parsed;
+			return $parsed;
 		}
 
 

@@ -52,33 +52,14 @@ namespace Mk\Shared
 		public function render()
 		{
 			
-/*			if ($this-> _model)
-			{
-				if ($this-> getActionView())
-				{
-					$this->getActionView()
-					->set($this->_model->getTable(), $this->_model);
-				}
-				if ($this->getLayoutView())
-				{
-					$this->getLayoutView()
-					->set($this->_model->getTable(), $this->_model);
-				}
-			}
-*/			
+
 			if ($this-> _model)
 			{
-				if ($this-> getActionView())
-				{
-					$this->getActionView()
-					->set('_table',$this->_model->getTable());
-				}
-				if ($this->getLayoutView())
-				{
-					$this->getLayoutView()
-					->set('_table',$this->_model->getTable());
-				}
+				$this->addViewData('_table',$this->_model->getTable());
 			}
+
+			$this->addViewData('_param',\Mk\Tools\App::getConfig()->param);
+
 
 			parent::render();
 		}

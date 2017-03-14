@@ -90,7 +90,7 @@ namespace Mk
 	}
 
 
-		public function Setrenderview($t=true){
+		public function setRenderView($t=true){
 			$this->_willRenderActionView=$t;
 			$this->_willRenderLayoutView=$t;
 		}
@@ -230,7 +230,7 @@ namespace Mk
 			$default = $view->Template->Implementation->getDefaultKey();
 			//echo "Mario:".$default;
 			$data = Registry::get($default, array());
-			Debug::msg($data);
+			//Debug::msg($data);
 			if ((isset($data['varView']))and(is_array($data['varView'])))
 			{
 				$this->_sharedData=array_merge($this->_sharedData,$data['varView']);
