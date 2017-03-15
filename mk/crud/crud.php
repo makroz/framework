@@ -28,8 +28,8 @@ namespace Mk\Crud
 		public function __construct($options = array())
 		{
 			//$options['willRenderLayoutView']=false;
-			$options['defaultModules']=APP_PATH;
-
+			$options['defaultModules']=CORE_PATH;
+			\Mk\Core::addPaths("\mk\crud\crud",2);
 			parent::__construct($options);
 			$this->_database = Registry::get("database");
 			if (\Mk\Tools\App::isAjax()==true){
@@ -641,16 +641,15 @@ namespace Mk\Crud
 		private function procesaPlantillaView($filePl,$campos,$table){
 			global $variables;
 			echo "<h1>Inicia proceso de Vista:</h1><h2>".basename($filePl)."</h2>";
-			
 			$gestor = fopen($filePl,"r");
 			$plantilla = fread($gestor,filesize($filePl));
 			fclose($gestor);
-
+			//echo $plantilla;
 			//$plantilla = str_replace('{% /append %}','[[ /append ]]',$plantilla);
 			//$plantilla = str_replace('{% append js.inline %}','[[ append js.inline ]]',$plantilla);
 			//$plantilla = str_replace('{% append js.inline %}','[[ append js.onready ]]',$plantilla);
 			
-			//print_r($plantilla);
+//			print_r($plantilla);
 
 			$componentes=\Mk\Tools\String::getEtiquetas($plantilla,'[[component:]]','[[:component]]','1');
 
@@ -662,16 +661,27 @@ namespace Mk\Crud
 
 			while(sizeof($componentes)>0){
 
-
-			
-			//print_r($componentes);
-
 			foreach($componentes as $component => $parametros){
-				//TODO: revisar s existe el componente
-				$file=CORE_PATH.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.$component.DIRECTORY_SEPARATOR.$component.'.html';
+				$dir=CORE_PATH.DIRECTORY_SEPARATOR.'mk'.DIRECTORY_SEPARATOR.'crud'.DIRECTORY_SEPARATOR.'crud'.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.$component.DIRECTORY_SEPARATOR;
+				$file=$dir.$component.'.html';
+				if (!file_exists($file)){return exit;}
+
 				$gestor = fopen($file,"r");
 				$html = fread($gestor,filesize($file));
 				fclose($gestor);
+
+				$iterator = new \DirectoryIterator($dir.'img');
+				foreach ($iterator as $item)
+				{
+					if (!$item->isDot() && $item->isFile())
+					{
+						if(copy($item->getPathname(), APP_PATH .DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.$item->getFilename())) {
+							echo "<br>Se copia el archivo para el componnte:".$item->getFilename();
+						}else{
+							echo "<br>No se copiado la imagen correctamente".$item->getFilename();
+						}
+					}
+				}
 
 				$codeUnique['jsinline'][$component]=\Mk\Tools\String::getEtiquetas($html,'{% append js.inline %}','{% /append %}',2,$component,' ');
 				$codeUnique['jsonready'][$component]=\Mk\Tools\String::getEtiquetas($html,'{% append js.onready %}','{% /append %}',2,$component,' ');
@@ -694,7 +704,7 @@ namespace Mk\Crud
 
 
 				
-				if (@filesize(CORE_PATH.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.$component.DIRECTORY_SEPARATOR.$component.'.php')>0){
+				if (@filesize($dir.$component.'.php')>0){
 					$funcionphp='\Components\\'.ucfirst($component).'\\'.ucfirst($component);
 					$funcionphp=new $funcionphp($campos);
 				}else{
@@ -857,7 +867,10 @@ namespace Mk\Crud
 
 			foreach($componentes as $component => $parametros){
 				//TODO: revisar s existe el componente
-				$file=CORE_PATH.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.$component.DIRECTORY_SEPARATOR.$component.'.html';
+				$dir=CORE_PATH.DIRECTORY_SEPARATOR.'mk'.DIRECTORY_SEPARATOR.'crud'.DIRECTORY_SEPARATOR.'crud'.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.$component.DIRECTORY_SEPARATOR;
+				$file=$dir.$component.'.html';
+				if (!file_exists($file)){return exit;}
+				//$file=CORE_PATH.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.$component.DIRECTORY_SEPARATOR.$component.'.html';
 				$gestor = fopen($file,"r");
 				$html = fread($gestor,filesize($file));
 				fclose($gestor);
@@ -883,9 +896,6 @@ namespace Mk\Crud
 		public function actionInit()
 		{
 
-
-
-
 			$view = $this-> getActionView();
 			$this->addViewData('database',$this->database->getSchema());
 			//echo "Base de datos:".$this->database->getSchema()."<hr>";
@@ -903,6 +913,7 @@ namespace Mk\Crud
 			}
 			$session = Registry::get("session");
 			$session->set('tables',Form::getListaSel($tabla,'...'));
+			//echo $this->getFilenameAction();
 
 
 		}

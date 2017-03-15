@@ -121,6 +121,9 @@ namespace Mk
 					$filed=APP_PATH."/{$defaultPath}/$theme/$file";
 				}
 
+			$filed=str_replace('\\',DIRECTORY_SEPARATOR,$filed);
+			$filed=str_replace('/',DIRECTORY_SEPARATOR,$filed);
+
 			return $filed;
 
 		}
@@ -258,6 +261,7 @@ namespace Mk
 				$this->_renderAjaxDiv='';
 			}
 			$this->addViewData('isAjax',\Mk\Tools\App::isAjax());
+			setcookie('_config_',json_encode(\Mk\Tools\App::getConfig()->param));
 
 
 			$doAction = $this->getWillRenderActionView() && $this->getActionView()->fileExist();
