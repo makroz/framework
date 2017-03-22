@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		{% yield meta.inline %}
 
-		{% set vip.files %}
+		{% append vip.files %}
 			<script type="text/javascript" src="js/jquery/jquery.js"></script>
 			<link type="text/css" rel="stylesheet" href="js/materialize/materializeicon.css"/>
 			<link type="text/css" rel="stylesheet" href="js/materialize/materialize.min.css"/>
@@ -16,12 +16,8 @@
 			<script type="text/javascript" src="../mk/js/mk.js"></script>
 		{% /set %}
 
-		{% set style.files %}
-		{% /set %}
-
 		{% yield vip.files %}
 		{% yield style.files %}
-		{% yield meta.inline %}
 
 		<style>
 			{% yield style.inline %}

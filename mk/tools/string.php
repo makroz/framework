@@ -45,6 +45,43 @@ namespace Mk\Tools
 
 			) 
 		*/
+	
+			public static function getCodes(&$string,$start,$end,$_reemplazo='',$startend=''){
+				$out = array();
+				$ini=stripos($string,$start);
+					$i=0;
+				while ($ini!==false){
+					$ini1=$ini;
+					if ($startend!=''){
+						$ini=stripos($string,$startend,$ini);	
+					}
+					if ($ini!==false){
+						if ($startend!=''){
+							$ini=$ini+strlen($startend);
+						}else{
+							$ini=$ini+strlen($start);
+						}
+						$fin=stripos($string,$end,$ini);
+						if ($fin!==false){
+							$value=substr($string,$ini,$fin-$ini);
+							if (stripos($value,'{%')!==false){
+								$i++;
+								$out[$i]=$value;
+								if ($_reemplazo!=''){
+									$code="[[code:{$_reemplazo}:{$i}]]";
+									$string=substr_replace($string, $code, $ini,$fin-$ini);
+									$fin=$ini+strlen($code);
+								}
+							}
+							$ini=stripos($string,$start,$fin+strlen($end));
+						}else{
+							$ini=false;
+						}
+					}
+				}
+				return $out;
+			}
+			
 			public static function getEtiquetas(&$string,$start,$end,$_type='',$_key='root',$_delete=false){
 				$string = str_replace("\n",'[[ln]]',$string);
 				preg_match_all('/' . preg_quote($start, '/') . '(.*?)'. preg_quote($end, '/').'/i', $string, $m);
@@ -96,31 +133,32 @@ namespace Mk\Tools
 				return $out;
 			}
 
+			public static function quitarSaltosDobles($text){
 
-			/*public static function getEtiquetas1($string,$start,$end,$_type=''){
-				preg_match_all('/' . preg_quote($start, '/') . '(.*?)'. preg_quote($end, '/').'/i', $string, $m);
-				$out = array();
-
-				foreach($m[1] as $key => $value){
-					if ($_type==1){
-						if ((stripos(' ',$value)!==true)and(stripos('::',$value)!==true)){
-							$value=$value.'::';
-						}
-					}
-					$type = explode('::',$value);
-					if(sizeof($type)>1){
-						if(!is_array($out[$type[0]]))
-							$out[$type[0]] = array();
-						$key1=$type[0];
-						unset($type[0]);
-						$out[$key1][] = rtrim(implode($type,'::'),'::');
-					} else {
-						$out[] = $value;
-					}
-				}
-				return $out;
+			while (stripos($text,'  '.PHP_EOL)!==false){
+				$text = str_replace('  '.PHP_EOL,PHP_EOL,$text);
 			}
-*/
+
+			while (stripos($text,' '.PHP_EOL)!==false){
+				$text = str_replace(' '.PHP_EOL,PHP_EOL,$text);
+			}
+
+			while (stripos($text,'	'.PHP_EOL)!==false){
+				$text = str_replace('	'.PHP_EOL,PHP_EOL,$text);
+			}
+
+			while (stripos($text,PHP_EOL.PHP_EOL.PHP_EOL)!==false){
+				$text = str_replace(PHP_EOL.PHP_EOL.PHP_EOL,PHP_EOL,$text);
+			}
+
+			while (stripos($text,PHP_EOL.PHP_EOL)!==false){
+				$text = str_replace(PHP_EOL.PHP_EOL,PHP_EOL,$text);
+			}
+			return $text;
+
+			}
+
+
 			public static function stripos_array($haystack, $needles,$what=false) {
 				if ( is_array($needles) ) {
 					foreach ($needles as $str) {

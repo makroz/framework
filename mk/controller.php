@@ -278,7 +278,7 @@ namespace Mk
 					foreach ($this->_sharedData as $key => $value) {
 						$view->set($key,$value);
 					}
-					 $data1=$view->_getData();
+					$data1=$view->_getData();
 					$results = $view->render();
 					
 				}

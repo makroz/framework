@@ -61,7 +61,7 @@ namespace Mk
 		}
 
 
-		public function render($content='')
+		public function render($content='',$msg=0)
 		{
 
 			if ($content==''){
@@ -72,12 +72,14 @@ namespace Mk
 			}
 			$content = file_get_contents($this-> getFile());
 			}
-			$this-> _template-> parse($content);
-			//\Mk\Shared\FormTools::debug($this-> _template-> process($this-> _data),551);
 
-			 $this->getVarView();
+			$this->getVarView();
+			$this-> _template-> parse($content,$this-> _data);
+
 			return $this-> _template-> process($this-> _data);
+
 		}
+
 		public function get($key, $default = "")
 		{
 			if (isset($this-> _data[$key]))

@@ -52,25 +52,25 @@ public static function autoload($class)
 		if (strpos($file,'_controller')>0)
 		{
 			$classFile=basename($file,'_controller.php');
-			\Mk\Debug::smsg("$classFile",'_controlller');
+			//	\Mk\Debug::smsg("$classFile",'_controlller');
 			$combined=MODULE_PATH.DIRECTORY_SEPARATOR.$classFile.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.$file;
-			\Mk\Debug::smsg("1Se Busco  $combined ($class)",'',3);	
+			//\Mk\Debug::msg("1Se Busco  $combined ($class)");	
 			if (file_exists($combined))
 			{
 				include($combined);
-				\Mk\Debug::smsg("Se encontro la clase $combined",'',3);	
+				//\Mk\Debug::smsg("Se encontro la clase $combined",'',3);	
 				return;
 			}
 		}
 
 		$classFile=basename($file,'.php');
-		\Mk\Debug::smsg("$classFile",'models');
+		//\Mk\Debug::smsg("$classFile",'models');
 		$combined=MODULE_PATH.DIRECTORY_SEPARATOR.$classFile.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$file;
-		\Mk\Debug::smsg("2Se Busco  $combined ($class)",'',3);	
+		//\Mk\Debug::msg("2Se Busco  $combined ($class)",'',3);	
 		if (file_exists($combined))
 		{
 			include($combined);
-			\Mk\Debug::smsg("Se encontro la clase $combined",'',3);	
+			//\Mk\Debug::msg("Se encontro la clase $combined");	
 			return;
 		}
 
@@ -79,13 +79,13 @@ public static function autoload($class)
 		if ($classFile!='')
 		{
 			
-			\Mk\Debug::smsg("$classFile",'cur_model_path');
+			//\Mk\Debug::smsg("$classFile",'cur_model_path');
 			$combined=MODULE_PATH.DIRECTORY_SEPARATOR.$classFile.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$file;
-			\Mk\Debug::smsg("3Se Busco  $combined ($class)",'',3);	
+			//\Mk\Debug::smsg("3Se Busco  $combined ($class)",'',3);	
 			if (file_exists($combined))
 			{
 				include($combined);
-				\Mk\Debug::smsg("Se encontro la clase $combined",'',3);	
+				//\Mk\Debug::smsg("Se encontro la clase $combined",'',3);	
 				return;
 			}
 		}
@@ -100,10 +100,10 @@ public static function autoload($class)
 		if (file_exists($combined))
 		{
 			include($combined);
-			\Mk\Debug::smsg("Se encontro la clase $combined",'',4);	
+			//\Mk\Debug::smsg("Se encontro la clase $combined",'',4);	
 			return;
 		}
-		\Mk\Debug::smsg("Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")",'',4);	
+		//\Mk\Debug::smsg("Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")",'',4);	
     }
             $deb=debug_backtrace();
             foreach ($deb as $k => $v) {

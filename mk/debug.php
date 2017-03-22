@@ -5,6 +5,8 @@ namespace Mk
     class Debug
     {
 
+        public static $times=array();
+
         public function __construct()
         {
         // do nothing
@@ -19,6 +21,26 @@ namespace Mk
 
         }
 
+        public static function microtime_float()
+        {
+        list($useg, $seg) = explode(" ", microtime());
+        return ((float)$useg + (float)$seg);
+        }
+
+        public static function initTime($key='0'){
+           echo "<br>".date('Y/m/d H:i:s')." Inicio initTime($key):"."<br>";
+           self::$times[$key]=self::microtime_float();
+        }
+
+        public static function endTime($key='0'){
+           
+           $fin=self::microtime_float();
+            $tiempo=round(($fin - self::$times[$key])*1000,4);
+           self::$times[$key]=$fin;
+           echo "<br>".date('Y/m/d H:i:s')." Finalizo initTime($key):".$tiempo."<br>";
+        }
+
+
         public static function msgfile($msg,$file=''){
             if ($file==''){
                 $file='\log'.date('Ymd').'.txt';
@@ -27,29 +49,23 @@ namespace Mk
             file_put_contents($file, "*********\n\r\l\ln".$msg, FILE_APPEND);
         }
 
-        public static function msg($msg, $key = "",$nivel=2)
+        public static function msg($msg, $nivel=2,$title='',$key = "")
         {
             if (DEBUG>=$nivel)
-            {    
-                echo "<h3>DEBUG msg ($key) </h3><pre>";
+            {  
+                if ($key!=''){  
+                echo "<h3>DEBUG msg ($key) </h3>";
+                }
+                 if ($title!='')
+                {
+                    echo "<span style='color:red;'>$title: </span><br>";
+                }
+                echo "<pre>";
                 @print_r($msg);
                 echo "</pre>";
             }
         }
-        public static function smsg($msg,$title='',$nivel=3)
-        {
-            if (DEBUG>=$nivel)
-            {    
-                
-                if ($title!='')
-                {
-                    $msg="<span style='color:red;'>$title: </span>$msg";
-                }
-                $msg="<div >".$msg."</div>"; 
 
-                echo $msg;
-            }
-        }
         /**
         * jdebug() - provide a Java style exception trace
         * @param $exception

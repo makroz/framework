@@ -266,19 +266,26 @@ namespace Mk
 			}
 			return implode($content);
 		}
-		public function parse($template)
+		public function parse($template,$_data='',$msg=0)
 		{
 			if (!is_a($this->_implementation, "Mk\Template\Implementation"))
 			{
 				throw $this->_Exception();
 			}
+
+				$_code_ = \Mk\Tools\String::getCodes($template,'{% append', '{% /append %}', 'compile',' %}');
+				foreach ($_code_ as $key2 => $html) {
+					$vcompile = new Template(array(
+						"implementation" => new Template\Implementation\Extended()
+					));
+					$vcompile->parse($html,$_data,$msg+1);
+					$template = str_replace("[[code:compile:{$key2}]]",stripslashes($vcompile->process($_data)),$template);
+				}
+
 			$array = $this->_array($template);
 			$tree = $this->_tree($array["all"]);
 			$this->_code = $this->header.$this->_script($tree).$this->footer;
-			//\Mk\Debug::msg($this->code);
-/*				echo "<hr>Error en tenplate:<br> ";print_r($this->code);
-				echo "<hr>con los datos :<br> <pre>";print_r($_data);echo "</pre>";
-*/			
+
 			try
 			{
 				$this->_function = create_function("\$_data", $this->code);

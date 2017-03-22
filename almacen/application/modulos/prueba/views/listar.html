@@ -105,6 +105,10 @@ $('#mk_buscar').modal();
 {% /append %}
 {% append js.inline %}
 
+	{% if (1==1) %}
+		alert('hola');
+	{% /if %}
+
     jconfirm.defaults = {
         title: 'Aviso',
         boxWidth: '30%',
@@ -399,22 +403,12 @@ getAjax(link,'GET',{ },item, function(msg){
 		}
 	}
 {% /append %}
-{% append js.files %}
-
-<link href='js/confirm/confirm.css' rel='stylesheet'>
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
 <script type='text/javascript' src='js/confirm/confirm.js'></script>
-   
-
 <script type='text/javascript' src='js/loadingoverlay/loadingoverlay.min.js'></script>
- 
-
-  
-
-<script type="text/javascript" src="js/printarea/printarea.js"></script>
-       
-
-	<link href='js/datedropper/datedropper.css' rel='stylesheet'>
-	<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+<script type='text/javascript' src='js/printarea/printarea.js'></script>
+<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
 {% /append %}
 <div class="mk-section">
 <h1 > {% echo $modTitulo; %}</h1>
