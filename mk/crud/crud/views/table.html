@@ -132,69 +132,12 @@ function openDet(id){
   return false;
 }
 
+
+
 function valFunc(){
   valUsof();
   valTipoLista();
   valFuncion();
-}
-
-function openJoin(id){
- $('#modal2').modal();
-  $('#modal2').attr('data-key',id);
-
-  var dato=$('#campojoin').val();
-
-  if (dato==''){
-    $('#n_table, #n_col').val(-1);
-
-  }else{
-    var datos=dato.split('.');
-    $('#n_table').val(datos[0]);
-    getCampos(datos[1]);
-    
-  }
-
-  $('#modal2').modal('open');
- $('select').material_select();
-}
-
-
-function openLista(id){
-$('#modalLista').modal();
-  $('#modalLista').attr('data-key',id);
-
-  var dato=$('#listalista').val()+'*';
-  var tr=dato.split('*');
-  $('#tablalista tbody tr').remove();
-  
-  for (i = 0; i < tr.length; i++) {
-    if (tr[i]!=''){
-      dato=(tr[i]).split('|');
-      addTr(i+1,dato[0],dato[1],dato[2]);
-    }
-      
-  }
-
-  $('#bAddLista').data('indice',tr.length);
-
-  $('#modalLista').modal('open');
-  $('select').material_select();
-  $("#tablalista tbody").sortable({
-  axis:'y',
-  containment: "parent",
-    cursor: "move",
-    forceHelperSize: true,
-    handle: ".handle",
-    opacity: 0.5
-});
-}
-
-function closeLista(){
-  var id=$('#modalLista').attr('data-key');
-  cSaveLista();
-  
-  Materialize.updateTextFields();
-  $('#modalLista').modal('close');
 }
 
 function closeDet(){
@@ -220,17 +163,6 @@ function closeDet(){
 
 
   $('#modal1').modal('close');
-}
-
-function closeJoin(){
- 
-  var id=$('#modal2').attr('data-key');
-  var dato=$('#n_table').val()+'.'+$('#n_col').val();
-  $('#'+id).val( dato );
-
-  
-  Materialize.updateTextFields();
-  $('#modal2').modal('close');
 }
 
 
@@ -316,70 +248,121 @@ function valTipoLista(){
   
 }
 
+function validarFormulario(){
+  $('#form1').submit();  
+}
+
 
 function clicChecked(id){
-
   return false;
 }
 
 
+function openJoin(id){
+  $('#modal2').modal();
+  $('#modal2').attr('data-key',id);
+  var dato=$('#campojoin').val();
+  if (dato==''){
+    $('#n_table, #n_col').val(-1);
+  }else{
+    var datos=dato.split('.');
+    $('#n_table').val(datos[0]);
+    getCampos(datos[1]);
+  }
+  $('#modal2').modal('open');
+  $('select').material_select();
+}
 
 function getCampos(valTarget){
-
-var dato=getSelAjax('#n_table',
-                    'index.php?crud=getCampos',
-                    '#n_col',
-                    valTarget
-                    );
+  var dato=getSelAjax('#n_table',
+      'index.php?crud=getCampos',
+      '#n_col',
+      valTarget
+    );
 }
 
-function cDel(id){
-  $('#trlista'+id).remove();
-   //var dato=$('#bAddLista').data('indice');
-  // dato=dato-1;
- //  $('#bAddLista').data('indice',dato);
+function closeJoin(){
+  var id=$('#modal2').attr('data-key');
+  var dato=$('#n_table').val()+'.'+$('#n_col').val();
+  $('#'+id).val( dato );
 
+  Materialize.updateTextFields();
+  $('#modal2').modal('close');
 }
 
-function cSaveLista(){
-var dato='';
-$('#tablalista tbody tr').each(function( index ) {
-  var i=$( this ).data('i');
-  dato=dato+$('#valor'+i).val()+'|'+$('#texto'+i).val()+'|'+$('#tag'+i).val()+'*';
-});
 
-$('#listalista').val(dato);
+function openLista(id){
+  $('#modalLista').modal();
+  $('#modalLista').attr('data-key',id);
 
-}
+  var dato=$('#listalista').val()+'*';
+  var tr=dato.split('*');
+  $('#tablalista tbody tr').remove();
 
-function addTr(i,valor,texto,tag){
- 
- $('#tablalista tbody').append('<tr id="trlista'+i+'" data-i="'+i+'">'+
-            '<td><input id="valor'+i+'" type="text" class="validate" value="'+valor+'"></td>'+
-            '<td><input id="texto'+i+'" type="text" class="validate" value="'+texto+'"></td>'+
-            '<td><input id="tag'+i+'" type="text" class="validate" value="'+tag+'"></td>'+
-            '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="cDel('+i+');" style="cursor: pointer;" >delete</i> <i class="material-icons handle grey-text text-lighten-1 "  style="cursor: move;" >import_export</i> </td>'+
-          '</tr>');
+  for (i = 0; i < tr.length; i++) {
+    if (tr[i]!=''){
+      dato=(tr[i]).split('|');
+      addTr(i+1,dato[0],dato[1],dato[2]);
+    }
+  }
 
-}
+  $('#bAddLista').data('indice',tr.length);
 
-function validarFormulario(){
-$('#form1').submit();  
+  $('#modalLista').modal('open');
+  $('select').material_select();
+  $("#tablalista tbody").sortable({
+    axis:'y',
+    containment: "parent",
+    cursor: "move",
+    forceHelperSize: true,
+    handle: ".handle",
+    opacity: 0.5
+  });
 }
 
 function cAdd(){
-
   var dato=0;
   dato=$('#bAddLista').data('indice');
   if (dato=='-1'){
     dato=$('#tablalista tbody tr').length;
   }
-
   dato=dato+1;
   $('#bAddLista').data('indice',dato);
 
   addTr(dato,'','','');
 }
+
+
+function cDel(id){
+  $('#trlista'+id).remove();
+}
+
+function cSaveLista(){
+  var dato='';
+  $('#tablalista tbody tr').each(function( index ) {
+    var i=$( this ).data('i');
+    dato=dato+$('#valor'+i).val()+'|'+$('#texto'+i).val()+'|'+$('#tag'+i).val()+'*';
+  });
+  $('#listalista').val(dato);
+}
+
+function addTr(i,valor,texto,tag){
+$('#tablalista tbody').append('<tr id="trlista'+i+'" data-i="'+i+'">'+
+  '<td><input id="valor'+i+'" type="text" class="validate" value="'+valor+'"></td>'+
+  '<td><input id="texto'+i+'" type="text" class="validate" value="'+texto+'"></td>'+
+  '<td><input id="tag'+i+'" type="text" class="validate" value="'+tag+'"></td>'+
+  '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="cDel('+i+');" style="cursor: pointer;" >delete</i> <i class="material-icons handle grey-text text-lighten-1 "  style="cursor: move;" >import_export</i> </td>'+
+  '</tr>');
+}
+
+
+function closeLista(){
+  var id=$('#modalLista').attr('data-key');
+  cSaveLista();
+  Materialize.updateTextFields();
+  $('#modalLista').modal('close');
+}
+
 
 {% /append %}
 
