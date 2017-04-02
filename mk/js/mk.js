@@ -332,3 +332,8 @@ function getCookie(cname) {
 
   }
 
+  function dataUnique(campo, valor, success){
+    getAjax(reaction('search_campo[]='+campo+'&search_cond=1&search_search_text='+valor,'dataExist', '',true),'GET',{},'',success)
+
+  }
+

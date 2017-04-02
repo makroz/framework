@@ -10,10 +10,24 @@ class Formulario
         	$this->campos=$campos;
         }
 
+public function array_sort_by(&$arrIni, $col, $order = SORT_ASC) 
+{
+    $arrAux = array();
+    foreach ($arrIni as $key=> $row) 
+    {
+        $arrAux[$key] = is_object($row) ? $arrAux[$key] = $row->$col : $row[$col];
+        $arrAux[$key] = strtolower($arrAux[$key]);
+    }
+    array_multisort($arrAux, $order, $arrIni);
+}
+
+
+
     	public function inputs(){
             //echo "<hr><pre>";print_r($this->campos);echo "</pre>";
-
+            $this->array_sort_by($this->campos,'posf');
     		$texto='';
+
     		foreach ($this->campos as $key => $value) {
     			$class='';
                 $tam='';
@@ -21,6 +35,12 @@ class Formulario
                 $onblur='';
                 $onchange='';
                 $onclick='';
+
+                $unico='';
+                if ($value['unico']=='1'){
+                    $unico="&unico=1";
+                    $onblur="isUnique_{$key}();";
+                }
 
     			if ($value['usof']!='-1'){
     				$this->ncol++;
@@ -107,7 +127,7 @@ class Formulario
                     if ($eventos!=''){
                         $eventos="&eventos={$eventos}";
                     }
-    				$texto.="[[component:]]form_input::id={$key}&label={$value['label']}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$dataon}{$dec}{$options}{$validate}{$eventos}[[:component]] ";
+    				$texto.="[[component:]]form_input::id={$key}&label={$value['label']}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$unico}{$dataon}{$dec}{$options}{$validate}{$eventos}[[:component]] ";
     			}
     		}
 			//return '{% php print_r($_data); %}'.$texto;

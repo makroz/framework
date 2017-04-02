@@ -75,7 +75,6 @@ namespace Mk
 
 			$this->getVarView();
 			$this-> _template-> parse($content,$this-> _data);
-
 			return $this-> _template-> process($this-> _data);
 
 		}

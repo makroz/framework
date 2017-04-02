@@ -43,10 +43,10 @@ namespace Mk
 
         public static function msgfile($msg,$file=''){
             if ($file==''){
-                $file='\log'.date('Ymd').'.txt';
+                $file=APP_PATH.'\logs\msg'.date('Ymd').'.txt';
 
             }
-            file_put_contents($file, "*********\n\r\l\ln".$msg, FILE_APPEND);
+            file_put_contents($file,PHP_EOL."Mensaje (".date('Y/m/d H:i:s').")".PHP_EOL.$msg.PHP_EOL, FILE_APPEND);
         }
 
         public static function msg($msg, $nivel=2,$title='',$key = "")

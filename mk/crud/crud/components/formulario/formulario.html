@@ -31,7 +31,9 @@ return -1;
 {% /append %}
 <div class="errorList"></div>
 <form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
+<div class="row">
 [[php:]]inputs[[:php]]
+</div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>
 <!-- notajax: -->

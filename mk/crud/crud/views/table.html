@@ -239,12 +239,12 @@ function valUsof(){
   $('#funcion').removeAttr('disabled');
 
   valor=$('#usof').val();
-  $('.usof').removeClass('s10').addClass('s12');
-  $('.tam').hide();
+  $('.usof').removeClass('s8').addClass('s12');
+  $('.tam , .posf').hide();
  
-  if ((valor!='-1')&&(valor!='oculto')){
-    $('.usof').removeClass('s12').addClass('s10');
-    $('.tam').show();
+  if ((valor!='-1')&&(valor!='oculto')&&(valor.trim()!='')){
+    $('.usof').removeClass('s12').addClass('s8');
+    $('.tam, .posf').show();
   }
  
   if (valor=='check'){

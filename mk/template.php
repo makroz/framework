@@ -285,15 +285,13 @@ namespace Mk
 			$array = $this->_array($template);
 			$tree = $this->_tree($array["all"]);
 			$this->_code = $this->header.$this->_script($tree).$this->footer;
-
 			try
-			{
+			{	
 				$this->_function = create_function("\$_data", $this->code);
 			}
 			catch(\Exception $e)
 			{
 				echo "<hr>Error en tenplate:<br> ";print_r($this->code);
-				//echo "<hr>con los datos :<br> <pre>";print_r($this->_data);echo "</pre>";
 				throw $this->_Exception($e);
 			}
 			return $this;

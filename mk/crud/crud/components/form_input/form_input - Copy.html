@@ -1,43 +1,24 @@
 [[compile:]]
 
-[* if '[[var:]]unico[[:var]]'=='1' *]
-
-[% append js.inline %]
-var old_[[var:]]id[[:var]]='{% echo $item[[[var:]]id[[:var]]]; %}';
-function isUnique_[[var:]]id[[:var]](){
-	var dato=$('#[[var:]]id[[:var]]').val();
-	if (dato!=old_[[var:]]id[[:var]]){
-		old_[[var:]]id[[:var]]=dato;
-		dataUnique('[[var:]]id[[:var]]',dato,function(msg){
-			if (msg==1){
-				alert('Ese [[var:]]label[[:var]] ya exite!!!');
-				$('#[[var:]]id[[:var]]').focus();
-			}
-		});
-	}
-}
-[% /append %]
-
-
-[* /if *]
-
-[[unique:]]{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}[[:unique]]
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %} 
 
 [* if '[[var:]]tipo[[:var]]'=='alfa' *]
+	<div class="row">
 		<div class="input-field col [[var:]]clase[[:var]]">
-	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}'  [[var:]]validate[[:var]] [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]validate[[:var]] [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
 	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
+	</div>
 [* /if *]
 
 [* if '[[var:]]tipo[[:var]]'=='oculto' *]
-<div class="input-field col [[var:]]clase[[:var]]">
 	          <input  id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="hidden" value='{% echo $item[[[var:]]id[[:var]]]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-</div>
 [* /if *]
 
 [* if '[[var:]]tipo[[:var]]'=='check' *]
+
+<div class="row">
 	<div class="input-field col [[var:]]clase[[:var]]">
 
 	 {% if $_action!='ver' %} 
@@ -49,20 +30,25 @@ function isUnique_[[var:]]id[[:var]](){
      <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
      <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
      </div>
+</div>
 
 [* /if *]
 
 [* if '[[var:]]tipo[[:var]]'=='float' *]
+
+	<div class="row">
 		<div class="input-field col [[var:]]clase[[:var]]">
 	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="float $clasver" data-decimal='[[var:]]decimal[[:var]]' width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]validate[[:var]] [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
 	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
+	</div>
 
 [* /if *]
 
 [* if '[[var:]]tipo[[:var]]'=='selec' *]
 	{% php $options=\\Mk\\Tools\\Form::getOptions($anexos[[[var:]]id[[:var]]][options],$item[[[var:]]id[[:var]]],'Seleccione '.$anexos[[[var:]]id[[:var]]][label]); %}
+	<div class="row">
 		<div class="input-field col [[var:]]clase[[:var]]">
 		 {% if $_action!='ver' %} 
 		<select id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" class="select $clasver" [[var:]]validate[[:var]] [[var:]]eventos[[:var]]  >
@@ -75,6 +61,7 @@ function isUnique_[[var:]]id[[:var]](){
     	          <label for="[[var:]]id[[:var]]">{$anexos[[[var:]]id[[:var]]][label]}</label>
     	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
+	</div>
 
 [* /if *]
 

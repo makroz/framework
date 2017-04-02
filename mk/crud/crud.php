@@ -102,10 +102,14 @@ namespace Mk\Crud {
 			$pedir['usof']['text']            = 'Tipo de input en el formulario';
 			$pedir['usof']['type']            = 'sel';
 			$pedir['usof']['opt']             = Form::getListaSel($lusof, 'No usar');
-			$pedir['usof']['tam']             = 's12';
+			$pedir['usof']['tam']             = 's8';
 			$pedir['tam']['text']             = 'Tamano';
 			$pedir['tam']['type']             = 'text';
 			$pedir['tam']['tam']              = 's2';
+			$pedir['posf']['text']             = 'Pos. Form.';
+			$pedir['posf']['type']             = 'text';
+			$pedir['posf']['tam']              = 's2';
+
 			$pedir['funcion']['text']         = 'Funcion al Grabar/cargar';
 			$pedir['funcion']['type']         = 'sel';
 			$pedir['funcion']['opt']          = Form::getListaSel($lfunc, 'Por Defecto');
@@ -147,19 +151,26 @@ namespace Mk\Crud {
 			$pedir['search']['type']          = 'check';
 			$pedir['search']['onval']         = '1';
 			$pedir['search']['offval']        = '0';
-			$pedir['search']['tam']           = 's6 m4';
+			$pedir['search']['tam']           = 's6 m3';
 			$pedir['required']['text']        = 'Es Obligatorio?';
 			$pedir['required']['type']        = 'check';
 			$pedir['required']['onval']       = '1';
 			$pedir['required']['offval']      = '0';
-			$pedir['required']['tam']         = 's6 m4';
+			$pedir['required']['tam']         = 's6 m3';
 			$pedir['ver']['text']             = 'Solo Lectura?';
 			$pedir['ver']['type']             = 'check';
 			$pedir['ver']['onval']            = '1';
 			$pedir['ver']['offval']           = '0';
-			$pedir['ver']['tam']              = 's6 m4';
+			$pedir['ver']['tam']              = 's6 m3';
+			$pedir['unico']['text']             = 'Valor Unico?';
+			$pedir['unico']['type']             = 'check';
+			$pedir['unico']['onval']            = '1';
+			$pedir['unico']['offval']           = '0';
+			$pedir['unico']['tam']              = 's6 m3';
+
 			$pedir['f2']['type']              = 'raw';
 			$pedir['f2']['text']              = '</fieldset>';
+			$posf=0;
 			foreach ($table as $key => $field) {
 				$pedir['label']['val'][$key]    = ucfirst($key);
 				$pedir['var']['val'][$key]      = '_' . lcfirst(ucwords($key));
@@ -169,6 +180,8 @@ namespace Mk\Crud {
 				$pedir['tam']['val'][$key]      = 's12';
 				$pedir['tamlista']['val'][$key] = '';
 				$pedir['search']['val'][$key]   = '1';
+				$pedir['posf']['val'][$key]   = $posf;
+				$posf++;
 				// Valores por defecto segun tipo de datos de la BD
 				if (in_array($field['type'], array(
 					'text',
@@ -657,6 +670,7 @@ namespace Mk\Crud {
 						} else {
 							$html = $this->procesaPhpHtml($html, $funcionphp);
 						}
+
 						$compile = \Mk\Tools\String::getEtiquetas($html, '[[compile:]]', '[[:compile]]', 3, $component, '[[compilando]] ');
 						//$compile=$compile[0];
 						/*if ($component=='form_input'){
@@ -673,6 +687,7 @@ namespace Mk\Crud {
 							$compile  = str_replace('[* ', '{% ', $compile);
 							$compile  = str_replace(' *]', ' %}', $compile);
 							$vcompile = new \Mk\View();
+							//$vcompile->set('campos', $campos);
 							$compile  = $vcompile->render($compile);
 							$compile  = str_replace('[% ', '{% ', $compile);
 							$compile  = str_replace(' %]', ' %}', $compile);
@@ -680,6 +695,14 @@ namespace Mk\Crud {
 							//$compile = str_replace('[[**]]','\\',$compile);
 							echo "<br><span style='color:red;'> Compilado</span>";
 							$html = str_replace('[[compilando]]', stripslashes($compile), $html);
+
+							$codeUnique['jsinline'][$component]    .= \Mk\Tools\String::getEtiquetas($html, '{% append js.inline %}', '{% /append %}', 2, $component, ' ');
+							$codeUnique['jsonready'][$component]   .= \Mk\Tools\String::getEtiquetas($html, '{% append js.onready %}', '{% /append %}', 2, $component, ' ');
+							$codeUnique['jsfiles'][$component]     .= \Mk\Tools\String::getEtiquetas($html, '{% append js.files %}', '{% /append %}', 2, $component, ' ');
+							$codeUnique['styleinline'][$component] .= \Mk\Tools\String::getEtiquetas($html, '{% append style.inline %}', '{% /append %}', 2, $component, ' ');
+							$codeUnique['stylefiles'][$component]  .= \Mk\Tools\String::getEtiquetas($html, '{% append style.files %}', '{% /append %}', 2, $component, ' ');
+
+
 						}
 						echo "<br>---Renderizado Componente: $tag";
 						$plantilla = str_replace('[[component:]]' . $tag . '[[:component]]', $html, $plantilla);

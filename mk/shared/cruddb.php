@@ -58,6 +58,30 @@ namespace Mk\Shared
 
 		}
 
+	public function actionDataExist(){
+		$this->setRenderView(false);
+		//$primary = $this->getPrimary();
+		//
+		//
+		$where=$this->getSearchWhere();
+		$where = array(
+		'?'=>$where
+		);
+		$count = $this->_model->count($where);
+		$existe=0;
+		if ($count>0){
+			$existe=1;
+		}
+		if (\Mk\Tools\App::isAjax()==true){
+			echo $existe;
+			return $pk;	
+		}else{
+			echo "<pre>";print_r($existe);echo "</pre>";
+			exit;
+		}
+		return -1;
+	}
+
 	public function actionGetItem(){
 		$this->setRenderView(false);
 		$primary = $this->getPrimary();
