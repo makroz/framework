@@ -96,7 +96,7 @@ function isUnique_nombre(){
 
 	<div class="input-field col s12 m4">
 	 {% if $_action!='ver' %}
-      <input type="checkbox" id="base" name='base' class="check $clasver" value="1" {% if ($item[base]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  />
+      <input type="checkbox" id="base" name='base' class="check $clasver" value="1" {% if ($item[base]=="1") %} checked="checked" {% /if %}  onclick='iDisabledCheck(this,"#relBase",1);'   />
   {% /if %}
      {% else %}
      <input id="base" name="base" type="text" class="alfa $clasver" width="" value='{% php if ($item[base]=="1"){ $_valor= $anexos[base][labelon]; } else { $_valor=$anexos[base][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >

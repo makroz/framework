@@ -32,14 +32,53 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
     			$class='';
                 $tam='';
                 $onkeypress='';
+                $onfocus='';
                 $onblur='';
                 $onchange='';
                 $onclick='';
 
+                if ($value['listaeventos']!=''){
+
+                      $aux=explode('*',$value['listaeventos'].'*');
+                      foreach ($aux as $k => $v){
+                        if ($v!=''){
+                          $eventos=explode('|',$v.'|');
+                          if ($eventos[1]!=''){
+                                $eventos[1]=trim($eventos[1],';').';';
+                                $eventos[1]=str_replace("'",'"', $eventos[1]);
+                            switch ($eventos[0]) {
+                                case 'onclick':
+                                    $onclick.=$eventos[1];
+                                    break;
+                                case 'onblur':
+                                    $onblur.=$eventos[1];
+                                    break;
+                                case 'onchange':
+                                    $onchange.$eventos[1];
+                                    break;
+                                case 'onfocus':
+                                    $onfocus.=$eventos[1];
+                                    break;
+                                case 'onkeypress':
+                                    $onkeypress.=$eventos[1];
+                                    break;
+                                default:
+                                    # code...
+                                    break;
+                            }
+
+                          }
+
+                         
+                        }
+                      }
+                }
+
+
                 $unico='';
                 if ($value['unico']=='1'){
                     $unico="&unico=1";
-                    $onblur="isUnique_{$key}();";
+                    $onblur.="isUnique_{$key}();";
                 }
 
     			if ($value['usof']!='-1'){
@@ -123,6 +162,17 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                     if ($onblur!=''){
                         $eventos.=" onblur='{$onblur}' ";
                     }
+                    if ($onclick!=''){
+                        $eventos.=" onclick='{$onclick}' ";
+                    }
+                    if ($onchange!=''){
+                        $eventos.=" onchange='{$onchange}' ";
+                    }
+                    if ($onfocus!=''){
+                        $eventos.=" onfocus='{$onfocus}' ";
+                    }
+
+
 
                     if ($eventos!=''){
                         $eventos="&eventos={$eventos}";
