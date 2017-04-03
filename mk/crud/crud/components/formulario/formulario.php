@@ -3,11 +3,12 @@ namespace  Components\Formulario
 {
 class Formulario
     {
-    	public $ncol=0;
+    	public $variables=array();
     	public $campos=array();
-    	public function __construct($campos = array())
+    	public function __construct($campos = array(),$variables=array())
         {
         	$this->campos=$campos;
+            $this->variables=$variables;
         }
 
 public function array_sort_by(&$arrIni, $col, $order = SORT_ASC) 
@@ -22,7 +23,9 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
 }
 
 
-
+        public function codejs(){
+            return $this->variables['codejs'];
+        }
     	public function inputs(){
             //echo "<hr><pre>";print_r($this->campos);echo "</pre>";
             $this->array_sort_by($this->campos,'posf');

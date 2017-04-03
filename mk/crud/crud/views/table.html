@@ -30,9 +30,24 @@ color:#26a69a;
 {% append js.files %}
 <link href='js/jquery-ui/jquery-ui.min.css' rel='stylesheet'>
 <script type='text/javascript' src='js/jquery-ui/jquery-ui.min.js'></script>
+
+<link rel="stylesheet" href="../mk/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="../mk/js/codemirror/theme/material.css">
+<script src="../mk/js/codemirror/lib/codemirror.js"></script>
+<script src="../mk/js/codemirror/mode/javascript/javascript.js"></script>
+<script src="../mk/js/codemirror/addon/selection/active-line.js"></script>
+<script src="../mk/js/codemirror/addon/edit/matchbrackets.js"></script>
+
 {% /append %}
 
 {% append js.onready %}
+
+var editorjs = CodeMirror.fromTextArea(document.getElementById("codejs"), {
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true,
+    theme: 'material'
+  });
 
 $(".button-collapse").sideNav();
 $('select').material_select();
@@ -504,7 +519,15 @@ function closeLista(){
    
   </div>
   <div id="listas" class="col s12">Lista</div>
-  <div id="formulario" class="col s12">Formulario</div>
+  <div id="formulario" class="col s12">Formulario
+      <div class="row">
+         <div class="input-field col s12">
+                <textarea id="codejs" name='codejs'  class="validate plantilla" data-type="text"  >
+                </textarea>
+                <label for="codejs" data-error="" data-success="">Codigo Js en formulario</label>
+         </div>
+      </div>
+  </div>
 </div>
 
  </form>

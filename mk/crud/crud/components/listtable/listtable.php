@@ -3,12 +3,14 @@ namespace  Components\Listtable
 {
 class Listtable
     {
-    	public $ncol=0;
-    	public $campos=array();
-    	public function __construct($campos = array())
+    	public $variables=array();
+        public $campos=array();
+        public function __construct($campos = array(),$variables=array())
         {
-        	$this->campos=$campos;
+            $this->campos=$campos;
+            $this->variables=$variables;
         }
+
 
     	public function encabezados(){
 

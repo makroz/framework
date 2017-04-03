@@ -556,6 +556,7 @@ namespace Mk\Crud {
 			$txtCampos .= "public \$_tSingular='" . Inputs::post('singular') . "';\n";
 			$txtCampos .= "public \$_tPlural='" . Inputs::post('plural') . "';\n";
 			$variables['_modSingular_'] = Inputs::post('singular');
+			$variables['codejs']=Inputs::post('codejs','');
 			$view                       = $this->getActionView();
 			$crudConfig                 = json_encode($_REQUEST);
 			$dir                        = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR . 'configuration';
@@ -591,6 +592,7 @@ namespace Mk\Crud {
 			fclose($gestor);
 			//$plantilla=str_replace(PHP_EOL,'<br />',$plantilla);
 			$view->set('mensaje', nl2br($plantilla));
+			//$view->set('campos', $campos);
 			//generar vista listar
 			$file = strtolower($this->getFilenameLayout('view_listar.html', 'plantillas'));
 			$this->procesaPlantillaView($file, $campos, $table);
@@ -605,12 +607,12 @@ namespace Mk\Crud {
 			$plantilla = fread($gestor, filesize($filePl));
 			fclose($gestor);
 			$componentes                        = \Mk\Tools\String::getEtiquetas($plantilla, '[[component:]]', '[[:component]]', '1');
-			$codeUnique['jsinline']['index']    = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.inline %}', '{% /append %}', 2, 'index', ' ');
+/*			$codeUnique['jsinline']['index']    = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.inline %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['jsonready']['index']   = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.onready %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['jsfiles']['index']     = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.files %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['styleinline']['index'] = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.inline %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['stylefiles']['index']  = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.files %}', '{% /append %}', 2, 'index', ' ');
-			while (sizeof($componentes) > 0) {
+*/			while (sizeof($componentes) > 0) {
 				foreach ($componentes as $component => $parametros) {
 					$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'mk' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . $component . DIRECTORY_SEPARATOR;
 					$file = $dir . $component . '.html';
@@ -623,23 +625,13 @@ namespace Mk\Crud {
 
 					$this->copiarDir($dir . 'img',APP_PATH . DIRECTORY_SEPARATOR . 'img',true,true);
 					$this->copiarDir($dir . 'js',APP_PATH . DIRECTORY_SEPARATOR . 'js',true,true);
-/*					$iterator = new \DirectoryIterator($dir . 'img');
-					foreach ($iterator as $item) {
-						if (!$item->isDot() && $item->isFile()) {
-							if (copy($item->getPathname(), APP_PATH . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $item->getFilename())) {
-								echo "<br>Se copia el archivo para el componnte:" . $item->getFilename();
-							} else {
-								echo "<br>No se copiado la imagen correctamente" . $item->getFilename();
-							}
-						}
-					}
-*/
-					$codeUnique['jsinline'][$component]    = \Mk\Tools\String::getEtiquetas($html, '{% append js.inline %}', '{% /append %}', 2, $component, ' ');
+
+/*					$codeUnique['jsinline'][$component]    = \Mk\Tools\String::getEtiquetas($html, '{% append js.inline %}', '{% /append %}', 2, $component, ' ');
 					$codeUnique['jsonready'][$component]   = \Mk\Tools\String::getEtiquetas($html, '{% append js.onready %}', '{% /append %}', 2, $component, ' ');
 					$codeUnique['jsfiles'][$component]     = \Mk\Tools\String::getEtiquetas($html, '{% append js.files %}', '{% /append %}', 2, $component, ' ');
 					$codeUnique['styleinline'][$component] = \Mk\Tools\String::getEtiquetas($html, '{% append style.inline %}', '{% /append %}', 2, $component, ' ');
 					$codeUnique['stylefiles'][$component]  = \Mk\Tools\String::getEtiquetas($html, '{% append style.files %}', '{% /append %}', 2, $component, ' ');
-					if (!$codeUnique['codeunique'][$component]) {
+*/					if (!$codeUnique['codeunique'][$component]) {
 						$codeUnique['codeunique'][$component] = \Mk\Tools\String::getEtiquetas($html, '[[unique:]]', '[[:unique]]', 2, $component, ' ');
 						if (trim($codeUnique['codeunique'][$component]) != '') {
 							$posi = strpos($plantilla, "[[component:]]$component");
@@ -652,7 +644,7 @@ namespace Mk\Crud {
 					}
 					if (@filesize($dir . $component . '.php') > 0) {
 						$funcionphp = '\Components\\' . ucfirst($component) . '\\' . ucfirst($component);
-						$funcionphp = new $funcionphp($campos);
+						$funcionphp = new $funcionphp($campos,$variables);
 					} else {
 						$funcionphp = null;
 					}
@@ -706,12 +698,12 @@ namespace Mk\Crud {
 							echo "<br><span style='color:red;'> Compilado</span>";
 							$html = str_replace('[[compilando]]', stripslashes($compile), $html);
 
-							$codeUnique['jsinline'][$component]    .= \Mk\Tools\String::getEtiquetas($html, '{% append js.inline %}', '{% /append %}', 2, $component, ' ');
+/*							$codeUnique['jsinline'][$component]    .= \Mk\Tools\String::getEtiquetas($html, '{% append js.inline %}', '{% /append %}', 2, $component, ' ');
 							$codeUnique['jsonready'][$component]   .= \Mk\Tools\String::getEtiquetas($html, '{% append js.onready %}', '{% /append %}', 2, $component, ' ');
 							$codeUnique['jsfiles'][$component]     .= \Mk\Tools\String::getEtiquetas($html, '{% append js.files %}', '{% /append %}', 2, $component, ' ');
 							$codeUnique['styleinline'][$component] .= \Mk\Tools\String::getEtiquetas($html, '{% append style.inline %}', '{% /append %}', 2, $component, ' ');
 							$codeUnique['stylefiles'][$component]  .= \Mk\Tools\String::getEtiquetas($html, '{% append style.files %}', '{% /append %}', 2, $component, ' ');
-
+*/
 
 						}
 						echo "<br>---Renderizado Componente: $tag";
@@ -723,6 +715,14 @@ namespace Mk\Crud {
 				}
 				$componentes = \Mk\Tools\String::getEtiquetas($plantilla, '[[component:]]', '[[:component]]', '1');
 			} //while
+
+			$codeUnique['jsinline']['index']    = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.inline %}', '{% /append %}', 2, 'index', ' ');
+			$codeUnique['jsonready']['index']   = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.onready %}', '{% /append %}', 2, 'index', ' ');
+			$codeUnique['jsfiles']['index']     = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.files %}', '{% /append %}', 2, 'index', ' ');
+			$codeUnique['styleinline']['index'] = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.inline %}', '{% /append %}', 2, 'index', ' ');
+			$codeUnique['stylefiles']['index']  = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.files %}', '{% /append %}', 2, 'index', ' ');
+
+
 			$js  = implode($codeUnique['jsfiles'], " ");
 			$js  = \Mk\Tools\String::quitarSaltosDobles($js);
 			$js  = str_replace("'", '"', $js);
@@ -773,7 +773,7 @@ namespace Mk\Crud {
 				foreach ($php as $key2 => $param2) {
 					$param = trim(implode(',', $param2), ',');
 					$texto = $funcionphp->$key2($param);
-					echo "<br>EL php es: $texto";
+					echo "<br>EL php {$key2} es: $texto";
 					if ($param == '') {
 						$html = str_replace('[[php:]]' . $key2 . '[[:php]]', $texto, $html);
 					} else {

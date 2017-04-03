@@ -3,7 +3,7 @@
 {% /append %}
 {% append style.inline %}
 
-  
+
 
 {% /append %}
 {% append js.onready %}
@@ -13,17 +13,17 @@ $(document).ajaxStop(function(){
 });
 	$("select").material_select();
 	showMensajes();
-  
+
 
 {% /append %}
-{% append js.inline %}
+{% append js.inline %}  
 
     jconfirm.defaults = {
         title: 'Aviso',
         boxWidth: '30%',
         useBootstrap: false
     };
-  
+
 
 function grabado(msg){
 if (msg=='ok'){
@@ -37,7 +37,7 @@ if (msg=='ok'){
 }
 return -1;
 }
- 
+
 
 var old_nombre='{% echo $item[nombre]; %}';
 function isUnique_nombre(){
