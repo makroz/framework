@@ -54,9 +54,12 @@ $('.campojoin > i').click(function() {
 });
 
 $('.listalista > i').click(function() {
-  openLista('listalista');
+  openLista(modalistalista);
 });
 
+$('.listaeventos > i').click(function() {
+  openLista(modalistaeventos);
+});
 
  $("#campos").sortable({
    containment: "#campos",
@@ -290,27 +293,54 @@ function closeJoin(){
   $('#modal2').modal('close');
 }
 
+var modalista=[];
+modalista['modal']='';
+modalista['campo']='';
+modalista['addTr']='';
+modalista['tit']='';
+modalista['head']='';
+var modalistalista=[];
+modalistalista['modal']='#modalLista';
+modalistalista['campo']='#listalista';
+modalistalista['addTr']='addTrListalista';
+modalistalista['tit']='Crear Lista';
+modalistalista['head']='<tr><th data-field="valor">VALOR</th><th data-field="texto">TEXTO</th><th data-field="tag">TAGS</th><th data-field="action">Accion</th></tr>';
+var modalistaeventos=[];
+modalistaeventos['modal']='#modalLista';
+modalistaeventos['campo']='#listaeventos';
+modalistaeventos['addTr']='addTrListaeventos';
+modalistaeventos['tit']='Lista de Eventos';
+modalistaeventos['head']='<tr><th data-field="evento">EVENTO</th><th data-field="codigo">CODIGO</th><th data-field="action">Accion</th></tr>';
 
-function openLista(id){
-  $('#modalLista').modal();
-  $('#modalLista').attr('data-key',id);
 
-  var dato=$('#listalista').val()+'*';
-  var tr=dato.split('*');
-  $('#tablalista tbody tr').remove();
+function openLista(objeto){
+  if (!objeto){
+    objeto=modalistalista;
+  }
+  modalista=objeto;
+  var modal=modalista['modal'];
+  var campo=modalista['campo'];
+  $(modal).find('h4').html(modalista['tit']);
+  $(modal+' thead').html(modalista['head']);
 
+  $(modal).modal();
+  //$(modal).attr('data-key',id);
+
+  var datos=$(campo).val()+'*';
+  var tr=datos.split('*');
+  $(modal+' tbody tr').remove();
   for (i = 0; i < tr.length; i++) {
     if (tr[i]!=''){
-      dato=(tr[i]).split('|');
-      addTr(i+1,dato[0],dato[1],dato[2]);
+      var dato=(tr[i]).split('|');
+      _addTr(i+1,dato);
     }
   }
 
-  $('#bAddLista').data('indice',tr.length);
+  $(modal).find('#bAddLista').data('indice',tr.length);
 
-  $('#modalLista').modal('open');
+  $(modal).modal('open');
   $('select').material_select();
-  $("#tablalista tbody").sortable({
+  $(modal).find("#tablalista tbody").sortable({
     axis:'y',
     containment: "parent",
     cursor: "move",
@@ -321,46 +351,95 @@ function openLista(id){
 }
 
 function cAdd(){
+  var modal=modalista['modal'];
+  var campo=modalista['campo'];
+
   var dato=0;
-  dato=$('#bAddLista').data('indice');
+  dato= $(modal).find('#bAddLista').data('indice');
   if (dato=='-1'){
-    dato=$('#tablalista tbody tr').length;
+    dato= $(modal).find('#tablalista tbody tr').length;
   }
   dato=dato+1;
-  $('#bAddLista').data('indice',dato);
+  $(modal).find('#bAddLista').data('indice',dato);
 
-  addTr(dato,'','','');
+  _addTr(dato,['','','']);
 }
 
 
 function cDel(id){
-  $('#trlista'+id).remove();
+  var modal=modalista['modal'];
+  $(modal).find('#trlista'+id).remove();
 }
 
 function cSaveLista(){
+  var modal=modalista['modal'];
+  var campo=modalista['campo'];
   var dato='';
-  $('#tablalista tbody tr').each(function( index ) {
+
+  $(modal).find('#tablalista tbody tr').each(function( index ) {
     var i=$( this ).data('i');
-    dato=dato+$('#valor'+i).val()+'|'+$('#texto'+i).val()+'|'+$('#tag'+i).val()+'*';
+    
+    $(modal).find('.dato'+i).each(function( index ) {
+      if ($( this ).prop("tagName")!='DIV'){
+      dato=dato+$( this ).val()+'|';
+      }
+    });
+    dato=dato+'*';
   });
-  $('#listalista').val(dato);
+  $(campo).val(dato);
 }
 
-function addTr(i,valor,texto,tag){
+function _addTr(i,dato){
+  var funcion=modalista['addTr'];
+  eval(funcion+'('+i+',dato);');
+}
+
+function addTrListalista(i,dato){
 $('#tablalista tbody').append('<tr id="trlista'+i+'" data-i="'+i+'">'+
-  '<td><input id="valor'+i+'" type="text" class="validate" value="'+valor+'"></td>'+
-  '<td><input id="texto'+i+'" type="text" class="validate" value="'+texto+'"></td>'+
-  '<td><input id="tag'+i+'" type="text" class="validate" value="'+tag+'"></td>'+
+  '<td><input id="valor'+i+'" type="text" class="validate dato'+i+'" value="'+dato[0]+'"></td>'+
+  '<td><input id="texto'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
+  '<td><input id="tag'+i+'" type="text" class="validate dato'+i+'" value="'+dato[2]+'"></td>'+
   '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="cDel('+i+');" style="cursor: pointer;" >delete</i> <i class="material-icons handle grey-text text-lighten-1 "  style="cursor: move;" >import_export</i> </td>'+
   '</tr>');
 }
 
+function getOptions(lista,sel){
+var r='';
+  for(var i in lista){
+    var s='';
+    if (sel!=''){
+      if (sel==i){
+        s=' selected="selected" ';
+      }
+    }
+    r=r+'<option value="'+i+'" '+s+'>'+lista[i]+'</option>';
+  }  
+return r;
+}
+
+function addTrListaeventos(i,dato){
+var listaopciones=[];
+listaopciones['onchange']='onChange';
+listaopciones['onclick']='onClick';
+listaopciones['onblur']='onBlur';
+listaopciones['onfocus']='onFocus';
+var lista=getOptions(listaopciones,dato[0]);
+$('#tablalista tbody').append('<tr id="trlista'+i+'" data-i="'+i+'">'+
+  '<td><select  id="evento'+i+'" type="text" class="validate dato'+i+'" >'+lista+'</select></td>'+
+  '<td><input id="codigo'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
+  '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="cDel('+i+');" style="cursor: pointer;" >delete</i> <i class="material-icons handle grey-text text-lighten-1 "  style="cursor: move;" >import_export</i> </td>'+
+  '</tr>');
+  $('select').material_select();
+}
+
+
 
 function closeLista(){
-  var id=$('#modalLista').attr('data-key');
+  var modal=modalista['modal'];
+  //var id=$(modal).attr('data-key');
   cSaveLista();
   Materialize.updateTextFields();
-  $('#modalLista').modal('close');
+  $(modal).modal('close');
 }
 
 

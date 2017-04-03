@@ -170,6 +170,16 @@ namespace Mk\Crud {
 
 			$pedir['f2']['type']              = 'raw';
 			$pedir['f2']['text']              = '</fieldset>';
+
+			$pedir['listaeventos']['text']      = 'Eventos';
+			$pedir['listaeventos']['type']      = 'text';
+			$pedir['listaeventos']['icon']      = 'view_list';
+			$pedir['listaeventos']['icon-type'] = 'postfix';
+			$pedir['listaeventos']['tam']       = 's4';
+			$pedir['listaeventos']['disabled']  = 'disabled';
+
+
+
 			$posf=0;
 			foreach ($table as $key => $field) {
 				$pedir['label']['val'][$key]    = ucfirst($key);
