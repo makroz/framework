@@ -10,7 +10,7 @@ function isUnique_[[var:]]id[[:var]](){
 		old_[[var:]]id[[:var]]=dato;
 		dataUnique('[[var:]]id[[:var]]',dato,function(msg){
 			if (msg==1){
-				alert('Ese [[var:]]label[[:var]] ya exite!!!');
+				alert('Ese {% echo $anexos[[[var:]]id[[:var]]][labelf] %} ya existe!!!');
 				$('#[[var:]]id[[:var]]').focus();
 			}
 		});
@@ -26,7 +26,7 @@ function isUnique_[[var:]]id[[:var]](){
 [* if '[[var:]]tipo[[:var]]'=='alfa' *]
 		<div class="input-field col [[var:]]clase[[:var]]">
 	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}'  [[var:]]validate[[:var]] [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
+	          <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
 	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
 [* /if *]
@@ -46,7 +46,7 @@ function isUnique_[[var:]]id[[:var]](){
      {% else %}
      <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver" width="[[var:]]tam[[:var]]" value='{% php if ($item[[[var:]]id[[:var]]]=="[[var:]]dataon[[:var]]"){ $_valor= $anexos[[[var:]]id[[:var]]][labelon]; } else { $_valor=$anexos[[[var:]]id[[:var]]][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
      {% /else %}
-     <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
+    <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
      <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
      </div>
 
@@ -55,7 +55,7 @@ function isUnique_[[var:]]id[[:var]](){
 [* if '[[var:]]tipo[[:var]]'=='float' *]
 		<div class="input-field col [[var:]]clase[[:var]]">
 	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="float $clasver" data-decimal='[[var:]]decimal[[:var]]' width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]validate[[:var]] [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="[[var:]]id[[:var]]">[[var:]]label[[:var]]</label>
+	         <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
 	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
 
@@ -72,7 +72,7 @@ function isUnique_[[var:]]id[[:var]](){
      {% else %}
      <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver" width="[[var:]]tam[[:var]]" value='{% echo $anexos[[[var:]]id[[:var]]][options][$item[[[var:]]id[[:var]]]]; %}'  disabled="disabled"  >
      {% /else %}
-    	          <label for="[[var:]]id[[:var]]">{$anexos[[[var:]]id[[:var]]][label]}</label>
+    	          <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
     	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
 

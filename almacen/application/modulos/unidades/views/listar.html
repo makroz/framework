@@ -541,7 +541,7 @@ function isUnique_nombre(){
 		old_nombre=dato;
 		dataUnique('nombre',dato,function(msg){
 			if (msg==1){
-				alert('Ese Nombre ya exite!!!');
+				alert('Ese {% echo $anexos[nombre][labelf] %} ya existe!!!');
 				$('#nombre').focus();
 			}
 		});
@@ -587,7 +587,7 @@ function isUnique_nombre(){
 	      <div class="row search1" data-count='0'>
 	            <div class="input-field col s3" >
 	    <select id="search_campo" name='search_campo[]' class="_search browser-default" onchange="_search_campo_change(this)" autocomplete='false' >
-	      <option value="pk" class="_sc2">Id</option><option value="nombre" class="_sc1">Nombre</option><option value="base" class="_sc1">Es Base?</option><option value="tipo" class="_sc1">Tipo</option><option value="relBase" class="_sc2">Relacion con la Base</option><option value="created" class="_sc4">Created</option><option value="modified" class="_sc4">Modified</option>
+	      <option value="pk" class="_sc2">Id</option><option value="nombre" class="_sc1">Nombre</option><option value="base" class="_sc1">Base</option><option value="tipo" class="_sc1">Tipo</option><option value="relBase" class="_sc2">RelBase</option><option value="created" class="_sc4">Created</option><option value="modified" class="_sc4">Modified</option>
 	    </select>
 	          <label for="search_campo" class="labeltop">Campo de busqueda</label>
 				</div>
@@ -790,14 +790,14 @@ function isUnique_nombre(){
      {% else %}
      <input id="tipo" name="tipo" type="text" class="alfa $clasver" width="" value='{% echo $anexos[tipo][options][$item[tipo]]; %}'  disabled="disabled"  >
      {% /else %}
-    	          <label for="tipo">{$anexos[tipo][label]}</label>
+    	          <label for="tipo">{% echo $anexos[tipo][labelf] %}</label>
     	          <div class="error_input">{$errors[tipo][0]}</div>
 		</div>
  
 
 		<div class="input-field col s12">
 	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'    onblur='isUnique_nombre();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="nombre">Nombre</label>
+	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
 		</div>
  
@@ -809,14 +809,14 @@ function isUnique_nombre(){
      {% else %}
      <input id="base" name="base" type="text" class="alfa $clasver" width="" value='{% php if ($item[base]=="1"){ $_valor= $anexos[base][labelon]; } else { $_valor=$anexos[base][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
      {% /else %}
-     <label for="base">Es Base?</label>
+    <label for="base">{% echo $anexos[base][labelf] %}</label>
      <div class="error_input">{$errors[base][0]}</div>
      </div>
  
 
 		<div class="input-field col s12 m8">
 	          <input id="relBase" name="relBase" type="text" class="float $clasver" data-decimal='2' width="" value='{% echo $item[relBase]; %}' data-validate=' numeric'  onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="relBase">Relacion con la Base</label>
+	         <label for="relBase">{% echo $anexos[relBase][labelf] %}</label>
 	          <div class="error_input">{$errors[relBase][0]}</div>
 		</div>
 </div>

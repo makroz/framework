@@ -285,6 +285,7 @@ namespace Mk
 						$write = !empty($propertyMeta["@write"]) || $readwrite;
 						$validate = !empty($propertyMeta["@validate"])? $propertyMeta["@validate"] : false;
 						$label = $first($propertyMeta, "@label");
+						$labelf = !empty($propertyMeta["@labelf"])? $first($propertyMeta, "@labelf") : $first($propertyMeta, "@label");
 
 
 						if (!in_array($type, $types))
@@ -305,7 +306,8 @@ namespace Mk
 							"read" => $read,
 							"write" => $write,
 							"validate" => $validate,
-							"label" => $label
+							"label" => $label,
+							"labelf" => $labelf
 							);
 
 						if (!empty($propertyMeta["@uso"])){

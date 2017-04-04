@@ -94,6 +94,11 @@ namespace Mk\Crud {
 			$pedir                            = array();
 			$pedir['label']['text']           = 'Etiqueta en Listas';
 			$pedir['label']['type']           = 'text';
+			$pedir['label']['tam']           = 's6';
+			$pedir['labelf']['text']           = 'Etiqueta en Formulario Si es Diferente';
+			$pedir['labelf']['type']           = 'text';
+			$pedir['labelf']['tam']           = 's6';
+
 			$pedir['var']['text']             = 'Nombre de Variable';
 			$pedir['var']['type']             = 'text';
 			$pedir['uso']['text']             = 'Procesar al Grabar/Actualizar';
@@ -183,6 +188,7 @@ namespace Mk\Crud {
 			$posf=0;
 			foreach ($table as $key => $field) {
 				$pedir['label']['val'][$key]    = ucfirst($key);
+				$pedir['labelf']['val'][$key]    = '';
 				$pedir['var']['val'][$key]      = '_' . lcfirst(ucwords($key));
 				$pedir['funcion']['val'][$key]  = '-1';
 				$pedir['dec']['val'][$key]      = '0';
@@ -506,6 +512,9 @@ namespace Mk\Crud {
 					}
 				}
 				$lines[]  = '* @label ' . $field['label'];
+				if (($field['labelf'] != '')&&($field['labelf'] != $field['label'])) {
+					$lines[]  = '* @labelf ' . $field['labelf'];
+				}
 				$validate = '';
 				if ($field['required'] == 1) {
 					$validate .= " required";

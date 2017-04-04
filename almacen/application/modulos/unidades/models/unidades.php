@@ -25,7 +25,8 @@ protected $_nombre;
 * @type char
 * @uso A
 * @funcion check
-* @label Es Base?
+* @label Base
+* @labelf Es Unidad Base?
 */
 protected $_base;
 /**
@@ -44,7 +45,8 @@ protected $_tipo;
 * @type float
 * @uso A
 * @funcion bdf
-* @label Relacion con la Base
+* @label RelBase
+* @labelf Relacion con la Base
 * @validate  numeric
 */
 protected $_relBase;

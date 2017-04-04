@@ -180,7 +180,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                     if ($eventos!=''){
                         $eventos="&eventos={$eventos}";
                     }
-    				$texto.="[[component:]]form_input::id={$key}&label={$value['label']}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$unico}{$dataon}{$dec}{$options}{$validate}{$eventos}[[:component]] ";
+    				$texto.="[[component:]]form_input::id={$key}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$unico}{$dataon}{$dec}{$options}{$validate}{$eventos}[[:component]] ";
     			}
     		}
 			//return '{% php print_r($_data); %}'.$texto;

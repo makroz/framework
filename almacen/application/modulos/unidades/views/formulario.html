@@ -46,7 +46,7 @@ function isUnique_nombre(){
 		old_nombre=dato;
 		dataUnique('nombre',dato,function(msg){
 			if (msg==1){
-				alert('Ese Nombre ya exite!!!');
+				alert('Ese {% echo $anexos[nombre][labelf] %} ya existe!!!');
 				$('#nombre').focus();
 			}
 		});
@@ -82,14 +82,14 @@ function isUnique_nombre(){
      {% else %}
      <input id="tipo" name="tipo" type="text" class="alfa $clasver" width="" value='{% echo $anexos[tipo][options][$item[tipo]]; %}'  disabled="disabled"  >
      {% /else %}
-    	          <label for="tipo">{$anexos[tipo][label]}</label>
+    	          <label for="tipo">{% echo $anexos[tipo][labelf] %}</label>
     	          <div class="error_input">{$errors[tipo][0]}</div>
 		</div>
  
 
 		<div class="input-field col s12">
 	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'    onblur='isUnique_nombre();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="nombre">Nombre</label>
+	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
 		</div>
  
@@ -101,14 +101,14 @@ function isUnique_nombre(){
      {% else %}
      <input id="base" name="base" type="text" class="alfa $clasver" width="" value='{% php if ($item[base]=="1"){ $_valor= $anexos[base][labelon]; } else { $_valor=$anexos[base][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
      {% /else %}
-     <label for="base">Es Base?</label>
+    <label for="base">{% echo $anexos[base][labelf] %}</label>
      <div class="error_input">{$errors[base][0]}</div>
      </div>
  
 
 		<div class="input-field col s12 m8">
 	          <input id="relBase" name="relBase" type="text" class="float $clasver" data-decimal='2' width="" value='{% echo $item[relBase]; %}' data-validate=' numeric'  onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="relBase">Relacion con la Base</label>
+	         <label for="relBase">{% echo $anexos[relBase][labelf] %}</label>
 	          <div class="error_input">{$errors[relBase][0]}</div>
 		</div>
 </div>
