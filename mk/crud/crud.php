@@ -431,6 +431,22 @@ namespace Mk\Crud {
 			}
 		}
 
+		public function actionGetConfig(){
+			$this->setRenderView(false);
+			$session   = Registry::get("session");
+			$table = Inputs::get('table', $session->get('table', ''));
+			$fileconfig='';
+			$dir = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR . 'configuration';
+			if (file_exists($dir . DIRECTORY_SEPARATOR . 'config.crud')){
+				$fileconfig=file_get_contents($dir . DIRECTORY_SEPARATOR . 'config.crud');
+			}
+			echo $fileconfig;
+			return $fileconfig;
+
+		}
+
+
+
 		public function actionGenerar()
 		{
 			global $variables;
@@ -561,7 +577,24 @@ namespace Mk\Crud {
 			$crudConfig                 = json_encode($_REQUEST);
 			$dir                        = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR . 'configuration';
 			@mkdir($dir, 0700, true);
-			$gestor = fopen($dir . DIRECTORY_SEPARATOR . 'config-' . date('Ymd-His') . '.crud', "w+");
+
+/*			$files = array_slice(scandir($dir), 2);
+			if (count($files)>0){
+				print_r($files);
+			}
+*/
+			if (file_exists($dir . DIRECTORY_SEPARATOR . 'config.crud')){
+				$fileconfig=file_get_contents($dir . DIRECTORY_SEPARATOR . 'config.crud');
+				if ($fileconfig!=$crudConfig){
+					$gestor = fopen($dir . DIRECTORY_SEPARATOR . 'config-' . date('Ymd-His') . '.crud', "w+");
+					fwrite($gestor, $fileconfig, strlen($fileconfig));
+					fclose($gestor);
+				}
+
+			}
+
+
+			$gestor = fopen($dir . DIRECTORY_SEPARATOR . 'config.crud', "w+");
 			fwrite($gestor, $crudConfig, strlen($crudConfig));
 			fclose($gestor);
 			//print_r($crudConfig);
@@ -578,6 +611,7 @@ namespace Mk\Crud {
 			$gestor = fopen($dir . 'models' . DIRECTORY_SEPARATOR . strtolower($table) . '.php', "w+");
 			fwrite($gestor, $plantilla, strlen($plantilla));
 			fclose($gestor);
+			$mensaje=$plantilla;
 			$anexos    = implode($anexos, PHP_EOL . "\t\t") . PHP_EOL;
 			$file      = strtolower($this->getFilenameLayout('controller.php', 'plantillas'));
 			$gestor    = fopen($file, "r");
@@ -586,12 +620,13 @@ namespace Mk\Crud {
 			$plantilla = str_replace('//<<[CLASS]>>//', ucfirst($table) . '_controller', $plantilla);
 			$plantilla = str_replace('//<<[ANEXOS]>>//', $anexos, $plantilla);
 			$dir       = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR;
+			
 			@mkdir($dir . 'controllers', 0700, true);
 			$gestor = fopen($dir . 'controllers' . DIRECTORY_SEPARATOR . strtolower($table) . '_controller.php', "w+");
 			fwrite($gestor, $plantilla, strlen($plantilla));
 			fclose($gestor);
 			//$plantilla=str_replace(PHP_EOL,'<br />',$plantilla);
-			$view->set('mensaje', nl2br($plantilla));
+			$view->set('mensaje','<br>//Aqui empieza el Modelo<br>'.nl2br($mensaje).PHP_EOL.'//Aqui empieza el Controlador<br>'.nl2br($plantilla));
 			//$view->set('campos', $campos);
 			//generar vista listar
 			$file = strtolower($this->getFilenameLayout('view_listar.html', 'plantillas'));

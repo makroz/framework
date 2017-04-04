@@ -31,6 +31,12 @@ namespace Mk\Tools
 			return $out;
 		}
 
+		public static function singularize($t){
+			$t=rtrim($t,'es');
+			$t=rtrim($t,'s');
+			return $t;
+		}
+
 		/* USO:
 				getEtiquetas('Sample text, [/text to extract/] Rest of sample text [/WEB::http://google.com/] bla bla bla. ','[/','/]'));
 

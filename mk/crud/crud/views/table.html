@@ -91,7 +91,15 @@ $("#modal1").modal();
 {% append js.inline %}
 
 function cargarConfig(){
-  var plantilla=prompt('Ingrese la Plantilla:','');
+  getAjax('index.php?crud=getConfig','GET',{},'',function(msg){
+    cargarConfig1(msg);
+  });
+}
+
+function cargarConfig1(plantilla){
+  if(plantilla==''){
+    plantilla=prompt('Ingrese la Plantilla:','');
+  }
   if (plantilla!=''){
 
     var datos=JSON.parse(plantilla);
@@ -118,7 +126,7 @@ function cargarConfig(){
 
   $('select').material_select();
    Materialize.updateTextFields();
-  
+  alert('Configuraion Cargada!!');
 }
 
 
@@ -507,11 +515,11 @@ function closeLista(){
   <div   id="tabcampos" class="col s12">
 
    <div class="input-field col s6">
-          <input id="singular" name='singular' type="text" class="validate plantilla " data-type="text" value="{% echo $tableName %}">
+          <input id="singular" name='singular' type="text" class="validate plantilla " data-type="text" value="{% echo \Mk\Tools\String::singularize(ucfirst($tableName)); %}">
           <label for="singular" data-error="Debe escribir un nombre en singular" data-success="">Nombre del Modulo en Singular</label>
    </div>
    <div class="input-field col s6">
-          <input id="plural" name='plural' type="text" class="validate plantilla" data-type="text"  value="{% echo \Mk\Tools\String::Pluralize($tableName); %}" >
+          <input id="plural" name='plural' type="text" class="validate plantilla" data-type="text"  value="{% echo ucfirst($tableName); %}" >
           <label for="plural" data-error="Debe escribir un nombre en plural" data-success="">Nombre del Modulo en plural</label>
    </div>
  
