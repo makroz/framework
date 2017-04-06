@@ -80,7 +80,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
 
                 $unico='';
                 if ($value['unico']=='1'){
-                    $unico="&unico=1";
+                    $unico="&unico=1&primary=".$this->variables['_primary_']."&";
                     $onblur.="isUnique_{$key}();";
                 }
 

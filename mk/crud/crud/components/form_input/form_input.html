@@ -7,11 +7,14 @@ var old_[[var:]]id[[:var]]='{% echo $item[[[var:]]id[[:var]]]; %}';
 function isUnique_[[var:]]id[[:var]](){
 	var dato=$('#[[var:]]id[[:var]]').val();
 	if (dato!=old_[[var:]]id[[:var]]){
-		old_[[var:]]id[[:var]]=dato;
-		dataUnique('[[var:]]id[[:var]]',dato,function(msg){
-			if (msg==1){
+		$('.btnPrevAjax').hide();
+		dataUnique($('#[[var:]]primary[[:var]]').val(),'[[var:]]id[[:var]]',dato,function(msg){
+			if (msg!='0'){
 				alert('Ese {% echo $anexos[[[var:]]id[[:var]]][labelf] %} ya existe!!!');
 				$('#[[var:]]id[[:var]]').focus();
+			}else{
+				old_[[var:]]id[[:var]]=dato;
+				$('.btnPrevAjax').show();
 			}
 		});
 	}

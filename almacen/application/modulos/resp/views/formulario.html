@@ -1,0 +1,176 @@
+
+{% append style.files %}
+{% /append %}
+{% append style.inline %}
+
+
+
+{% /append %}
+{% append js.onready %}
+
+$(document).ajaxStop(function(){
+    showMensajes();
+});
+	$("select").material_select();
+	showMensajes();
+
+
+{% /append %}
+{% append js.inline %}  
+
+    jconfirm.defaults = {
+        title: 'Aviso',
+        boxWidth: '30%',
+        useBootstrap: false
+    };
+
+
+function grabado(msg){
+if (msg=='ok'){
+	$('#mk_formulario').modal('close');
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
+// codejs
+function getIniciales(){
+  var n=$('#nombre').val();
+  var r='';
+  if (n!=''){
+    n=n.split(' ');
+    for (var i in n){
+      if (n[i]!=''){
+        r=r+n[i].substr(0,1);
+      }
+    }
+  }
+  if(r!=''){
+  	$('#iniciales').val(r.toUpperCase());
+  }
+}
+// codejs
+
+
+var old_doc='{% echo $item[doc]; %}';
+function isUnique_doc(){
+	var dato=$('#doc').val();
+	if (dato!=old_doc){
+		$('.btnPrevAjax').hide();
+		dataUnique($('#pk').val(),'doc',dato,function(msg){
+			if (msg!='0'){
+				alert('Ese {% echo $anexos[doc][labelf] %} ya existe!!!');
+				$('#doc').focus();
+			}else{
+				old_doc=dato;
+				$('.btnPrevAjax').show();
+			}
+		});
+	}
+}
+
+
+var old_iniciales='{% echo $item[iniciales]; %}';
+function isUnique_iniciales(){
+	var dato=$('#iniciales').val();
+	if (dato!=old_iniciales){
+		$('.btnPrevAjax').hide();
+		dataUnique($('#pk').val(),'iniciales',dato,function(msg){
+			if (msg!='0'){
+				alert('Ese {% echo $anexos[iniciales][labelf] %} ya existe!!!');
+				$('#iniciales').focus();
+			}else{
+				old_iniciales=dato;
+				$('.btnPrevAjax').show();
+			}
+		});
+	}
+}
+{% /append %}
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
+{% /append %}
+<div class="container">
+<!-- ajax: -->
+<div class="titulo">
+<h1 > {% echo $modTitulo; %}</h1>
+</div>
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
+<div class="row">
+
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+
+<div class="input-field col s12">
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+</div>
+ 
+
+		<div class="input-field col s12 m3">
+	          <input id="doc" name="doc" type="text" class="alfa $clasver" width="" value='{% echo $item[doc]; %}'   required data-validate=' required'  onblur='isUnique_doc();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="doc">{% echo $anexos[doc][labelf] %}</label>
+	          <div class="error_input">{$errors[doc][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12 m7">
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'   required data-validate=' required'  onblur='getIniciales();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
+	          <div class="error_input">{$errors[nombre][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12 m2">
+	          <input id="iniciales" name="iniciales" type="text" class="alfa $clasver" width="" value='{% echo $item[iniciales]; %}'    onblur='isUnique_iniciales();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="iniciales">{% echo $anexos[iniciales][labelf] %}</label>
+	          <div class="error_input">{$errors[iniciales][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12 m6">
+	          <input id="tel" name="tel" type="text" class="alfa $clasver" width="" value='{% echo $item[tel]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="tel">{% echo $anexos[tel][labelf] %}</label>
+	          <div class="error_input">{$errors[tel][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12 m6">
+	          <input id="cel" name="cel" type="text" class="alfa $clasver" width="" value='{% echo $item[cel]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="cel">{% echo $anexos[cel][labelf] %}</label>
+	          <div class="error_input">{$errors[cel][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12">
+	          <input id="mail" name="mail" type="text" class="alfa $clasver" width="" value='{% echo $item[mail]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="mail">{% echo $anexos[mail][labelf] %}</label>
+	          <div class="error_input">{$errors[mail][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12">
+	          <input id="dir" name="dir" type="text" class="alfa $clasver" width="" value='{% echo $item[dir]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="dir">{% echo $anexos[dir][labelf] %}</label>
+	          <div class="error_input">{$errors[dir][0]}</div>
+		</div>
+</div>
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
+</form>
+<!-- notajax: -->
+{% if ('[[var:]]mostrar[[:var]]'!='1') %}
+<div class="modal-footer" >
+<div class="pag white-text" style="float: left;"></div>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='ver') %}
+				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
+				{% /if %}
+        </div>
+{% /if %}
+<!-- :notajax -->
+<!-- :ajax -->
+</div>

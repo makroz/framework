@@ -60,18 +60,27 @@ namespace Mk\Shared
 
 	public function actionDataExist(){
 		$this->setRenderView(false);
-		//$primary = $this->getPrimary();
-		//
-		//
-		$where=$this->getSearchWhere();
-		$where = array(
-		'?'=>$where
-		);
-		$count = $this->_model->count($where);
+		$primary = $this->getPrimary();
+
 		$existe=0;
-		if ($count>0){
-			$existe=1;
+		$campo = $this->_model->escape(Inputs::get("campo",''));
+		$valor =$this->_model->escape( Inputs::get("valor",''));
+		$pk =$this->_model->escape( Inputs::get("pk",'0'));
+		//echo "Datos: {$campo}:{$valor}:{$pk}";
+		if (($campo!='')&&($valor!='')){
+
+			$where="({$primary}<>'{$pk}')and({$campo}='{$valor}')";
+			//echo $where;
+			//$where=$this->getSearchWhere();
+			$where = array(
+			'?'=>$where
+			);
+			$count = $this->_model->count($where);
+			if ($count>0){
+				$existe=1;
+			}
 		}
+
 		if (\Mk\Tools\App::isAjax()==true){
 			echo $existe;
 			return $pk;	
@@ -276,8 +285,10 @@ namespace Mk\Shared
 				}
 			}
 
-			$this->setParam('search_where',stripslashes($where));
-			$this->setParam('search_msg',stripslashes($this->_searchMsg));
+			if (Inputs::get("search_type",'')!='1'){
+				$this->setParam('search_where',stripslashes($where));
+				$this->setParam('search_msg',stripslashes($this->_searchMsg));
+			}
 			if ($where==''){
 				$where=$vacio;
 			}

@@ -332,8 +332,9 @@ function getCookie(cname) {
 
   }
 
-  function dataUnique(campo, valor, success){
-    getAjax(reaction('search_campo[]='+campo+'&search_cond=1&search_search_text='+valor,'dataExist', '',true),'GET',{},'',success)
+  function dataUnique(pk,campo, valor, _success){
+    //getAjax(reaction('searh_type=0&search_campo[]='+_campo+'&search_cond=3&search_search_text[]='+_valor,'dataExist', '',true),'GET',{},'',_success)
+    getAjax(reaction('campo='+campo+'&pk='+pk+'&valor='+valor,'dataExist', '',true),'GET',{},'',_success)
 
   }
 

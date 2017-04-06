@@ -481,6 +481,7 @@ namespace Mk\Crud {
 				$lines[] = '* @column';
 				$lines[] = '* @readwrite';
 				if ($fields[$key]['key'] == 'PRI') {
+					$variables['_primary_']=$key;
 					$lines[] = '* @primary';
 				}
 				if ($fields[$key]['key'] == 'MUL') {
@@ -640,6 +641,15 @@ namespace Mk\Crud {
 			//generar vista listar
 			$file = strtolower($this->getFilenameLayout('view_listar.html', 'plantillas'));
 			$this->procesaPlantillaView($file, $campos, $table);
+
+
+/*			$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'mk' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'jslibrary';
+			$fileconfig=file_get_contents($dir . DIRECTORY_SEPARATOR . 'library.js');
+			$jsl  = \Mk\Tools\String::getEtiquetas($fileconfig, '[[js:]]', '[[:js]]', '1');
+			echo "<hr>Library Js: <hr>";
+			print_r($jsl);
+			echo "<hr>Library Js Fin <hr>";
+*/
 			$file = strtolower($this->getFilenameLayout('view_formulario.html', 'plantillas'));
 			$this->procesaPlantillaView($file, $campos, $table);
 		}

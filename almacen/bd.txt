@@ -1,0 +1,12 @@
+almace
+
+unidades=pk,nombre, tipo, base, relbase, status
+
+
+resp=pk, doc,nombre,iniciales, tel, cel,mail,dir, status
+almacenes=pk, nombre, dir, fk_resp, estado, status
+permisos=pk,fk_almacenes, fk_resp,permisos, status
+categorias= pk, nombre, nivel, sk_padre, descrip, status
+productos=pk, fk_almacenes, nombre, fk_unidades, cant, costo, precio, codbarra, fk_categorias, status
+
+me falta modificar el sendform para que no envie si es que un ajax o unique no es correcto.
