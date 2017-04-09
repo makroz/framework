@@ -248,8 +248,16 @@ function getCookie(cname) {
             }
         }
 
+        if (tipo=='mail'){
+            if (!isEmail(dato)){
+              msg=msg+"Este Campo debe ser un eMail valido";      
+              error++;
+              // alert("validacin for "+$(campo).attr('id')+'is :' + tipo+' dato es: '+dato);
+            }
+        }
        
-        $(campo).parent().parent().find('.error_input').html(msg);
+        inputMsg(campo,msg)
+        //$(campo).parent().find('.error_input').html(msg);
 
 
 
@@ -263,6 +271,37 @@ function getCookie(cname) {
   }
     //alert('error='+error);
     return false;
+  }
+
+function inputMsg(campo,msg){
+  $(campo).parent().find('.error_input').html(msg);
+
+}
+
+function alertfocus(msg,inp,color,def,){
+  //alert(msg);
+  if (!color){color='red';}
+  if (!def){def='';}else{$(inp).val(def);}
+  
+  inputMsg(inp,msg);
+  $(inp).focus();
+  //$.alert({ content:"Este Campo debe ser un eMail valido",type: color});
+  //if (inp.indexOf('.')<0){inp='#'+inp;}
+  //setTimeout("$('"+inp+"').focus();",75); 
+  setTimeout("inputMsg('"+inp+"','');",5000); 
+}
+
+
+  function _valEmail(campo){
+    if (!isEmail($(campo).val())){
+      alertfocus('Este Campo debe ser un eMail valido','#'+ $(campo).prop('id'));
+    }
+  }
+
+  function isEmail(dato){
+    if (dato==''){return true;}
+    var emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    return emailRegex.test(dato);
   }
 
   function soloNum(e,i)   

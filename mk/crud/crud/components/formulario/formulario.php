@@ -114,11 +114,18 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                             $dec='0';
                         }
                         $dec='&decimal='.$dec;
-                        $onkeypress.=" return soloNum(event,this);";
+                        $onkeypress=" return soloNum(event,this);";
                         $onblur.=" _refreshFloat(this);";
 
 
                     }
+
+                     if($value['validar']=='mail'){
+                        $onblur.=" _valEmail(this);";
+                     }
+                     if($value['validar']=='numerico'){
+                       $onkeypress=" return soloNum(event,this);";
+                     }
 
                     $options='';
                     if($value['usof']=='selec'){

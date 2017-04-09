@@ -184,7 +184,7 @@ var options=[];
 	options['cod']=idSel;
 	if (idAction=='add'){
 		options=[];
-		_openForm('#mk_formulario',idAction,'Adicionar Responsable');
+		_openForm('#mk_formulario',idAction,'Adicionar Almacen');
 		//reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
 	}
@@ -193,7 +193,7 @@ var options=[];
 		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
 		return false;
 		}
-		_openForm('#mk_formulario',idAction,'Editar Responsable');
+		_openForm('#mk_formulario',idAction,'Editar Almacen');
 		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
 		reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
@@ -234,7 +234,7 @@ var options=[];
 			});
 		}
 		$('#mk_formulario  .modal-footer').find('.pag').html(pag);
-		_openForm('#mk_formulario',idAction,'Ver Responsable',true);
+		_openForm('#mk_formulario',idAction,'Ver Almacen',true);
 		reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
 	}
@@ -458,7 +458,7 @@ var options=[];
 	options['cod']=idSel;
 	if (idAction=='add'){
 		options=[];
-		_openForm('#mk_formulario',idAction,'Adicionar Responsable');
+		_openForm('#mk_formulario',idAction,'Adicionar Almacen');
 		//reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
 	}
@@ -467,7 +467,7 @@ var options=[];
 		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
 		return false;
 		}
-		_openForm('#mk_formulario',idAction,'Editar Responsable');
+		_openForm('#mk_formulario',idAction,'Editar Almacen');
 		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
 		reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
@@ -508,7 +508,7 @@ var options=[];
 			});
 		}
 		$('#mk_formulario  .modal-footer').find('.pag').html(pag);
-		_openForm('#mk_formulario',idAction,'Ver Responsable',true);
+		_openForm('#mk_formulario',idAction,'Ver Almacen',true);
 		reaction(options,idAction,'','#mk_formulario .modal-content');
 		return false;
 	}
@@ -533,68 +533,7 @@ if (msg=='ok'){
 return -1;
 }
 // codejs
-function getIniciales(){
-  var n=$('#nombre').val();
-  var r='';
-  if (n!=''){
-    n=n.split(' ');
-    for (var i in n){
-      if (n[i]!=''){
-        r=r+n[i].substr(0,1);
-      }
-    }
-  }
-  if(r!=''){
-  	$('#iniciales').val(r.toUpperCase());
-  }
-}
 // codejs
-
-
-var old_doc='{% echo $item[doc]; %}';
-function isUnique_doc(){
-	var dato=$('#doc').val();
-	if (dato==''){
-		$('.btnPrevAjax').show();
-		return true;
-	}
-	if (dato!=old_doc){
-		$('.btnPrevAjax').hide();
-		dataUnique($('#pk').val(),'doc',dato,function(msg){
-			if (msg!='0'){
-				alertfocus('Ese {% echo $anexos[doc][labelf] %} ya existe!!!','#doc')
-				//alert('Ese {% echo $anexos[doc][labelf] %} ya existe!!!');
-				//$('#doc').focus();
-			}else{
-				old_doc=dato;
-				$('.btnPrevAjax').show();
-			}
-		});
-	}
-}
-
-
-var old_iniciales='{% echo $item[iniciales]; %}';
-function isUnique_iniciales(){
-	var dato=$('#iniciales').val();
-	if (dato==''){
-		$('.btnPrevAjax').show();
-		return true;
-	}
-	if (dato!=old_iniciales){
-		$('.btnPrevAjax').hide();
-		dataUnique($('#pk').val(),'iniciales',dato,function(msg){
-			if (msg!='0'){
-				alertfocus('Ese {% echo $anexos[iniciales][labelf] %} ya existe!!!','#iniciales')
-				//alert('Ese {% echo $anexos[iniciales][labelf] %} ya existe!!!');
-				//$('#iniciales').focus();
-			}else{
-				old_iniciales=dato;
-				$('.btnPrevAjax').show();
-			}
-		});
-	}
-}
 {% /append %}
 {% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
 <link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
@@ -635,7 +574,7 @@ function isUnique_iniciales(){
 	      <div class="row search1" data-count='0'>
 	            <div class="input-field col s3" >
 	    <select id="search_campo" name='search_campo[]' class="_search browser-default" onchange="_search_campo_change(this)" autocomplete='false' >
-	      <option value="pk" class="_sc2">Id</option><option value="doc" class="_sc1">Doc</option><option value="nombre" class="_sc1">Nombre</option><option value="iniciales" class="_sc1">Iniciales</option><option value="tel" class="_sc1">Tel</option><option value="cel" class="_sc1">Cel</option><option value="mail" class="_sc1">Mail</option><option value="dir" class="_sc1">Dir</option>
+	      <option value="pk" class="_sc2">Id</option><option value="nombre" class="_sc1">Nombre</option><option value="dir" class="_sc1">Direccion</option><option value="estado" class="_sc1">Estado</option><option value="fk_resp" class="">Resp</option>
 	    </select>
 	          <label for="search_campo" class="labeltop">Campo de busqueda</label>
 				</div>
@@ -719,7 +658,7 @@ function isUnique_iniciales(){
 <input type="checkbox" id="{% echo 'list_check_all'; %}" name="{% echo 'list_check_all'; %}"  data-type="{% echo 'check'; %}" data-on="{% echo '1'; %}" data-off="{% echo '0'; %}" onclick="clicChecked('0');" />
 <label for="{% echo 'list_check_all'; %}"></label>
 			</th>
-			<th data-field="pk" width="60" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="doc" width="" class="sortable {% if ($order=='doc') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[doc][label] %} </th><th data-field="nombre" width="" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nombre][label] %} </th><th data-field="tel" width="" class="sortable {% if ($order=='tel') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tel][label] %} </th><th data-field="cel" width="" class="sortable {% if ($order=='cel') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[cel][label] %} </th><th data-field="mail" width="" class="sortable {% if ($order=='mail') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[mail][label] %} </th><th data-field="dir" width="" class="sortable {% if ($order=='dir') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[dir][label] %} </th><th data-field="status" width="45" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
+			<th data-field="pk" width="60" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="nombre" width="" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nombre][label] %} </th><th data-field="dir" width="" class="sortable {% if ($order=='dir') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[dir][label] %} </th><th data-field="estado" width="35" class="sortable {% if ($order=='estado') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[estado][label] %} </th><th data-field="fk_resp" width="150" class="sortable {% if ($order=='fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="status" width="45" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
 			<th data-field="act" width="290" class=" noprinter">Accion</th>
 		</tr>
 	</thead>
@@ -740,32 +679,22 @@ function isUnique_iniciales(){
  
 
 <td >
-     {% echo $row[doc]; %}
-</td>
- 
-
-<td >
      {% echo $row[nombre]; %}
 </td>
  
 
 <td >
-     {% echo $row[tel]; %}
-</td>
- 
-
-<td >
-     {% echo $row[cel]; %}
-</td>
- 
-
-<td >
-     {% echo $row[mail]; %}
-</td>
- 
-
-<td >
      {% echo $row[dir]; %}
+</td>
+ 
+
+<td >
+     {% echo $anexos[estado]['options'][$row[estado]]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[fk_resp]; %}
 </td>
  
 
@@ -803,7 +732,7 @@ function isUnique_iniciales(){
 		{% foreach $_i in range($nr+1, $limit) %}
 		<tr class="noprinter">
 			<td class="noprinter" >&nbsp; </td>
-			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
+			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
 			<td class="noprinter" > </td>
 		</tr>
 		{% /foreach %}
@@ -833,45 +762,10 @@ function isUnique_iniciales(){
 </div>
  
 
-		<div class="input-field col s12 m3">
-	          <input id="doc" name="doc" type="text" class="alfa $clasver" width="" value='{% echo $item[doc]; %}'   required data-validate=' required'  onblur='isUnique_doc();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="doc">{% echo $anexos[doc][labelf] %}</label>
-	          <div class="error_input">{$errors[doc][0]}</div>
-		</div>
- 
-
-		<div class="input-field col s12 m7">
-	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'   required data-validate=' required'  onblur='getIniciales();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+		<div class="input-field col s12">
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
-		</div>
- 
-
-		<div class="input-field col s12 m2">
-	          <input id="iniciales" name="iniciales" type="text" class="alfa $clasver" width="" value='{% echo $item[iniciales]; %}'    onblur='isUnique_iniciales();'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="iniciales">{% echo $anexos[iniciales][labelf] %}</label>
-	          <div class="error_input">{$errors[iniciales][0]}</div>
-		</div>
- 
-
-		<div class="input-field col s12 m6">
-	          <input id="tel" name="tel" type="text" class="alfa $clasver" width="" value='{% echo $item[tel]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="tel">{% echo $anexos[tel][labelf] %}</label>
-	          <div class="error_input">{$errors[tel][0]}</div>
-		</div>
- 
-
-		<div class="input-field col s12 m6">
-	          <input id="cel" name="cel" type="text" class="alfa $clasver" width="" value='{% echo $item[cel]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="cel">{% echo $anexos[cel][labelf] %}</label>
-	          <div class="error_input">{$errors[cel][0]}</div>
-		</div>
- 
-
-		<div class="input-field col s12">
-	          <input id="mail" name="mail" type="text" class="alfa $clasver" width="" value='{% echo $item[mail]; %}'  data-validate=' mail'  onblur=' _valEmail(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="mail">{% echo $anexos[mail][labelf] %}</label>
-	          <div class="error_input">{$errors[mail][0]}</div>
 		</div>
  
 
@@ -880,6 +774,23 @@ function isUnique_iniciales(){
 	          <label for="dir">{% echo $anexos[dir][labelf] %}</label>
 	          <div class="error_input">{$errors[dir][0]}</div>
 		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][label]); %}
+		<div class="input-field col s12">
+		 {% if $_action!='ver' %}
+		<select id="estado" name="estado" class="select $clasver"  required data-validate=' required' [[var:]]eventos[[:var]]  >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="estado" name="estado" type="text" class="alfa $clasver" width="" value='{% echo $anexos[estado][options][$item[estado]]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="estado">{% echo $anexos[estado][labelf] %}</label>
+    	          <div class="error_input">{$errors[estado][0]}</div>
+		</div>
+ 
+
 </div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>

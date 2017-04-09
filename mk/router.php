@@ -87,9 +87,9 @@ namespace Mk
 			
 			if (!method_exists($instance, $action))
 			{
-				$instance->willRenderLayoutView = false;
-				$instance->willRenderActionView = false;
-				throw $this->_Exception("Action {$action} not found",2);
+					$instance->willRenderLayoutView = false;
+					$instance->willRenderActionView = false;
+					throw $this->_Exception("Action {$action} not found in {$name}",2);
 			}
 			$inspector = new Inspector($instance);
 			$methodMeta = $inspector->getMethodMeta($action);
@@ -114,7 +114,6 @@ namespace Mk
 					}
 				}
 			};
-
 			Events::fire("mk.router.beforehooks.before", array($action, $parameters));
 			$hooks($methodMeta, "@before");
 			Events::fire("framework.router.beforehooks.after", array($action, $parameters));

@@ -11,6 +11,8 @@ namespace Mk\Shared
 	{
 
 		protected $_searchMsg='';
+		
+		public $defaultAction='listar';
 
 		protected $_defaultFields=array ("status"=>"STATUS");
 
@@ -450,6 +452,11 @@ namespace Mk\Shared
 
 	public function afterListar(&$view){
 		return true;
+	}
+
+	public function actionIndex(){
+		$this->changeViewAction('listar.html');
+		$this->actionListar();
 	}
 
 	public function actionListar(){

@@ -8,6 +8,7 @@ class Resp extends Mk\Shared\Model
 * @primary
 * @type autonumber
 * @label Id
+* @validate  numeric
 */
 protected $_pk;
 /**
@@ -68,6 +69,7 @@ protected $_cel;
 * @uso A
 * @funcion st
 * @label Mail
+* @validate  mail
 */
 protected $_mail;
 /**

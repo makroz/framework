@@ -59,12 +59,17 @@ function getIniciales(){
 var old_doc='{% echo $item[doc]; %}';
 function isUnique_doc(){
 	var dato=$('#doc').val();
+	if (dato==''){
+		$('.btnPrevAjax').show();
+		return true;
+	}
 	if (dato!=old_doc){
 		$('.btnPrevAjax').hide();
 		dataUnique($('#pk').val(),'doc',dato,function(msg){
 			if (msg!='0'){
-				alert('Ese {% echo $anexos[doc][labelf] %} ya existe!!!');
-				$('#doc').focus();
+				alertfocus('Ese {% echo $anexos[doc][labelf] %} ya existe!!!','#doc')
+				//alert('Ese {% echo $anexos[doc][labelf] %} ya existe!!!');
+				//$('#doc').focus();
 			}else{
 				old_doc=dato;
 				$('.btnPrevAjax').show();
@@ -77,12 +82,17 @@ function isUnique_doc(){
 var old_iniciales='{% echo $item[iniciales]; %}';
 function isUnique_iniciales(){
 	var dato=$('#iniciales').val();
+	if (dato==''){
+		$('.btnPrevAjax').show();
+		return true;
+	}
 	if (dato!=old_iniciales){
 		$('.btnPrevAjax').hide();
 		dataUnique($('#pk').val(),'iniciales',dato,function(msg){
 			if (msg!='0'){
-				alert('Ese {% echo $anexos[iniciales][labelf] %} ya existe!!!');
-				$('#iniciales').focus();
+				alertfocus('Ese {% echo $anexos[iniciales][labelf] %} ya existe!!!','#iniciales')
+				//alert('Ese {% echo $anexos[iniciales][labelf] %} ya existe!!!');
+				//$('#iniciales').focus();
 			}else{
 				old_iniciales=dato;
 				$('.btnPrevAjax').show();
@@ -146,7 +156,7 @@ function isUnique_iniciales(){
  
 
 		<div class="input-field col s12">
-	          <input id="mail" name="mail" type="text" class="alfa $clasver" width="" value='{% echo $item[mail]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="mail" name="mail" type="text" class="alfa $clasver" width="" value='{% echo $item[mail]; %}'  data-validate=' mail'  onblur=' _valEmail(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="mail">{% echo $anexos[mail][labelf] %}</label>
 	          <div class="error_input">{$errors[mail][0]}</div>
 		</div>

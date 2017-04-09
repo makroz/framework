@@ -24,6 +24,7 @@ namespace Mk
 			"autonumber",
 			"text",
 			"integer",
+			"int",
 			"decimal",
 			"boolean",
 			"datetime",
@@ -47,6 +48,10 @@ namespace Mk
 		"numeric" => array(
 		"handler" => "_validateNumeric",
 		"message" => "The {0} field can only contain numbers"
+		),
+		"mail" => array(
+		"handler" => "_validateEmail",
+		"message" => "The {0} field can only contain valid email"
 		),
 		"alphanumeric" => array(
 		"handler" => "_validateAlphaNumeric",
@@ -290,7 +295,7 @@ namespace Mk
 
 						if (!in_array($type, $types))
 						{
-							throw $this->_Exception("{$type} is not a valid type");
+							throw $this->_Exception("{$type} is not a valid type for $name");
 						}
 						if ($primary)
 						{
@@ -455,6 +460,12 @@ namespace Mk
 		{
 			return StringMethods::match($value, "^(\d|-)?(\d|,)*\.?\d*$");
 		}
+
+		protected function _validateEmail($value)
+		{
+			return StringMethods::match($value, "^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$");
+		}
+
 		protected function _validateAlphaNumeric($value)
 		{
 			return StringMethods::match($value, "#^([a-zA-Z0-9]+)$#");

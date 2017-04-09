@@ -72,7 +72,10 @@ namespace Mk\Crud {
 			$lusof['buscardb']                = 'DB Buscar';
 			$lusof['multiple']                = 'Lista Multiple';
 			$lusof['oculto']                  = 'Oculto';
-			$ltipolista['list']               = array(
+			$lvalid['mail']                   = 'eMail';
+			$lvalid['numerico']               = 'solo Numeros';
+			$lvalid['tel']                    = 'Telefonos';
+			$ltipolista['show']               = array(
 				'text' => 'Mostrar',
 				'tamsel' => 's8'
 			);
@@ -183,6 +186,11 @@ namespace Mk\Crud {
 			$pedir['listaeventos']['tam']       = 's4';
 			$pedir['listaeventos']['disabled']  = 'disabled';
 
+			$pedir['validar']['text']       = 'Validacion';
+			$pedir['validar']['type']       = 'sel';
+			$pedir['validar']['opt']        = Form::getListaSel($lvalid, 'Ninguna');
+			
+
 
 
 			$posf=0;
@@ -208,7 +216,7 @@ namespace Mk\Crud {
 				), true)) {
 					$pedir['funcion']['val'][$key]   = 'st';
 					$pedir['usof']['val'][$key]      = 'alfa';
-					$pedir['tipolista']['val'][$key] = 'list';
+					$pedir['tipolista']['val'][$key] = 'show';
 					if ($field['args'][0] > 0) {
 						$pedir['tamlista']['val'][$key] = ($field['args'][0] * 5) + 20;
 						if ($pedir['tamlista']['val'][$key] > 200) {
@@ -281,6 +289,7 @@ namespace Mk\Crud {
 				), true)) {
 					$pedir['funcion']['val'][$key]  = 'bdf';
 					$pedir['usof']['val'][$key]     = 'float';
+					$pedir['validar']['val'][$key]     = 'numerico';
 					$pedir['tamlista']['val'][$key] = '80';
 					if ($field['args'][1] > 0) {
 						$pedir['dec']['val'][$key] = $field['args'][1];
@@ -298,6 +307,7 @@ namespace Mk\Crud {
 				), true)) {
 					$pedir['tamlista']['val'][$key] = '60';
 					$pedir['usof']['val'][$key]     = 'int';
+					$pedir['validar']['val'][$key]     = 'numerico';
 				}
 				if (in_array($field['type'], array(
 					'datetime',
@@ -323,20 +333,20 @@ namespace Mk\Crud {
 				/// Valores por defecto segun tipo de datos de la BD
 				// Valores por defecto segun Nombre de Campo
 				$Name = strtolower($key);
+
+				if (in_array($Name, array(
+					'email',
+					'mail',
+					'correo'
+				), true)) {
+					$pedir['validar']['val'][$key]   = 'mail';
+				}
+
 				if (in_array($Name, array(
 					'pass',
 					'password',
 					'contrasena'
 				), true)) {
-					$func     = 'cd';
-					$usof     = 'pass';
-					$tamlista = '';
-					$tam      = '100';
-					$clase    = 'obligatorio';
-					$err      = 'X';
-					$search   = 'X';
-					$lista    = '-1';
-					$listan--;
 					$pedir['funcion']['val'][$key]   = 'st';
 					$pedir['usof']['val'][$key]      = 'pass';
 					$pedir['search']['val'][$key]    = '0';
@@ -402,7 +412,7 @@ namespace Mk\Crud {
 					//$pedir['ver']['val'][$key]='1';
 					//$var='cod';
 					if ($Name == 'pk') {
-						$pedir['tipolista']['val'][$key] = 'list';
+						$pedir['tipolista']['val'][$key] = 'show';
 						$pedir['tamlista']['val'][$key]  = '60';
 						$pedir['label']['val'][$key]     = 'Id';
 					}
@@ -520,11 +530,17 @@ namespace Mk\Crud {
 				if ($field['required'] == 1) {
 					$validate .= " required";
 				}
-				if (($field['usof'] == 'int') || ($field['usof'] == 'float')) {
+				if (($field['usof'] == 'int') || ($field['usof'] == 'float')|| ($field['validar'] == 'numerico')) {
 					if ($validate != '') {
 						$validate .= ',';
 					}
 					$validate .= " numeric";
+				}
+				if ($field['validar'] == 'mail') {
+					if ($validate != '') {
+						$validate .= ',';
+					}
+					$validate .= " mail";
 				}
 				if ($validate != '') {
 					$lines[] = '* @validate ' . $validate;
