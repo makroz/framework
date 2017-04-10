@@ -100,8 +100,6 @@ $('#mk_buscar').modal();
 	
 
 initListTable();
-
-
 {% /append %}
 {% append js.inline %}     
 
@@ -144,7 +142,9 @@ return -1;
 }
 function _openForm(f, idAction,tit){
 		$(f).find('input').val('');
-		$(f).find('select option:eq(0)').prop('selected', true);
+				$(f).find('select').each(function(index){
+			$(this).find('option:eq(0)').prop('selected', true);
+		});
 		$(f).find('.check').prop('checked', false);
 		$(f).find('.error_input').html('');
 		$(f).find('#_save_').val(idAction);
@@ -383,140 +383,6 @@ getAjax(link,'GET',{ },item, function(msg){
      	$(item).data('status',newstatus).attr('src','img/'+icon+'.png');
      }
    });
-}
-
-
-function _fillForm(msg){
-if (msg=='error'){
-	$('#mk_formulario').modal('close');
-	alert('error');
-}else{
-	var datos=JSON.parse(msg);
-	$.each(datos, function(i, item) {
-		var type=$('#'+i).prop("tagName");
-		if (type=='INPUT'){
-			var type2=$('#'+i).prop("type");
-			if (type2=='checkbox'){
-				if (item==1){
-					item=true;
-				}else{
-					item=false;
-				}
-				$('#'+i).prop('checked', item);
-			}else{
-				$('#'+i).val(item);
-			}
-		}
-		if (type=='SELECT'){
-			$('#'+i).find('option[value="'+item+'"]').prop('selected', true);
-		}
-		//alert(i+' es :'+$('#'+i).prop("tagName"));
-	});
-	$("select").material_select();
-}
-return -1;
-}
-function _openForm(f, idAction,tit){
-		$(f).find('input').val('');
-		$(f).find('select option:eq(0)').prop('selected', true);
-		$(f).find('.check').prop('checked', false);
-		$(f).find('.error_input').html('');
-		$(f).find('#_save_').val(idAction);
-		$(f).find('.titulo > h1 ').html(tit);
-		if (idAction=='ver'){
-			$('#btnSave').hide();
-			$('#btnPrint').show();
-			$(f).data('ultAction',idAction);
-		}else{
-			$('#btnPrint').hide();
-			$('#btnSave').show();
-			$('#mk_formulario  .modal-footer').find('.pag').html('');
-			if ((idAction=='add')&&($(f).data('ultAction')=='ver')){
-				reaction('',idAction,'','#mk_formulario .modal-content');
-			}
-			$(f).data('ultAction',idAction);
-		}
-		$("select").material_select();
-		Materialize.updateTextFields();
-		$(f).modal('open');
-}
-function verItem(id){
-	$('.mk_pag').removeClass('active');
-	$('.mk_pag:contains("'+id+'")').addClass('active');
-	reaction('cod='+id,'ver','','#mk_formulario .modal-content');
-}
-function clicBotonera(boton){
-var idSel = $(boton).parent().parent().data('cod');
-var idAction = $(boton).data('action');
-var selCount = 1;
-var div=''
-if (idSel==undefined){
-	idSel = serializar();
-	selCount = $(".list_check:checked").length;
-}
-var options=[];
-	options['cod']=idSel;
-	if (idAction=='add'){
-		options=[];
-		_openForm('#mk_formulario',idAction,'Adicionar Almacen');
-		//reaction(options,idAction,'','#mk_formulario .modal-content');
-		return false;
-	}
-	if (idAction=='edit'){
-		if (selCount!=1){
-		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
-		return false;
-		}
-		_openForm('#mk_formulario',idAction,'Editar Almacen');
-		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
-		reaction(options,idAction,'','#mk_formulario .modal-content');
-		return false;
-	}
-	if (idAction=='del'){
-		if (selCount==0){
-		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
-		return false;
-		}
-		idAction='';
-		$.confirm({
-		    title: 'Confirmacion',
-		    content: '¿Esta seguro de querer borrar los registros marcados?',
-		    type:'red',
-		    buttons: {
-		        confirm: function () {
-		            options['_del']='del';
-					idAction='listar';
-					div='.listTable';
-					reaction(options,idAction,'',div);
-		        },
-		        cancel: function () {
-		        
-		        }
-		    }
-		});
-	}
-	if (idAction=='ver'){
-		if (selCount==0){
-		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
-		return false;
-		}
-		var pag='';
-		if (selCount>1){
-			var cods=idSel.split(',');
-			$.each(cods,function(i,item){
-				pag=pag+'<span class="mk_pag" onclick="verItem('+item+');" >'+item+'</span>';
-			});
-		}
-		$('#mk_formulario  .modal-footer').find('.pag').html(pag);
-		_openForm('#mk_formulario',idAction,'Ver Almacen',true);
-		reaction(options,idAction,'','#mk_formulario .modal-content');
-		return false;
-	}
-	if (idAction!=''){
-	reaction(options,idAction,'',div);
-	//alert('Action Seleccionada: '+idAction);
-	}
-	return false;
 }
 
 

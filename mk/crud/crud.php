@@ -597,7 +597,10 @@ namespace Mk\Crud {
 					echo "<hr> usof selec DB:" . $field['campojoin'] . '<hr>';
 					$aux = explode('.', $field['campojoin'] . '.');
 					if (($aux[0]!='')&&($aux[1]!='')){
-						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}','{$aux[1]}');";
+						if ($aux[2]!=''){
+							$aux[2]=", '{$aux[2]}'";
+						}
+						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}', '{$aux[1]}'{$aux[2]});";
 					}
 				}
 				
@@ -653,7 +656,7 @@ namespace Mk\Crud {
 
 			$anexos    = implode($anexos, PHP_EOL . "\t\t") . PHP_EOL;
 			if (count($selecdb)>0){
-				$anexos    .="\t\t".'if ($join==true){'.PHP_EOL;
+				$anexos    .="\t\t".'if ($join!=0){'.PHP_EOL;
 				$anexos    .= "\t\t\t".implode($selecdb, PHP_EOL . "\t\t\t") . PHP_EOL;
 				$anexos    .="\t\t".'}'.PHP_EOL;
 			}

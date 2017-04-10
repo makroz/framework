@@ -36,8 +36,9 @@ return -1;
 
 function _openForm(f, idAction,tit){
 		$(f).find('input').val('');
-		$(f).find('select option:eq(0)').prop('selected', true);
-		
+				$(f).find('select').each(function(index){
+			$(this).find('option:eq(0)').prop('selected', true);
+		});
 		$(f).find('.check').prop('checked', false);
 		$(f).find('.error_input').html('');
 		$(f).find('#_save_').val(idAction);

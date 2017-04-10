@@ -112,7 +112,9 @@ namespace Mk\Tools
 						unset($type[0]);
 						$value1=rtrim(implode('::',$type),'::');
 						if ($_type==2){
-							$out[$key1][$_key]="\n". $value1;
+							if (stripos($out[$key1][$_key],$value)===false){
+								$out[$key1][$_key]="\n". $value1;
+							}
 						}else{
 							$out[$key1][] = $value1;	
 						}
@@ -122,7 +124,10 @@ namespace Mk\Tools
 						
 					} else {
 						if ($_type!=1){
-							$out[$_key] .="\n".$value; 
+							if (stripos($out[$_key],$value)===false){
+								$out[$_key] .="\n".$value; 
+							}
+							
 						}else{
 							$out[] =$value; 
 						}

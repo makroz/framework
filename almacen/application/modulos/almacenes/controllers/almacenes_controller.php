@@ -13,14 +13,14 @@ class Almacenes_controller extends CrudDb
 		//$this->_model =$this->_getLoged();
 	}
 
-	public function getAnexos($anexos=array(),$join=false){
+	public function getAnexos($anexos=array(),$join=0){
 		$anexos=parent::getAnexos($anexos);
 		$anexos['estado']['options']['E']='Abierto';
 		$anexos['estado']['options']['N']='Inventario Inicial Nuevo';
 		$anexos['estado']['options']['C']='Cerrado';
 		$anexos['estado']['options']['I']='Inventariando';
-		if ($join==true){
-			$anexos['fk_resp']['options']=$this->getArrayFromTable('resp','nombre');
+		if ($join!=0){
+			$anexos['fk_resp']['options']=$this->getArrayFromTable('resp', 'nombre');
 		}
 
 		return $anexos;
