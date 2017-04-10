@@ -106,10 +106,10 @@ namespace Mk\Crud {
 			$pedir['var']['type']             = 'text';
 			$pedir['uso']['text']             = 'Procesar al Grabar/Actualizar';
 			$pedir['uso']['type']             = 'sel';
-			$pedir['uso']['opt']              = Form::getListaSel($luso, 'Ninguno');
+			$pedir['uso']['opt']              = Form::getOptions($luso,'', 'Ninguno');
 			$pedir['usof']['text']            = 'Tipo de input en el formulario';
 			$pedir['usof']['type']            = 'sel';
-			$pedir['usof']['opt']             = Form::getListaSel($lusof, 'No usar');
+			$pedir['usof']['opt']             = Form::getOptions($lusof, '','No usar');
 			$pedir['usof']['tam']             = 's8';
 			$pedir['tam']['text']             = 'Tamano';
 			$pedir['tam']['type']             = 'text';
@@ -120,7 +120,7 @@ namespace Mk\Crud {
 
 			$pedir['funcion']['text']         = 'Funcion al Grabar/cargar';
 			$pedir['funcion']['type']         = 'sel';
-			$pedir['funcion']['opt']          = Form::getListaSel($lfunc, 'Por Defecto');
+			$pedir['funcion']['opt']          = Form::getOptions($lfunc, '','Por Defecto');
 			$pedir['fcustom']['text']         = 'Funcion/valor';
 			$pedir['fcustom']['type']         = 'text';
 			$pedir['fcustom']['tam']          = 's2';
@@ -134,7 +134,7 @@ namespace Mk\Crud {
 			$pedir['checkvalor']['tam']       = 's2';
 			$pedir['tipolista']['text']       = 'Se usara en Listado?';
 			$pedir['tipolista']['type']       = 'sel';
-			$pedir['tipolista']['opt']        = Form::getListaSel($ltipolista, '');
+			$pedir['tipolista']['opt']        = Form::getOptions($ltipolista,'', '');
 			$pedir['tamlista']['text']        = 'Ancho Columna';
 			$pedir['tamlista']['type']        = 'text';
 			$pedir['tamlista']['tam']         = 's3';
@@ -188,7 +188,7 @@ namespace Mk\Crud {
 
 			$pedir['validar']['text']       = 'Validacion';
 			$pedir['validar']['type']       = 'sel';
-			$pedir['validar']['opt']        = Form::getListaSel($lvalid, 'Ninguna');
+			$pedir['validar']['opt']        = Form::getOptions($lvalid,'', 'Ninguna');
 			
 
 
@@ -483,7 +483,9 @@ namespace Mk\Crud {
 			$campos    = Inputs::post('field');
 			$fields    = $this->database->getFields($table);
 			$anexos    = array();
+			$selecdb    = array();
 			$txtCampos = '';
+			//$selectdb=0;
 			foreach ($campos as $key => $field) {
 				$key     = str_replace("'", "", $key);
 				//echo "<br> $key: <br>";print_r($field);echo "<hr>";
@@ -590,6 +592,15 @@ namespace Mk\Crud {
 						}
 					}
 				}
+
+				if ($field['usof'] == 'selecdb') {
+					echo "<hr> usof selec DB:" . $field['campojoin'] . '<hr>';
+					$aux = explode('.', $field['campojoin'] . '.');
+					if (($aux[0]!='')&&($aux[1]!='')){
+						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}','{$aux[1]}');";
+					}
+				}
+				
 				$txtCampos .= implode($lines, PHP_EOL) . PHP_EOL;
 				//print_r($field);
 				//echo "<hr>";
@@ -638,7 +649,16 @@ namespace Mk\Crud {
 			fwrite($gestor, $plantilla, strlen($plantilla));
 			fclose($gestor);
 			$mensaje=$plantilla;
+
+
 			$anexos    = implode($anexos, PHP_EOL . "\t\t") . PHP_EOL;
+			if (count($selecdb)>0){
+				$anexos    .="\t\t".'if ($join==true){'.PHP_EOL;
+				$anexos    .= "\t\t\t".implode($selecdb, PHP_EOL . "\t\t\t") . PHP_EOL;
+				$anexos    .="\t\t".'}'.PHP_EOL;
+			}
+
+
 			$file      = strtolower($this->getFilenameLayout('controller.php', 'plantillas'));
 			$gestor    = fopen($file, "r");
 			$plantilla = fread($gestor, filesize($file));
@@ -901,7 +921,7 @@ namespace Mk\Crud {
 				$view->set('tables', $tables);
 			}
 			$session = Registry::get("session");
-			$session->set('tables', Form::getListaSel($tabla, '...'));
+			$session->set('tables', Form::getOptions($tabla, '','...'));
 			//echo $this->getFilenameAction();
 		}
 		public function actionGetCampos()
@@ -911,7 +931,7 @@ namespace Mk\Crud {
 			if ($valor != '') {
 				$campos = $this->database->getColsOf($valor);
 			}
-			echo Form::getListaSel($campos, '...');
+			echo Form::getOptions($campos, '','...');
 		}
 	}
 }

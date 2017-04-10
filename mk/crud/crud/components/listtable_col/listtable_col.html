@@ -64,6 +64,14 @@ getAjax(link,'GET',{ },item, function(msg){
 
 [* /if *]
 
+[* if '[[var:]]tipo[[:var]]'=='join' *]
+
+<td > 
+     {% echo $anexos[[[var:]]key[[:var]]]['options'][$row[[[var:]]key[[:var]]]]; %}
+</td>
+
+[* /if *]
+
 
 [* if '[[var:]]tipo[[:var]]'=='default' *]
 

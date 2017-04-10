@@ -46,34 +46,8 @@ class Listtable
     					break;
 
                     case 'check':
-/*                        $dataon='';
-                        $aux=explode('/',$value['checkvalor'].'/');
-                        if ($aux[0]==''){
-                            $aux[0]='1';
-                        }
-                        if ($aux[1]==''){
-                            $aux[1]='0';
-                        }
-                        $dataon='&dataon='.$aux[0];
-
-                        $labelon='';
-                        $labeloff='';
-
-                        $aux=explode('/',$value['checklista'].'/');
-                        if ($aux[0]==''){
-                            $aux[0]='Si';
-                        }
-                        if ($aux[1]==''){
-                            $aux[1]='No';
-                        }
-                        $labelon='&labelon='.$aux[0];
-                        $labeloff='&labeloff='.$aux[1];
-                        $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$dataon}{$labelon}{$labeloff}{$key1}[[:component]]";  
-*/
-                        $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$key1}[[:component]]";  
-                        break;
-
-                     case 'lista':
+                    case 'lista':
+                    case 'join':
                          $texto.="[[component:]]listtable_col::tipo={$value['tipolista']}{$key1}[[:component]]";  
                         break;
     				

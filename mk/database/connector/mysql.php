@@ -91,7 +91,7 @@ namespace Mk\Database\Connector
 		{
 			if (!$this->_isValidService())
 			{
-				throw$this->_Exception("Not connected to a valid service");
+				throw $this->_Exception("Not connected to a valid service");
 			}
 			//$sql=str_replace("'", "`", $sql);
 			\Mk\Events::fire("mk.query.sql.after",  array('type'=>$sql));

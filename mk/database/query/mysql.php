@@ -5,9 +5,12 @@ namespace Mk\Database\Query
 	//use Mk\Database\Exception as Exception;
 	class Mysql extends Database\Query
 	{
-		public function all()
+		public function all($sql='')
 		{
-			$sql = $this->_buildSelect();
+			if ($sql==''){
+				$sql = $this->_buildSelect();
+			}
+			
 			$result = $this->connector->execute($sql);
 			if ($result === false)
 			{
@@ -24,6 +27,7 @@ namespace Mk\Database\Query
 			return $rows;
 
 		}
+
 	}
 }
 

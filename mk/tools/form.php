@@ -12,13 +12,23 @@ namespace Mk\Tools
 		{
 		}
 
-		public static function getListaSel($lista=null,$msg="Selecconar...",$sel='',$datas=''){
+
+		public static function getOptions($lista=null,$sel='',$msg="Seleccionar..."){
 			$r='';
-			if ($msg!=''){$r.="<option value=''>$msg</option>";}
+
+			if (trim($msg!='')){
+				$r.="<option value='' disabled ";
+				if (trim($sel)==''){
+					$r.=" selected='selected' ";
+				}
+				 $r.=" > {$msg} </option>";
+			}
+
+			//if ($msg!=''){$r.="<option value=''>$msg</option>";}
 			if (is_array($lista)){
 				foreach ($lista as $key => $val){
 					if (is_array($val)){
-						$valor='';
+						$valor='';$datas='';
 						foreach ($val as $key1 => $val1){
 							if ($key1=='text'){
 								$valor=$val1;
@@ -180,85 +190,6 @@ namespace Mk\Tools
 		}
 		}//function
 
-/*		public static function dateToDb($fec='',$hora=false, $seg=true){
-		if (trim($fec)==''){
-			return '';
-		}else{
-
-			$formato=\Mk\Tools\App::getConfig()->param->fecha->formato;
-			if (empty($formato)){
-				$formato='dd/mm/aaaa hh:ii:ss';
-			}
-
-			$pd=strpos($_SESSION[_KeyLocal]->FFECHA,'dd');
-			$pm=strpos($_SESSION[_KeyLocal]->FFECHA,'mm');
-			$pa=strpos($_SESSION[_KeyLocal]->FFECHA,'aaaa');
-			$ph=strpos($_SESSION[_KeyLocal]->FFECHA,'hh');
-			$pi=strpos($_SESSION[_KeyLocal]->FFECHA,'ii');
-			$ps=strpos($_SESSION[_KeyLocal]->FFECHA,'ss');
-			
-			if ($hora==false){
-				return substr($fec,$pa,4).substr($fec,$pm,2).substr($fec,$pd,2);
-			}else{
-				if ($seg==false){
-					return substr($fec,$pa,4).substr($fec,$pm,2).substr($fec,$pd,2).substr($fec,$ph,2).substr($fec,$pi,2);
-				}else{
-					return substr($fec,$pa,4).substr($fec,$pm,2).substr($fec,$pd,2).substr($fec,$ph,2).substr($fec,$pi,2).substr($fec,$ps,2);
-				}
-			}
-		}
-		}//function
-
-		public static function timeToDb($fec='', $seg=true){
-		if (trim($fec)==''){
-			return '';
-		}else{
-			$formato='hh:ii:ss';
-			$ph=strpos($_SESSION[_KeyLocal]->FFECHA,'hh');
-			$pi=strpos($_SESSION[_KeyLocal]->FFECHA,'ii');
-			$ps=strpos($_SESSION[_KeyLocal]->FFECHA,'ss');
-			
-			if ($seg==false){
-				return substr($fec,$ph,2).substr($fec,$pi,2);
-			}else{
-				return substr($fec,$ph,2).substr($fec,$pi,2).substr($fec,$ps,2);
-			}
-		}
-		}//function
-
-
-		public static function dbToDate($fec='',$hora=false, $ss=true, $formato=''){
-		if ((trim($fec)=='')or(parseInt($fec)==0)){return '';
-		}else{
-			if ($formato==''){
-				$formato=\Mk\Tools\App::getConfig()->param->fecha->formato;
-				if (empty($formato)){
-					$formato='dd*mm*aaaa hh*ii*ss';
-				}
-			}
-			$sepFec=\Mk\Tools\App::getConfig()->param->fecha->separador;
-			if (empty($sepFec)){
-				$sepFec='/';
-			}
-			$sepHora=\Mk\Tools\App::getConfig()->param->hora->separador;
-			if (empty($sepHora)){
-				$sepHora=':';
-			}
-
-		$a=substr($fec,0,4);
-		$m=substr($fec,4,2);
-		$d=substr($fec,6,2);
-		$f=str_replace("*",$sepFec,$formato);
-		$f=str_replace("aaaa",$a,$f);
-		$f=str_replace("mm",$m,$f);
-		$f=str_replace("dd",$d,$f);
-		if ($hora==true){$f=$f." ".substr($fec,8,2).$sepHora.substr($fec,10,2);
-		if ($ss==true){$f=$f.$sepHora.substr($fec,12,2);}
-		}
-		return $f;
-		}
-		}//function
-*/
 
 		public static function dbToDate($fec='',$hora=false,  $formato=''){
 		if ((trim($fec)=='')or(parseInt($fec)==0)){return '';
@@ -300,7 +231,7 @@ namespace Mk\Tools
 		}
 		}//function
 
-public static function dbDateToDate($fec='',$hora=false,  $formato=''){
+		public static function dbDateToDate($fec='',$hora=false,  $formato=''){
 		if ((trim($fec)=='')or(parseInt($fec)==0)){return '';
 		}else{
 			if ($formato==''){
@@ -337,7 +268,7 @@ public static function dbDateToDate($fec='',$hora=false,  $formato=''){
 			return  $date;
 		}
 
-		public static function getOptions($items=array(),$sel='',$msg='Selecione...'){
+		/*public static function getOptions($items=array(),$sel='',$msg='Selecione...'){
 			$r='';
 			if (trim($msg!='')){
 				$r.="<option value='' disabled ";
@@ -357,7 +288,7 @@ public static function dbDateToDate($fec='',$hora=false,  $formato=''){
 
 			}
 			return $r;
-		}
+		}*/
 
 
 

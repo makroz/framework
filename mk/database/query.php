@@ -235,7 +235,7 @@ namespace Mk\Database
 				throw $this->_Exception("Invalid argument (on)");
 			}
 			$this->_fields += array($join =>$fields);
-			$this->_join[] = "JOIN {$join} ON {$on}";
+			$this->_join[] = "LEFT JOIN {$join} ON {$on}";
 			return $this;
 		}
 		public function limit($limit, $page = 1)

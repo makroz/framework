@@ -18,6 +18,7 @@ protected $_pk;
 * @uso A
 * @funcion st
 * @label Nombre
+* @validate  required
 */
 protected $_nombre;
 /**

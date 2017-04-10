@@ -13,7 +13,7 @@ class //<<[CLASS]>>// extends CrudDb
 		//$this->_model =$this->_getLoged();
 	}
 
-	public function getAnexos($anexos=array()){
+	public function getAnexos($anexos=array(),$join=false){
 		$anexos=parent::getAnexos($anexos);
 		//<<[ANEXOS]>>//
 		return $anexos;

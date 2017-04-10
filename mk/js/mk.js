@@ -275,6 +275,7 @@ function getCookie(cname) {
 
 function inputMsg(campo,msg){
   $(campo).parent().find('.error_input').html(msg);
+  $(campo).parent().parent().find('.error_input').html(msg);
 
 }
 

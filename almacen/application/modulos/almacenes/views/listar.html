@@ -694,7 +694,7 @@ return -1;
  
 
 <td >
-     {% echo $row[fk_resp]; %}
+     {% echo $anexos[fk_resp]['options'][$row[fk_resp]]; %}
 </td>
  
 
@@ -763,7 +763,7 @@ return -1;
  
 
 		<div class="input-field col s12">
-	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'   required data-validate=' required' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
 		</div>
@@ -776,7 +776,7 @@ return -1;
 		</div>
  
 
-	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][label]); %}
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][labelf]); %}
 		<div class="input-field col s12">
 		 {% if $_action!='ver' %}
 		<select id="estado" name="estado" class="select $clasver"  required data-validate=' required' [[var:]]eventos[[:var]]  >
@@ -791,6 +791,19 @@ return -1;
 		</div>
  
 
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf]); %}
+		<div class="input-field col s12">
+		 {% if $_action!='ver' %}
+		<select id="fk_resp" name="fk_resp" class="select $clasver"  required data-validate=' required' [[var:]]eventos[[:var]]  >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_resp" name="fk_resp" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_resp][options][$item[fk_resp]]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_resp">{% echo $anexos[fk_resp][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_resp][0]}</div>
+		</div>
 </div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>

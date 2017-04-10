@@ -69,8 +69,8 @@ function isUnique_[[var:]]id[[:var]](){
 
 [* /if *]
 
-[* if '[[var:]]tipo[[:var]]'=='selec' *]
-	{% php $options=\\Mk\\Tools\\Form::getOptions($anexos[[[var:]]id[[:var]]][options],$item[[[var:]]id[[:var]]],'Seleccione '.$anexos[[[var:]]id[[:var]]][label]); %}
+[* if (('[[var:]]tipo[[:var]]'=='selec')||('[[var:]]tipo[[:var]]'=='selecdb')) *]
+	{% php $options=\\Mk\\Tools\\Form::getOptions($anexos[[[var:]]id[[:var]]][options],$item[[[var:]]id[[:var]]],'Seleccione '.$anexos[[[var:]]id[[:var]]][labelf]); %}
 		<div class="input-field col [[var:]]clase[[:var]]">
 		 {% if $_action!='ver' %} 
 		<select id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" class="select $clasver" [[var:]]validate[[:var]] [[var:]]eventos[[:var]]  >

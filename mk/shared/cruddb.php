@@ -60,6 +60,28 @@ namespace Mk\Shared
 
 		}
 
+		public function getArrayFromTable($table,$campo,$msg='Seleccionar...',$sel='',$where="(status<>'0')"){
+			$database=\Mk\Registry::get('database');
+			$pk = ($database->getPrimaryKeyOf($table));
+			$pk=$pk[0];
+			$sql="select {$pk}, $campo from $table where $where";
+			$result=$database->execute($sql);
+			//$result = $this->connector->execute($sql);
+			if ($result === false)
+			{
+				$error = $database->lastError;
+				if (DEBUG>0){$error.= "($sql)";}
+				throw $this->_Exception("There was an error with your SQL query: {$error} ($sql)");
+			}
+			$lista = array();
+			while ($row=$result->fetch_assoc())
+			{
+				$lista[$row[$pk]]=$row[$campo];
+			}
+			return $lista;
+			//return \Mk\Tools\Form::getListaSel($lista,$msg,$sel);
+		}
+
 	public function actionDataExist(){
 		$this->setRenderView(false);
 		$primary = $this->getPrimary();
@@ -419,7 +441,7 @@ namespace Mk\Shared
 
 		$view
 		-> set("item", $this->_model->loadToArray())
-		-> set("anexos", $this->getAnexos($this->_model->getColumns()))
+		-> set("anexos", $this->getAnexos($this->_model->getColumns()),1)
 		-> set("modTitulo", "Editar ".$this->_model->_tSingular);
 		$this->afterEdit();
 	}
@@ -441,7 +463,7 @@ namespace Mk\Shared
 		$this->actionSave();
 		$view
 		-> set("item", $this->_model->loadToArray())
-		-> set("anexos", $this->getAnexos($this->_model->getColumns()))
+		-> set("anexos", $this->getAnexos($this->_model->getColumns()),1)
 		-> set("modTitulo", "Adicionar ".$this->_model->_tSingular);
 		$this->afterAdd();
 	}
@@ -477,7 +499,7 @@ namespace Mk\Shared
 		$items = false;
 
 
-		$anexos=$this->getAnexos($this->_model->getColumns());
+		$anexos=$this->getAnexos($this->_model->getColumns(),1);
 
 		$where = array(
 		'?'=>$where
