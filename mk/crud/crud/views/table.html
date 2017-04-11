@@ -215,7 +215,7 @@ function closeDet(){
 
 function valUsof(){
 
-  $('#funcion').removeAttr('disabled');
+  $('#funcion').prop('disabled',false);
 
   valor=$('#usof').val();
   $('.usof').removeClass('s8').addClass('s12');
@@ -227,8 +227,22 @@ function valUsof(){
   }
  
   if (valor=='check'){
-    $('#funcion').val('check').attr('disabled','disabled');
+    $('#funcion').val('check').prop('disabled',true);
     $('#tipolista').val('check');
+    valFuncion();
+    valTipoLista();
+  }
+
+if (valor=='selecdb'){
+    $('#funcion').val('st');
+    $('#tipolista').val('join');
+    valFuncion();
+    valTipoLista();
+  }
+
+if (valor=='selec'){
+    $('#funcion').val('st');
+    $('#tipolista').val('lista');
     valFuncion();
     valTipoLista();
   }
@@ -238,6 +252,7 @@ function valUsof(){
     valFuncion();
   }
   $('select').material_select();
+  Materialize.updateTextFields();
 
 }
 

@@ -170,16 +170,17 @@ namespace Mk\Tools
 			}
 
 
-			public static function stripos_array($haystack, $needles,$what=false) {
+			public static function stripos_array($haystack, $needles,$what=false,$sep='') {
 				if ( is_array($needles) ) {
 					foreach ($needles as $str) {
-
-							$pos = stripos($haystack, $str);
+						//echo "buscando {$str} en {$haystack}";
+						$pos = stripos($haystack.$sep, $str.$sep);
 						if ($pos !== FALSE) {
-						if ($what){
-							$pos=array($pos,$str);
-						}
-						return $pos;
+							//echo " Si se encontro en la pos: {$pos}";
+							if ($what){
+								$pos=array($pos,$str);
+							}
+							return $pos;
 						}
 						
 					}

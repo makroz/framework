@@ -102,9 +102,9 @@ namespace Mk\Crud {
 			$pedir['labelf']['type']           = 'text';
 			$pedir['labelf']['tam']           = 's6';
 
-			$pedir['var']['text']             = 'Nombre de Variable';
+/*			$pedir['var']['text']             = 'Nombre de Variable';
 			$pedir['var']['type']             = 'text';
-			$pedir['uso']['text']             = 'Procesar al Grabar/Actualizar';
+*/			$pedir['uso']['text']             = 'Procesar al Grabar/Actualizar';
 			$pedir['uso']['type']             = 'sel';
 			$pedir['uso']['opt']              = Form::getOptions($luso,'', 'Ninguno');
 			$pedir['usof']['text']            = 'Tipo de input en el formulario';
@@ -242,7 +242,7 @@ namespace Mk\Crud {
 						'date',
 						'fecha',
 						'fec'
-					), true) !== false)) {
+					), true,',') !== false)) {
 						$pedir['usof']['val'][$key]     = 'date';
 						$pedir['tamlista']['val'][$key] = '90';
 						$pedir['funcion']['val'][$key]  = 'date';
@@ -251,7 +251,7 @@ namespace Mk\Crud {
 						'date',
 						'fecha',
 						'fec'
-					), true) !== false)) {
+					), true,',') !== false)) {
 						$pedir['usof']['val'][$key]     = 'datetime';
 						$pedir['tamlista']['val'][$key] = '120';
 						$pedir['funcion']['val'][$key]  = 'datetime';
@@ -259,7 +259,7 @@ namespace Mk\Crud {
 					if (($field['args'][0] == 6) and (String::stripos_array($campos, array(
 						'time',
 						'hora'
-					), true) !== false)) {
+					), true,',') !== false)) {
 						$pedir['usof']['val'][$key]     = 'time';
 						$pedir['tamlista']['val'][$key] = '50';
 						$pedir['funcion']['val'][$key]  = 'time';
@@ -330,6 +330,10 @@ namespace Mk\Crud {
 						$pedir['funcion']['val'][$key]  = 'time';
 					}
 				}
+
+				if ($field['null']=='NO'){
+					$pedir['required']['val'][$key]   = '1';	
+				}
 				/// Valores por defecto segun tipo de datos de la BD
 				// Valores por defecto segun Nombre de Campo
 				$Name = strtolower($key);
@@ -354,7 +358,7 @@ namespace Mk\Crud {
 				}
 				$pos = stripos($Name, 'fk_');
 				if ($pos !== false) {
-					$tablajoin                       = substr($name, $pos + 3);
+					$tablajoin                       = substr($Name, $pos + 3);
 					$pedir['tipolista']['val'][$key] = 'join';
 					$tablajoin                       = explode('_', $tablajoin . '_-1');
 					if ($tablajoin[1] == '-1') {
@@ -370,13 +374,37 @@ namespace Mk\Crud {
 								'descrip',
 								'descripcion',
 								'description'
-							), true);
+							), true,',');
 							if ($pos !== FALSE) {
 								$tablajoin[1] = substr($campos, $pos[0], strlen($pos[1]));
 							}
 						}
 					}
 					$pedir['campojoin']['val'][$key] = $tablajoin[0] . '.' . $tablajoin[1];
+					$pedir['tamlista']['val'][$key]  = '150';
+					$pedir['usof']['val'][$key]      = 'selecdb';
+					$pedir['funcion']['val'][$key]   = '-1';
+				}
+				$pos = stripos($Name, 'sk_');
+				if ($pos !== false) {
+					$pedir['tipolista']['val'][$key] = 'join';
+					$campos       = $this->database->getColsOf($session->get('table', ''));
+					$campos       = implode(',', $campos);
+					$pos          = String::stripos_array($campos, array(
+						'nom',
+						'nombre',
+						'name',
+						'descrip',
+						'descripcion',
+						'description'
+					), true,',');
+					if ($pos !== FALSE) {
+						$campos = substr($campos, $pos[0], strlen($pos[1]));
+					}else{
+						$campos='';
+					}
+
+					$pedir['campojoin']['val'][$key] =$session->get('table', '') . '.' . $campos;
 					$pedir['tamlista']['val'][$key]  = '150';
 					$pedir['usof']['val'][$key]      = 'selecdb';
 					$pedir['funcion']['val'][$key]   = '-1';

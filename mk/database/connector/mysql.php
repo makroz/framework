@@ -357,7 +357,7 @@ public   function getTableInformationOf($table) {
 
 
  public   function getColsOf($table) {
-    	$information = array();
+ 	   	$information = array();
     	$result = $this->execute("DESC `$table`");
     	
     	while ( $field = $result->fetch_assoc() ) {

@@ -15,6 +15,7 @@
         <p>
           Tipo:{% echo $field['type']; %} {% if ($field['args'][0]) %} ( {% echo $field['args'][0] %} {% if ($field['args'][1]) %} , {% echo $field['args'][1] %} {% /if %} ) {% /if %}
           {% if ($field['null']=='NO') %} <br>Null: NO  {% /if %}
+          {% if ($field['null']!='NO') %} <br>Null: SI  {% /if %}
           {% if ($field['default']!='') %} <br>Default: {% echo $field['default'] %}   {% /if %}
           {% if ($field['extra']!='') %} <br>{% echo $field['extra'] %}   {% /if %}
         </p>
