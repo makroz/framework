@@ -40,12 +40,21 @@ input.ver:disabled{
 }
 
 .select-wrapper input.select-dropdown:disabled {
-    color: black;
+    color:rgba(0,0,0,0.50);
+
 }
+
 
 input:disabled:not([type]) + label, input[readonly="readonly"]:not([type]) + label, input[type="text"]:disabled + label, input[type="text"][readonly="readonly"] + label, input[type="password"]:disabled + label, input[type="password"][readonly="readonly"] + label, input[type="email"]:disabled + label, input[type="email"][readonly="readonly"] + label, input[type="url"]:disabled + label, input[type="url"][readonly="readonly"] + label, input[type="time"]:disabled + label, input[type="time"][readonly="readonly"] + label, input[type="date"]:disabled + label, input[type="date"][readonly="readonly"] + label, input[type="datetime"]:disabled + label, input[type="datetime"][readonly="readonly"] + label, input[type="datetime-local"]:disabled + label, input[type="datetime-local"][readonly="readonly"] + label, input[type="tel"]:disabled + label, input[type="tel"][readonly="readonly"] + label, input[type="number"]:disabled + label, input[type="number"][readonly="readonly"] + label, input[type="search"]:disabled + label, input[type="search"][readonly="readonly"] + label, textarea.materialize-textarea:disabled + label, textarea.materialize-textarea[readonly="readonly"] + label {
 	color:rgba(0,0,0,0.86);
 	font-style: bold;
+}
+
+.select-wrapper.required + label,
+textarea.materialize-textarea.required + label,
+input.required + label{
+	color: black;
+	font-weight: bold;
 }
 
 [type="checkbox"]:disabled:not(:checked) + label::before {

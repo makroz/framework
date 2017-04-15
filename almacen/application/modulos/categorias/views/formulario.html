@@ -35,8 +35,15 @@ if (msg=='ok'){
 }
 return -1;
 }
-// codejs
-// codejs
+function valNivel(){
+  var dato=$('#nivel').val();
+  if (dato==0){
+    $('#sk_padre').prop('disabled',true).removeClass('required').find('option:eq(0)').prop('selected',true);
+  }else{
+    $('#sk_padre').prop('disabled',false).addClass('required').find('option:eq(0)').prop('selected',true);
+  }
+  actualizarUI();
+}
 {% /append %}
 {% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
 <script type='text/javascript' src='js/confirm/confirm.js'></script>
@@ -57,19 +64,25 @@ return -1;
 </div>
  
 
-		<div class="input-field col s12">
-	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'   required data-validate=' required' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
-	          <div class="error_input">{$errors[nombre][0]}</div>
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[nivel][options],$item[nivel],'Seleccione '.$anexos[nivel][labelf]); %}
+		<div class="input-field col s12 m6">
+		 {% if $_action!='ver' %}
+		<select id="nivel" name="nivel" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  onchange='valNivel();'   >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="nivel" name="nivel" type="text" class="alfa $clasver" width="" value='{% echo $anexos[nivel][options][$item[nivel]]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="nivel">{% echo $anexos[nivel][labelf] %}</label>
+    	          <div class="error_input">{$errors[nivel][0]}</div>
 		</div>
  
 
- 
-
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[sk_padre][options],$item[sk_padre],'Seleccione '.$anexos[sk_padre][labelf]); %}
-		<div class="input-field col s12">
+		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
-		<select id="sk_padre" name="sk_padre" class="select $clasver"  required data-validate=' required, numeric'  onkeypress=' return soloNum(event,this);'   >
+		<select id="sk_padre" name="sk_padre" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
       {% echo $options; %}
     </select>
      {% /if %}
@@ -82,7 +95,14 @@ return -1;
  
 
 		<div class="input-field col s12">
-	          <input id="descrip" name="descrip" type="text" class="alfa $clasver" width="" value='{% echo $item[descrip]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
+	          <div class="error_input">{$errors[nombre][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12">
+	          <input id="descrip" name="descrip" type="text" class="alfa $clasver " width="" value='{% echo $item[descrip]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="descrip">{% echo $anexos[descrip][labelf] %}</label>
 	          <div class="error_input">{$errors[descrip][0]}</div>
 		</div>

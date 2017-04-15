@@ -380,7 +380,7 @@ namespace Mk\Crud {
 							}
 						}
 					}
-					$pedir['campojoin']['val'][$key] = $tablajoin[0] . '.' . $tablajoin[1];
+					$pedir['campojoin']['val'][$key] = $tablajoin[0] . '|' . $tablajoin[1]. '||';
 					$pedir['tamlista']['val'][$key]  = '150';
 					$pedir['usof']['val'][$key]      = 'selecdb';
 					$pedir['funcion']['val'][$key]   = '-1';
@@ -404,7 +404,7 @@ namespace Mk\Crud {
 						$campos='';
 					}
 
-					$pedir['campojoin']['val'][$key] =$session->get('table', '') . '.' . $campos;
+					$pedir['campojoin']['val'][$key] =$session->get('table', '') . '|' . $campos. '|1|';
 					$pedir['tamlista']['val'][$key]  = '150';
 					$pedir['usof']['val'][$key]      = 'selecdb';
 					$pedir['funcion']['val'][$key]   = '-1';
@@ -513,7 +513,12 @@ namespace Mk\Crud {
 			$anexos    = array();
 			$selecdb    = array();
 			$txtCampos = '';
+			$cargaAjaxForm=0;
 			//$selectdb=0;
+			//echo "<hr>campos:<hr>";print_r($campos);
+			$view->set('campos',$campos);
+			$view->set('variables',$variables);
+
 			foreach ($campos as $key => $field) {
 				$key     = str_replace("'", "", $key);
 				//echo "<br> $key: <br>";print_r($field);echo "<hr>";
@@ -623,12 +628,15 @@ namespace Mk\Crud {
 
 				if ($field['usof'] == 'selecdb') {
 					echo "<hr> usof selec DB:" . $field['campojoin'] . '<hr>';
-					$aux = explode('.', $field['campojoin'] . '.');
+					$aux = explode('|', $field['campojoin'] . '||||');
 					if (($aux[0]!='')&&($aux[1]!='')){
-						if ($aux[2]!=''){
-							$aux[2]=", '{$aux[2]}'";
-						}
-						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}', '{$aux[1]}'{$aux[2]});";
+						$aux[3]=str_replace('"',"'",$aux[3]);
+						$aux[4]=str_replace('"',"'",$aux[4]);
+						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}', '{$aux[1]}',".'"'.$aux[4].'","'.$aux[3].'");';
+					}
+					if ($aux[2]=='1'){
+						$cargaAjaxForm++;
+						$selecdb[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
 					}
 				}
 				
@@ -641,6 +649,7 @@ namespace Mk\Crud {
 			$txtCampos .= "public \$_tPlural='" . Inputs::post('plural') . "';\n";
 			$variables['_modSingular_'] = Inputs::post('singular');
 			$variables['codejs']=Inputs::post('codejs','');
+			$variables['codejsopenform']=Inputs::post('codejsopenform','');
 			$view                       = $this->getActionView();
 			$crudConfig                 = json_encode($_REQUEST);
 			$dir                        = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR . 'configuration';
@@ -681,6 +690,9 @@ namespace Mk\Crud {
 			fclose($gestor);
 			$mensaje=$plantilla;
 
+			if ($cargaAjaxForm>0){
+				$selecdb[] = '$anexos' . "['cargaAjaxForm']=1;";
+			}
 
 			$anexos    = implode($anexos, PHP_EOL . "\t\t") . PHP_EOL;
 			if (count($selecdb)>0){
@@ -703,6 +715,8 @@ namespace Mk\Crud {
 			fwrite($gestor, $plantilla, strlen($plantilla));
 			fclose($gestor);
 			//$plantilla=str_replace(PHP_EOL,'<br />',$plantilla);
+			//$campos,$variables
+			$view->set('variables',$variables);
 			$view->set('mensaje','<br>//Aqui empieza el Modelo<br>'.nl2br($mensaje).PHP_EOL.'//Aqui empieza el Controlador<br>'.nl2br($plantilla));
 			//$view->set('campos', $campos);
 			//generar vista listar
@@ -810,13 +824,15 @@ namespace Mk\Crud {
 							$compile  = str_replace('[* ', '{% ', $compile);
 							$compile  = str_replace(' *]', ' %}', $compile);
 							$vcompile = new \Mk\View();
-							//$vcompile->set('campos', $campos);
+							$vcompile->set('campos', $campos);
+							$vcompile->set('variables', $variables);
+
 							$compile  = $vcompile->render($compile);
 							$compile  = str_replace('[% ', '{% ', $compile);
 							$compile  = str_replace(' %]', ' %}', $compile);
 							$compile  = str_replace('[[]]', '$', $compile);
 							//$compile = str_replace('[[**]]','\\',$compile);
-							echo "<br><span style='color:red;'> Compilado</span>";
+							echo "<br><span style='color:red;'><code>$compile</code> Compilado </span>";
 							$html = str_replace('[[compilando]]', stripslashes($compile), $html);
 
 /*							$codeUnique['jsinline'][$component]    .= \Mk\Tools\String::getEtiquetas($html, '{% append js.inline %}', '{% /append %}', 2, $component, ' ');

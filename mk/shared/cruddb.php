@@ -60,12 +60,17 @@ namespace Mk\Shared
 
 		}
 
-		public function getArrayFromTable($table,$campo,$tag='',$where="(status<>'0')"){
+		public function getArrayFromTable($table,$campo,$tag='',$where=""){
 			$database=\Mk\Registry::get('database');
 			$pk = ($database->getPrimaryKeyOf($table));
 			$pk=$pk[0];
 			if ($tag!=''){
 				$tag=", $tag";
+			}
+			if ($where!=''){
+				$where="({$where})and(status<>'0')";
+			}else{
+				$where="(status<>'0')";
 			}
 			$sql="select $pk, $campo $tag from $table where $where";
 			$result=$database->execute($sql);

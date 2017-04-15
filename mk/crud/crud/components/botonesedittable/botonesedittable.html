@@ -34,6 +34,13 @@ if (msg=='error'){
 return -1;
 }
 
+function initOpenForm(_respond){
+[[compile:]]
+	$$variables[codejsopenform]
+[[:compile]]
+return 0;
+}
+
 function _openForm(f, idAction,tit){
 		$(f).find('input').val('');
 				$(f).find('select').each(function(index){
@@ -52,8 +59,8 @@ function _openForm(f, idAction,tit){
 			$('#btnPrint').hide();
 			$('#btnSave').show();
 			$('#mk_formulario  .modal-footer').find('.pag').html('');
-			if ((idAction=='add')&&($(f).data('ultAction')=='ver')){
-				reaction('',idAction,'','#mk_formulario .modal-content');
+			if (((idAction=='add')&&($(f).data('ultAction')=='ver'))||('{% echo $anexos[cargaAjaxForm] %}'=='1')){
+				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
 			}
 			$(f).data('ultAction',idAction);
 		}
@@ -99,7 +106,7 @@ var options=[];
 		}
 		_openForm('#mk_formulario',idAction,'Editar [[var:]]_modSingular_[[:var]]');
 		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
-		reaction(options,idAction,'','#mk_formulario .modal-content');
+		reaction(options,idAction,'','#mk_formulario .modal-content',initOpenForm);
 		return false;
 	}
 	if (idAction=='del'){

@@ -61,6 +61,18 @@ editorjs = CodeMirror.fromTextArea(document.getElementById("codejs"), {
     theme: 'material'
   });
 
+editorjsopenform = CodeMirror.fromTextArea(document.getElementById("codejsopenform"), {
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    matchTags: {bothTags: true},
+    extraKeys: {"Ctrl-J": "toMatchingTag"},
+    autoCloseTags: true,
+    autoRefresh: true,
+    theme: 'material'
+  });
+
 $(".button-collapse").sideNav();
 $('select').material_select();
 
@@ -101,6 +113,7 @@ $("#modal1").modal();
 $("ul.tabs").tabs({ onShow: function(tab) { 
   if ($(tab).attr('id')=='formulario'){
     editorjs.refresh();
+    editorjsopenform.refresh();
   } 
 
   } 
@@ -145,6 +158,9 @@ function cargarConfig1(plantilla){
   }
 editorjs.getDoc().setValue($('#codejs').val());
 editorjs.refresh();
+editorjsopenform.getDoc().setValue($('#codejsopenform').val());
+editorjsopenform.refresh();
+
   $('select').material_select();
    Materialize.updateTextFields();
   alert('Configuraion Cargada!!');
@@ -326,13 +342,29 @@ function openJoin(id){
   var dato=$('#campojoin').val();
   if (dato==''){
     $('#n_table, #n_col').val(-1);
+    $('#n_cond').val('');
+    $('#n_tag').val('');
+    $('#n_carga').prop('checked',false);
+
   }else{
-    var datos=dato.split('.');
+    dato=dato+'||||';
+    var datos=dato.split('|');
     $('#n_table').val(datos[0]);
     getCampos(datos[1]);
+
+    $('#n_cond').val(datos[3]);
+    $('#n_tag').val(datos[4]);
+    if (datos[2]=='1'){
+      $('#n_carga').prop('checked',true);
+    }else{
+      $('#n_carga').prop('checked',false);
+    }
+
   }
   $('#modal2').modal('open');
   $('select').material_select();
+
+
 }
 
 function getCampos(valTarget){
@@ -345,7 +377,7 @@ function getCampos(valTarget){
 
 function closeJoin(){
   var id=$('#modal2').attr('data-key');
-  var dato=$('#n_table').val()+'.'+$('#n_col').val();
+  var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+$('#n_carga').val()+'|'+$('#n_cond').val()+'|'+$('#n_tag').val();
   $('#'+id).val( dato );
 
   Materialize.updateTextFields();
@@ -567,7 +599,9 @@ function closeLista(){
   <div id="listas" class="col s12">Lista</div>
   <div id="formulario" class="col s12">Formulario
                 <label for="codejs" style="color: black;">Codigo Js en formulario</label>
-                <textarea id="codejs" name='codejs'  class="validate plantilla" data-type="text"  ></textarea>
+                <textarea id="codejs" name='codejs'  class="validate plantilla codejs" data-type="text"  ></textarea>
+                <label for="codejsopenform" style="color: black;">Codigo Js al abrir el formulario</label>
+                <textarea id="codejsopenform" name='codejsopenform'  class="validate plantilla codejs" data-type="text"  ></textarea>
                 
   </div>
 </div>
@@ -708,10 +742,23 @@ function closeLista(){
     <label   for="n_col" >Columna:</label>
   </div>
 
+<div class="col {% echo $ctam; %} ">
+      <input type="checkbox" id="n_carga" name='n_carga' class="" value="1" />
+      <label  for="n_carga" >Cargar por Ajax cada que muestre formulario?</label>
+  </div>
+
+      <div class="input-field col {% echo $ctam; %} ">
+          <input id="n_cond" name='n_cond' type="text" class="validate" value="" >
+          <label for="n_cond" >Condicion Extra:</label>
+        </div>
+
+        <div class="input-field col {% echo $ctam; %} ">
+          <input id="n_tag" name='n_tag' type="text" class="validate" value="" >
+          <label for="n_tag" >Datos Tag:</label>
+        </div>
+
+
     </div>
-
-
-
     </div>
     <div class="modal-footer">
      <button class="modal-action  waves-effect waves-green btn-flat" onclick="closeJoin();">Ok</button>
@@ -765,7 +812,5 @@ function closeLista(){
       
     </div>
   </div>
-
-
 
 

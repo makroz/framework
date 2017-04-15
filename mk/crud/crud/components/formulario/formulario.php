@@ -39,6 +39,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                 $onblur='';
                 $onchange='';
                 $onclick='';
+                $numeric=0;
 
                 if ($value['listaeventos']!=''){
 
@@ -57,7 +58,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                                     $onblur.=$eventos[1];
                                     break;
                                 case 'onchange':
-                                    $onchange.$eventos[1];
+                                    $onchange.=$eventos[1];
                                     break;
                                 case 'onfocus':
                                     $onfocus.=$eventos[1];
@@ -114,7 +115,20 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                             $dec='0';
                         }
                         $dec='&decimal='.$dec;
-                        $onkeypress=" return soloNum(event,this);";
+                        if ($numeric==0){
+                            $onkeypress.=" return soloNum(event,this);";
+                            $numeric++;
+                        }
+                        $onblur.=" _refreshFloat(this);";
+
+
+                    }
+
+                    if($value['usof']=='int'){
+                        if ($numeric==0){
+                            $onkeypress.=" return soloInt(event,this);";
+                            $numeric++;
+                        }
                         $onblur.=" _refreshFloat(this);";
 
 
@@ -123,8 +137,13 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                      if($value['validar']=='mail'){
                         $onblur.=" _valEmail(this);";
                      }
-                     if($value['validar']=='numerico'){
+
+                     if(($value['validar']=='numerico')&&($numeric==0)){
+                        $numeric++;
                        $onkeypress=" return soloNum(event,this);";
+                        if($value['usof']=='int'){
+                            $onkeypress=" return soloInt(event);";
+                        }
                      }
 
                     $options='';
@@ -136,7 +155,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                                 if ($value1!=''){
                                     $opt1=explode('|',$value1.'||');
                                     if ($opt1[0]!=''){
-                                        if ($opt1[1]==''){
+                                            if ($opt1[1]==''){
                                             $opt1[1]=$opt1[0];
                                         }
 
@@ -154,15 +173,16 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                     }
 
 
-                    $validate='';
-                    if ($value['validate']!=''){
+                    $validate=str_replace(',',' ',$value['validate']);
+
+/*                    if ($value['validate']!=''){
+
                         if (stripos($value['validate'],'required')!==false){
                             $validate.=" required ";
                         }
                         $validate.="data-validate='".$value['validate']."'";
-                        
-
                     }
+*/                    
                     $validate='&validate='.$validate;
 
                     $eventos='';

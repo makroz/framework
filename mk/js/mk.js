@@ -73,13 +73,17 @@ function getCookie(cname) {
         }
         
         if (success){
-          if (success(msg)<0){
+          var r=success(msg);
+          if (r<0){
             div='';
           }
         }
 
         if (div!=''){
           $(div).html(msg);
+          if (r==0){
+            success(msg);
+          }
         }
 
           $("select").material_select();
@@ -217,12 +221,15 @@ function getCookie(cname) {
   var errors='';
   var error=0;
   $(campos).each(function(){
-    var validar=$(this).data('validate');
+    var validar=$(this).prop('class');
     if ((validar!='')&&(validar!=undefined)){
       
-      validar=validar.trim().split(',');
+      validar=validar.trim().split(' ');
 
       var campo=this;
+      var dis=$(campo).prop('disabled');
+      $(campo).prop('disabled',false);
+
       var msg='';
       var dato=$(campo).val();
       if (!dato){dato='';}
@@ -244,7 +251,7 @@ function getCookie(cname) {
             if (dato.trim()==''){
               msg=msg+"Este Campo es Obligatorio";      
               error++;
-              // alert("validacin for "+$(campo).attr('id')+'is :' + tipo+' dato es: '+dato);
+              alert("validacin for "+$(campo).attr('id')+' is :' + tipo+' dato es: '+dato+' dis:'+dis);
             }
         }
 
@@ -255,14 +262,14 @@ function getCookie(cname) {
               // alert("validacin for "+$(campo).attr('id')+'is :' + tipo+' dato es: '+dato);
             }
         }
-       
-        inputMsg(campo,msg)
-        //$(campo).parent().find('.error_input').html(msg);
-
-
-
-      });
       
+      });
+       inputMsg(campo,msg);
+       if (error>0){
+          if (dis==true){
+            //$(campo).prop('disabled',true);
+          }
+       }
     }
   });
 
@@ -274,8 +281,9 @@ function getCookie(cname) {
   }
 
 function inputMsg(campo,msg){
-  $(campo).parent().find('.error_input').html(msg);
-  $(campo).parent().parent().find('.error_input').html(msg);
+  $('label[for="'+$(campo).prop('id')+'"] ~ .error_input').html(msg);
+  //$(campo).parent().find('.error_input').html(msg);
+  //$(campo).parent().parent().find('.error_input').html(msg);
 
 }
 
@@ -391,3 +399,7 @@ function alertfocus(msg,inp,color,def,){
     Materialize.updateTextFields();
   }
 
+function actualizarUI(){
+  $("select").material_select();
+    Materialize.updateTextFields();
+}

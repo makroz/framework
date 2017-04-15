@@ -26,7 +26,7 @@ protected $_nombre;
 * @readwrite
 * @type tinyint
 * @uso A
-* @funcion -1
+* @funcion st
 * @label Nivel
 * @validate  required, numeric
 */

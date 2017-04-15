@@ -6,7 +6,9 @@
 
 {% append style.inline %}
 
+{% /append %}
 
+{% append js.onready %}
 
 {% /append %}
 
@@ -24,9 +26,9 @@ if (msg=='ok'){
 }	
 return -1;
 }
-// codejs
+
 [[php:]]codejs[[:php]]
-// codejs
+
 {% /append %}
 <div class="errorList"></div>
 <form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
