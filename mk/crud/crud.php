@@ -632,7 +632,16 @@ namespace Mk\Crud {
 					if (($aux[0]!='')&&($aux[1]!='')){
 						$aux[3]=str_replace('"',"'",$aux[3]);
 						$aux[4]=str_replace('"',"'",$aux[4]);
-						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}', '{$aux[1]}',".'"'.$aux[4].'","'.$aux[3].'");';
+						//$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}', '{$aux[1]}',".'"'.$aux[4].'","'.$aux[3].'");';
+						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."actionGetListFor('{$key}',".'$anexos);';
+						$anexos[] = '$anexos' . "['{$key}']['join']['table']='{$aux[0]}';";
+						$anexos[] = '$anexos' . "['{$key}']['join']['campo']='{$aux[1]}';";
+						if ($aux[3]!=''){
+							$anexos[] = '$anexos' . "['{$key}']['join']['cond']=".'"'.$aux[3].'";';
+						}
+						if ($aux[4]!=''){
+							$anexos[] = '$anexos' . "['{$key}']['join']['tag']=".'"'.$aux[4].'";';
+						}
 					}
 					if ($aux[2]=='1'){
 						$cargaAjaxForm++;
@@ -691,7 +700,7 @@ namespace Mk\Crud {
 			$mensaje=$plantilla;
 
 			if ($cargaAjaxForm>0){
-				$selecdb[] = '$anexos' . "['cargaAjaxForm']=1;";
+				//$selecdb[] = '$anexos' . "['cargaAjaxForm']=1;";
 			}
 
 			$anexos    = implode($anexos, PHP_EOL . "\t\t") . PHP_EOL;

@@ -146,6 +146,10 @@ namespace Mk\Tools
 
 			public static function quitarSaltosDobles($text){
 
+			while (stripos($text,"\t".PHP_EOL)!==false){
+				$text = str_replace("\t".PHP_EOL,PHP_EOL,$text);
+			}
+
 			while (stripos($text,'  '.PHP_EOL)!==false){
 				$text = str_replace('  '.PHP_EOL,PHP_EOL,$text);
 			}

@@ -326,6 +326,7 @@ namespace Mk
 								
 					}
 
+					$results = \Mk\Tools\String::quitarSaltosDobles($results);
 					echo $results;
 					if ($runScript!=''){
 							echo "<script type='text/javascript'> $runScript </script>";

@@ -60,6 +60,8 @@ namespace Mk\Shared
 
 		}
 
+
+
 		public function getArrayFromTable($table,$campo,$tag='',$where=""){
 			$database=\Mk\Registry::get('database');
 			$pk = ($database->getPrimaryKeyOf($table));
@@ -93,6 +95,38 @@ namespace Mk\Shared
 			}
 			return $lista;
 			//return \Mk\Tools\Form::getListaSel($lista,$msg,$sel);
+		}
+
+		public function actionGetListFor($campo='',$anexos=false){
+			if (($campo!='')&&($anexos!==false)){
+				if (isset($anexos[$campo]['options'])){
+					return $anexos[$campo]['options'];	
+				}
+				if (isset($anexos[$campo]['join'])){
+					return $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$anexos[$campo]['join']['cond']);
+				}
+				
+				return array();
+
+			}else{
+				$this->setRenderView(false);
+				$primary = $this->getPrimary();
+				$campo = $this->_model->escape(Inputs::request("campo",''));
+				$sel = $this->_model->escape(Inputs::request("sel",''));
+				$anexos=$this->getAnexos($this->_model->getColumns());
+				$msg = $this->_model->escape(Inputs::request("msg",'Seleccione '.$anexos[$campo]['labelf']));
+
+				if (isset($anexos[$campo]['options'])){
+
+					echo \Mk\Tools\Form::getOptions($anexos[$campo]['options'],$sel, $msg);	
+				}
+				if (isset($anexos[$campo]['join'])){
+					echo \Mk\Tools\Form::getOptions( $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$anexos[$campo]['join']['cond']),$sel, $msg);
+				}
+
+				return "<option value=''>Sin Datos...</option>";
+			}
+
 		}
 
 	public function actionDataExist(){

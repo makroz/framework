@@ -41,6 +41,7 @@ function initOpenForm(_respond){
 return 0;
 }
 
+
 function _openForm(f, idAction,tit){
 		$(f).find('input').val('');
 				$(f).find('select').each(function(index){
@@ -61,13 +62,18 @@ function _openForm(f, idAction,tit){
 			$('#mk_formulario  .modal-footer').find('.pag').html('');
 			if (((idAction=='add')&&($(f).data('ultAction')=='ver'))||('{% echo $anexos[cargaAjaxForm] %}'=='1')){
 				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
+			}else{
+				{% foreach $row in $anexos %}
+				{% if $row['cargaAjax']==1 %}
+				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
+				{% /if %}
+				{% /foreach %}
 			}
 			$(f).data('ultAction',idAction);
 		}
 
 
-		$("select").material_select();
-		Materialize.updateTextFields();
+		actualizarUI();
 		$(f).modal('open');		
 }
 

@@ -17,10 +17,12 @@ class Categorias_controller extends CrudDb
 		$anexos=parent::getAnexos($anexos);
 		$anexos['nivel']['options']['0']='Categoria';
 		$anexos['nivel']['options']['1']='Sub-Categoria';
+		$anexos['sk_padre']['join']['table']='categorias';
+		$anexos['sk_padre']['join']['campo']='nombre';
+		$anexos['sk_padre']['join']['cond']="(nivel='0')";
 		if ($join!=0){
-			$anexos['sk_padre']['options']=$this->getArrayFromTable('categorias', 'nombre',"","(nivel='0')");
+			$anexos['sk_padre']['options']=$this->actionGetListFor('sk_padre',$anexos);
 			$anexos['sk_padre']['cargaAjax']=1;
-			$anexos['cargaAjaxForm']=1;
 		}
 
 		return $anexos;
