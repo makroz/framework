@@ -364,7 +364,7 @@ namespace Mk\Crud {
 					if ($tablajoin[1] == '-1') {
 						$pos = stripos($tablas, $tablajoin[0]);
 						if ($pos !== false) {
-							$tablajoin[0] = substr($tablas, $pos, strlen($tablajoin));
+							$tablajoin[0] = substr($tablas, $pos, strlen($tablajoin[0]));
 							$campos       = $this->database->getColsOf($tablajoin[0]);
 							$campos       = implode(',', $campos);
 							$pos          = String::stripos_array($campos, array(
@@ -414,12 +414,14 @@ namespace Mk\Crud {
 					$pedir['usof']['val'][$key]      = '-1';
 					$pedir['uso']['val'][$key]       = 'G';
 					$pedir['funcion']['val'][$key]   = 'datetimesystem';
+					$pedir['required']['val'][$key]   = '0';
 				}
 				if ($Name == 'modified') {
 					$pedir['tipolista']['val'][$key] = '-1';
 					$pedir['usof']['val'][$key]      = '-1';
 					$pedir['uso']['val'][$key]       = 'A';
 					$pedir['funcion']['val'][$key]   = 'datetimesystem';
+					$pedir['required']['val'][$key]   = '0';
 				}
 				if (($Name == 'status') && ($field['args'][0] == 1)) {
 					$pedir['tipolista']['val'][$key] = 'status';
@@ -430,6 +432,7 @@ namespace Mk\Crud {
 					$pedir['tamlista']['val'][$key]  = '45';
 					$pedir['search']['val'][$key]    = '0';
 					$pedir['label']['val'][$key]     = 'St';
+					$pedir['required']['val'][$key]   = '0';
 				}
 				/// Valores por defecto segun Nombre de Campo
 				if ($field['key'] == 'PRI') {
@@ -644,11 +647,14 @@ namespace Mk\Crud {
 						}
 					}
 					if ($aux[2]=='1'){
-						$cargaAjaxForm++;
+						//$cargaAjaxForm++;
 						$selecdb[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
 					}
 				}
 				
+				if ($field['usof'] == 'date') {
+					$cargaDateForm++;
+				}
 				$txtCampos .= implode($lines, PHP_EOL) . PHP_EOL;
 				//print_r($field);
 				//echo "<hr>";
@@ -701,6 +707,10 @@ namespace Mk\Crud {
 
 			if ($cargaAjaxForm>0){
 				//$selecdb[] = '$anexos' . "['cargaAjaxForm']=1;";
+			}
+
+			if ($cargaDateForm>0){
+				$anexos[] = '$anexos' . "['cargaDateForm']=1;";
 			}
 
 			$anexos    = implode($anexos, PHP_EOL . "\t\t") . PHP_EOL;

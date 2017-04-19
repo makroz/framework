@@ -142,6 +142,9 @@ function initOpenForm(_respond){
 
 
 	valNivel();
+if ('{% echo $anexos[cargaDateForm] %}'=='1'){
+	$('input.datafecha').dateDropper();
+}
 return 0;
 }
 function _openForm(f, idAction,tit){
@@ -410,7 +413,7 @@ function valNivel(){
   if (dato==0){
     $('#sk_padre').prop('disabled',true).removeClass('required').find('option:eq(0)').prop('selected',true);
   }else{
-    $('#sk_padre').prop('disabled',false).addClass('required').find('option:eq(0)').prop('selected',true);
+    $('#sk_padre').prop('disabled',false).addClass('required');
   }
   actualizarUI();
 }
@@ -637,6 +640,8 @@ function valNivel(){
 
 {% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 
+
+
 <div class="input-field col s12">
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 </div>
@@ -684,6 +689,8 @@ function valNivel(){
 	          <label for="descrip">{% echo $anexos[descrip][labelf] %}</label>
 	          <div class="error_input">{$errors[descrip][0]}</div>
 		</div>
+ 
+
 </div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>

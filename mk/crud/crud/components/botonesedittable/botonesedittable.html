@@ -38,6 +38,9 @@ function initOpenForm(_respond){
 [[compile:]]
 	$$variables[codejsopenform]
 [[:compile]]
+if ('{% echo $anexos[cargaDateForm] %}'=='1'){
+	$('input.datafecha').dateDropper();
+}
 return 0;
 }
 

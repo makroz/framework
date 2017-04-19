@@ -233,7 +233,10 @@ function valUsof(){
 
   $('#funcion').prop('disabled',false);
 
-  valor=$('#usof').val();
+  var valor=$('#usof').val();
+  if (!valor){
+    valor='';
+  }
   $('.usof').removeClass('s8').addClass('s12');
   $('.tam , .posf').hide();
  

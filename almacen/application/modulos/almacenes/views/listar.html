@@ -79,8 +79,6 @@ table.highlight > tbody > tr:hover {
 .selTR, table.striped > tbody > tr.selTR:nth-child(2n+1), table.striped > tbody > tr.selTR:nth-child(2n+0) {
     background-color: red;
 }
-
-
 {% /append %}
 {% append js.onready %}
 
@@ -140,6 +138,14 @@ if (msg=='error'){
 }
 return -1;
 }
+function initOpenForm(_respond){
+
+
+if ('{% echo $anexos[cargaDateForm] %}'=='1'){
+	$('input.datafecha').dateDropper();
+}
+return 0;
+}
 function _openForm(f, idAction,tit){
 		$(f).find('input').val('');
 				$(f).find('select').each(function(index){
@@ -157,13 +163,18 @@ function _openForm(f, idAction,tit){
 			$('#btnPrint').hide();
 			$('#btnSave').show();
 			$('#mk_formulario  .modal-footer').find('.pag').html('');
-			if ((idAction=='add')&&($(f).data('ultAction')=='ver')){
-				reaction('',idAction,'','#mk_formulario .modal-content');
+			if (((idAction=='add')&&($(f).data('ultAction')=='ver'))||('{% echo $anexos[cargaAjaxForm] %}'=='1')){
+				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
+			}else{
+				{% foreach $row in $anexos %}
+				{% if $row['cargaAjax']==1 %}
+				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
+				{% /if %}
+				{% /foreach %}
 			}
 			$(f).data('ultAction',idAction);
 		}
-		$("select").material_select();
-		Materialize.updateTextFields();
+		actualizarUI();
 		$(f).modal('open');
 }
 function verItem(id){
@@ -195,7 +206,7 @@ var options=[];
 		}
 		_openForm('#mk_formulario',idAction,'Editar Almacen');
 		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
-		reaction(options,idAction,'','#mk_formulario .modal-content');
+		reaction(options,idAction,'','#mk_formulario .modal-content',initOpenForm);
 		return false;
 	}
 	if (idAction=='del'){
@@ -216,7 +227,6 @@ var options=[];
 					reaction(options,idAction,'',div);
 		        },
 		        cancel: function () {
-		        
 		        }
 		    }
 		});
@@ -379,7 +389,6 @@ getAjax(link,'GET',{ },item, function(msg){
      		newstatus='1'
      		icon='X';
      	}
-     
      	$(item).data('status',newstatus).attr('src','img/'+icon+'.png');
      }
    });
@@ -398,8 +407,6 @@ if (msg=='ok'){
 }
 return -1;
 }
-// codejs
-// codejs
 {% /append %}
 {% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
 <link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
@@ -440,7 +447,7 @@ return -1;
 	      <div class="row search1" data-count='0'>
 	            <div class="input-field col s3" >
 	    <select id="search_campo" name='search_campo[]' class="_search browser-default" onchange="_search_campo_change(this)" autocomplete='false' >
-	      <option value="pk" class="_sc2">Id</option><option value="nombre" class="_sc1">Nombre</option><option value="dir" class="_sc1">Direccion</option><option value="estado" class="_sc1">Estado</option><option value="fk_resp" class="">Resp</option>
+	      <option value="pk" class="_sc2">Id</option><option value="nombre" class="_sc1">Nombre</option><option value="dir" class="_sc1">Dirreccion</option><option value="estado" class="_sc1">Estado</option><option value="fk_resp" class="">Responsable</option><option value="fecultinv" class="">Ult.Inventario</option><option value="lapso" class="_sc2">Lapso</option>
 	    </select>
 	          <label for="search_campo" class="labeltop">Campo de busqueda</label>
 				</div>
@@ -524,7 +531,7 @@ return -1;
 <input type="checkbox" id="{% echo 'list_check_all'; %}" name="{% echo 'list_check_all'; %}"  data-type="{% echo 'check'; %}" data-on="{% echo '1'; %}" data-off="{% echo '0'; %}" onclick="clicChecked('0');" />
 <label for="{% echo 'list_check_all'; %}"></label>
 			</th>
-			<th data-field="pk" width="60" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="nombre" width="" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nombre][label] %} </th><th data-field="dir" width="" class="sortable {% if ($order=='dir') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[dir][label] %} </th><th data-field="estado" width="35" class="sortable {% if ($order=='estado') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[estado][label] %} </th><th data-field="fk_resp" width="150" class="sortable {% if ($order=='fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="status" width="45" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
+			<th data-field="pk" width="60" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="nombre" width="" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nombre][label] %} </th><th data-field="dir" width="" class="sortable {% if ($order=='dir') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[dir][label] %} </th><th data-field="estado" width="35" class="sortable {% if ($order=='estado') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[estado][label] %} </th><th data-field="fk_resp" width="150" class="sortable {% if ($order=='fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="fecultinv" width="90" class="sortable {% if ($order=='fecultinv') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecultinv][label] %} </th><th data-field="lapso" width="60" class="sortable {% if ($order=='lapso') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[lapso][label] %} </th><th data-field="status" width="45" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
 			<th data-field="act" width="290" class=" noprinter">Accion</th>
 		</tr>
 	</thead>
@@ -565,6 +572,16 @@ return -1;
  
 
 <td >
+     {% echo $row[fecultinv]; %}
+</td>
+ 
+
+<td >
+     {% echo $anexos[lapso]['options'][$row[lapso]]; %}
+</td>
+ 
+
+<td >
      {% if ($row[status]=="1") %}
           <img src="img/E.png" title="Click para cambiar" data-status='0' data-pk='$row[pk]' id='img_status_$row[pk]' onclick="cambiarStatus(this);" >
      {% /if %}
@@ -598,7 +615,7 @@ return -1;
 		{% foreach $_i in range($nr+1, $limit) %}
 		<tr class="noprinter">
 			<td class="noprinter" >&nbsp; </td>
-			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
+			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
 			<td class="noprinter" > </td>
 		</tr>
 		{% /foreach %}
@@ -623,20 +640,22 @@ return -1;
 
 {% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 
+
+
 <div class="input-field col s12">
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 </div>
  
 
 		<div class="input-field col s12">
-	          <input id="nombre" name="nombre" type="text" class="alfa $clasver" width="" value='{% echo $item[nombre]; %}'   required data-validate=' required' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
 		</div>
  
 
 		<div class="input-field col s12">
-	          <input id="dir" name="dir" type="text" class="alfa $clasver" width="" value='{% echo $item[dir]; %}'   [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="dir" name="dir" type="text" class="alfa $clasver " width="" value='{% echo $item[dir]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
 	          <label for="dir">{% echo $anexos[dir][labelf] %}</label>
 	          <div class="error_input">{$errors[dir][0]}</div>
 		</div>
@@ -645,7 +664,7 @@ return -1;
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][labelf]); %}
 		<div class="input-field col s12">
 		 {% if $_action!='ver' %}
-		<select id="estado" name="estado" class="select $clasver"  required data-validate=' required' [[var:]]eventos[[:var]]  >
+		<select id="estado" name="estado" class="select $clasver  required"  [[var:]]eventos[[:var]]  >
       {% echo $options; %}
     </select>
      {% /if %}
@@ -660,7 +679,7 @@ return -1;
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf]); %}
 		<div class="input-field col s12">
 		 {% if $_action!='ver' %}
-		<select id="fk_resp" name="fk_resp" class="select $clasver"  required data-validate=' required' [[var:]]eventos[[:var]]  >
+		<select id="fk_resp" name="fk_resp" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
       {% echo $options; %}
     </select>
      {% /if %}
@@ -670,6 +689,30 @@ return -1;
     	          <label for="fk_resp">{% echo $anexos[fk_resp][labelf] %}</label>
     	          <div class="error_input">{$errors[fk_resp][0]}</div>
 		</div>
+ 
+
+		<div class="input-field col s12">
+	          <input id="fecultinv" name="fecultinv" type="text" class="alfa $clasver datafecha " width="" value='{% echo $item[fecultinv]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="d/m/Y"  data-large-mode="true" >
+	          <label for="fecultinv">{% echo $anexos[fecultinv][labelf] %}</label>
+	          <div class="error_input">{$errors[fecultinv][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[lapso][options],$item[lapso],'Seleccione '.$anexos[lapso][labelf]); %}
+		<div class="input-field col s12">
+		 {% if $_action!='ver' %}
+		<select id="lapso" name="lapso" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="lapso" name="lapso" type="text" class="alfa $clasver" width="" value='{% echo $anexos[lapso][options][$item[lapso]]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="lapso">{% echo $anexos[lapso][labelf] %}</label>
+    	          <div class="error_input">{$errors[lapso][0]}</div>
+		</div>
+ 
+
 </div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>

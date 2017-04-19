@@ -39,6 +39,25 @@ function isUnique_[[var:]]id[[:var]](){
 		</div>	
 [* /if *]
 
+[* if '[[var:]]tipo[[:var]]'=='date' *]
+[[unique:]]
+{% append js.files %}
+	<link href='js/datedropper/datedropper.css' rel='stylesheet'>
+	<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+{% /append %}
+
+{% append js.onready %}
+	 $('input.datafecha').dateDropper();
+{% /append %}
+[[:unique]]
+		<div class="input-field col [[var:]]clase[[:var]]">
+	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver datafecha [[var:]]validate[[:var]]" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="d/m/Y"  data-large-mode="true" >
+	          <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
+	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
+		</div>	
+[* /if *]
+
+
 [* if '[[var:]]tipo[[:var]]'=='oculto' *]
 <div class="input-field col [[var:]]clase[[:var]]">
 	          <input  id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="hidden" value='{% echo $item[[[var:]]id[[:var]]]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >

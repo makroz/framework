@@ -31,7 +31,8 @@ namespace Mk
 			"varchar",
 			"char",
 			"tinyint",
-			"float"
+			"float",
+			"date"
 			);
 		/**
 		* @read
@@ -172,8 +173,9 @@ namespace Mk
 			return $query->delete();
 		}
 
-		public function save()
+		public function save($notColumns='')
 		{
+
 			$primary = $this->primaryColumn;
 			$raw = $primary["raw"];
 			$name = $primary["name"];
@@ -185,11 +187,13 @@ namespace Mk
 				$query->where("{$name} = ?", $this->$raw);
 			}
 			$data = array();
+			//print_r($notColumns);
 			foreach ($this->columns as $key => $column)
 			{
-				/*if (is_array($onlyColumns)&&(!$onlyColumns[$colum["raw"]])){
+
+				if (is_array($notColumns)&&($notColumns[$key]==1)){
 					continue;
-				}*/
+				}
 				if (!$column["read"])
 				{
 					$prop = $column["raw"];
@@ -463,6 +467,10 @@ namespace Mk
 
 		protected function _validateEmail($value)
 		{
+			if ($value==''){
+				return true;
+			}
+
 			return StringMethods::match($value, "^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$");
 		}
 

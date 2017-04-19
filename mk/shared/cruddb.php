@@ -211,6 +211,7 @@ namespace Mk\Shared
 				$action='M';
 			}
 
+			$notColumns='';
 			foreach ($model->columns as $key => $campo) {
 				$prop = $campo["name"];
 
@@ -296,12 +297,15 @@ namespace Mk\Shared
 					//print_r($model->$prop+':'+$pro);
 					if ($this->getPrimary()!=$prop){
 						$model->$prop='';	
+						//echo "No se Grabara=".$campo['raw'];
+						$notColumns[$key]=1;
 					}
+
 				}
 			}
 
 	$this->_model=$model;
-	return true;
+	return $notColumns;
 	}
 
 
@@ -405,13 +409,14 @@ namespace Mk\Shared
 			$view = $this-> getActionView();
 
 			$this->_model->loadFromArray($_REQUEST);
-			$this->_verificarDatos(Inputs::request("_save_"));
+			$notColumns=$this->_verificarDatos(Inputs::request("_save_"));
 
 
 			if ($this->_model-> validate())
 			{
 				$this->beforeSave();
-				$this->_model->save();
+				//print_r($notColumns);
+				$this->_model->save($notColumns);
 				$this->afterSave();
 				$view->set("success", true);
 			}

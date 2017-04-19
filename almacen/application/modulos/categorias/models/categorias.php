@@ -59,7 +59,6 @@ protected $_descrip;
 * @funcion custom
 * @fcustom 1
 * @label St
-* @validate  required
 */
 protected $_status;
 public $_tSingular='Categoria';

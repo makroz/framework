@@ -267,7 +267,7 @@ function getCookie(cname) {
        inputMsg(campo,msg);
        if (error>0){
           if (dis==true){
-            //$(campo).prop('disabled',true);
+            $(campo).prop('disabled',true);
           }
        }
     }

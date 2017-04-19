@@ -4,7 +4,7 @@ namespace Mk\Shared
 	class Model extends \Mk\Model
 	{
 		
-		public function save()
+		public function save($notColumns='')
 		{
 			$primary = $this-> getPrimaryColumn();
 			$raw = $primary["raw"];
@@ -19,7 +19,7 @@ namespace Mk\Shared
 			if (method_exists($this,'setModified')){
 				$this-> setModified(date("Y-m-d H:i:s"));
 			}
-			parent::save();
+			parent::save($notColumns);
 		}
 	}
 }

@@ -3,8 +3,6 @@
 {% /append %}
 {% append style.inline %}
 
-
-
 {% /append %}
 {% append js.onready %}
 
@@ -13,6 +11,9 @@ $(document).ajaxStop(function(){
 });
 	$("select").material_select();
 	showMensajes();
+
+
+	 $('input.datafecha').dateDropper();
 {% /append %}
 {% append js.inline %}  
 
@@ -40,13 +41,15 @@ function valNivel(){
   if (dato==0){
     $('#sk_padre').prop('disabled',true).removeClass('required').find('option:eq(0)').prop('selected',true);
   }else{
-    $('#sk_padre').prop('disabled',false).addClass('required').find('option:eq(0)').prop('selected',true);
+    $('#sk_padre').prop('disabled',false).addClass('required');
   }
   actualizarUI();
 }
 {% /append %}
 {% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
 <script type='text/javascript' src='js/confirm/confirm.js'></script>
+<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
 {% /append %}
 <div class="container">
 <!-- ajax: -->
@@ -58,6 +61,8 @@ function valNivel(){
 <div class="row">
 
 {% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+
+
 
 <div class="input-field col s12">
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
@@ -106,6 +111,8 @@ function valNivel(){
 	          <label for="descrip">{% echo $anexos[descrip][labelf] %}</label>
 	          <div class="error_input">{$errors[descrip][0]}</div>
 		</div>
+ 
+
 </div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>
