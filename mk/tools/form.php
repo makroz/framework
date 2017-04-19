@@ -108,7 +108,8 @@ namespace Mk\Tools
 
 			}
 			
-			$fecha = date_create_from_format ($formato , $fec);
+			$fecha = date_timestamp_get(date_create_from_format ($formato , $fec));
+			//echo "Fechas: $fec | $formato |";print_r($fecha);
 
 			if ($hora==true){
 				return date('Y-m-d H:i:s',$fecha);
@@ -132,7 +133,7 @@ namespace Mk\Tools
 
 			}
 			
-			$fecha = date_create_from_format ($formato , $hora);
+			$fecha = date_timestamp_get(date_create_from_format ($formato , $hora));
 			return date('H:i:s',$fecha);
 		}
 		}//function
@@ -211,7 +212,7 @@ namespace Mk\Tools
 				}
 			}
 
-			$fecha = date_create_from_format ('YmdHis' , $fec);
+			$fecha = date_timestamp_get(date_create_from_format ('YmdHis' , $fec));
 			return date($formato,$fecha);
 		}
 		}//function
@@ -226,7 +227,7 @@ namespace Mk\Tools
 				}
 			}
 
-			$hora = date_create_from_format ('His' , $hora);
+			$hora = date_timestamp_get(date_create_from_format ('His' , $hora));
 			return date($formato,$hora);
 		}
 		}//function
@@ -244,7 +245,7 @@ namespace Mk\Tools
 				}
 			}
 
-			$fecha = date_create_from_format ('Y-m-d H:i:s' , $fec);
+			$fecha = date_timestamp_get(date_create_from_format ('Y-m-d H:i:s' , $fec));
 			return date($formato,$fecha);
 		}//function
 
@@ -255,7 +256,7 @@ namespace Mk\Tools
 					$formato='His';
 			}
 
-			$hora = date_create_from_format ('H:i:s' , $hora);
+			$hora = date_timestamp_get(date_create_from_format ('H:i:s' , $hora));
 			return date($formato,$hora);
 		}
 		}//function

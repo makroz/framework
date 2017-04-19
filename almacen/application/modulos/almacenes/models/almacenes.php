@@ -55,7 +55,7 @@ protected $_fk_resp;
 * @readwrite
 * @type date
 * @uso A
-* @funcion 
+* @funcion date
 * @label Ult.Inventario
 * @labelf Fecha del Ultimo Inventario
 */
