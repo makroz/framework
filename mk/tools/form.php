@@ -192,9 +192,31 @@ namespace Mk\Tools
 		}//function
 
 
+
 		public static function dbToDate($fec='',$hora=false,  $formato=''){
-		if ((trim($fec)=='')or(parseInt($fec)==0)){return '';
+
+/*		$bus=array('-',':',' ');
+		$fec1=str_replace($bus,'',$fec);
+		echo "Fecha es: $fec1";
+*/		
+
+		if ((trim($fec)=='')or(trim($fec)==0)){
+			return '';
 		}else{
+
+			$formhora='';
+			if (stripos($fec,'-')!==false){
+				if ($hora==true){
+					$formhora=' H:i:s';
+				}
+				$fecha = date_timestamp_get(date_create_from_format ('Y-m-d'.$formhora , $fec));
+			}else{
+				if ($hora==true){
+					$formhora='His';
+				}
+				$fecha = date_timestamp_get(date_create_from_format ('Ymd'.$formhora, $fec));
+			}
+
 			if ($formato==''){
 				$formato=\Mk\Tools\App::getConfig()->param->fecha->formato;
 				if (empty($formato)){
@@ -211,8 +233,6 @@ namespace Mk\Tools
 					$formato.=' '.$formatoh;
 				}
 			}
-
-			$fecha = date_timestamp_get(date_create_from_format ('YmdHis' , $fec));
 			return date($formato,$fecha);
 		}
 		}//function

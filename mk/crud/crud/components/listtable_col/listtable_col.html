@@ -72,6 +72,14 @@ getAjax(link,'GET',{ },item, function(msg){
 
 [* /if *]
 
+[* if '[[var:]]tipo[[:var]]'=='date' *]
+
+<td > 
+
+     {% echo \\Mk\\Tools\\Form::dbToDate($row[[[var:]]key[[:var]]]); %}
+</td>
+
+[* /if *]
 
 
 [* if '[[var:]]tipo[[:var]]'=='default' *]

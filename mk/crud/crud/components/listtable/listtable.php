@@ -52,8 +52,12 @@ class Listtable
                         break;
     				
     				default:
+                        $tipo='default';
+                        if ($value['type']=='date'){
+                            $tipo='date';
 
-                        $texto.="[[component:]]listtable_col::tipo=default{$key1}[[:component]]";  
+                        }
+                        $texto.="[[component:]]listtable_col::tipo={$tipo}{$key1}[[:component]]";  
     					
     					break;
     			}

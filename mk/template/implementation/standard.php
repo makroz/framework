@@ -67,6 +67,7 @@ namespace Mk\Template\Implementation
 		protected function _echo($tree, $content)
 		{
 			$raw = $this->_script($tree, $content);
+
 			return "\$_text[] = {$raw}";
 		}
 		protected function _script($tree, $content)

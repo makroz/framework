@@ -572,7 +572,7 @@ return -1;
  
 
 <td >
-     {% echo $row[fecultinv]; %}
+     {% echo \Mk\Tools\Form::dbToDate($row[fecultinv]); %}
 </td>
  
 
@@ -662,7 +662,7 @@ return -1;
  
 
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][labelf]); %}
-		<div class="input-field col s12">
+		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
 		<select id="estado" name="estado" class="select $clasver  required"  [[var:]]eventos[[:var]]  >
       {% echo $options; %}
@@ -677,7 +677,7 @@ return -1;
  
 
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf]); %}
-		<div class="input-field col s12">
+		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
 		<select id="fk_resp" name="fk_resp" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
       {% echo $options; %}
@@ -691,15 +691,16 @@ return -1;
 		</div>
  
 
-		<div class="input-field col s12">
-	          <input id="fecultinv" name="fecultinv" type="text" class="alfa $clasver datafecha " width="" value='{% echo $item[fecultinv]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="d/m/Y"  data-large-mode="true" >
+{% php $valor=\Mk\Tools\Form::dbToDate($item[fecultinv]); %}
+		<div class="input-field col s12 m6">
+	          <input id="fecultinv" name="fecultinv" type="text" class="alfa $clasver datafecha " width="" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true"  data-large-mode="true"  data-default-date="{% echo \Mk\Tools\Form::dbToDate($item[fecultinv],false,'m-d-Y'); %}"  >
 	          <label for="fecultinv">{% echo $anexos[fecultinv][labelf] %}</label>
 	          <div class="error_input">{$errors[fecultinv][0]}</div>
 		</div>
  
 
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[lapso][options],$item[lapso],'Seleccione '.$anexos[lapso][labelf]); %}
-		<div class="input-field col s12">
+		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
 		<select id="lapso" name="lapso" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
       {% echo $options; %}
