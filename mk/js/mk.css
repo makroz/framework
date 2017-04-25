@@ -66,3 +66,11 @@ input.required + label{
 	border-right: 2px solid rgba(0,0,0,1);
 	border-bottom: 2px solid rgba(0,0,0,1);
 }
+
+.modal.modal-fixed-footer .modal-tit{
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);background-color: #fafafa;border-radius:  2px 2px 0 0;height: 56px;position: absolute;top: 0;padding: 4px 6px;width: 100%;
+}
+.modal.modal-fixed-footer .modal-content{
+
+margin-top:56px;height:calc(100% - 112px);padding-top: 0;
+}

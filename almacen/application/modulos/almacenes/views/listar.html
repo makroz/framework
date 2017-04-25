@@ -141,6 +141,11 @@ return -1;
 function initOpenForm(_respond){
 
 
+	if ($('#_save_').val()=='edit'){
+	$('#estado option[value="A"]').prop('disabled',true);
+}else{
+	$('#estado option[value="A"]').prop('disabled',false);
+}
 if ('{% echo $anexos[cargaDateForm] %}'=='1'){
 	$('input.datafecha').dateDropper();
 }
@@ -441,9 +446,9 @@ return -1;
 <a class="btn-floating  waves-effect waves-light blue" title="Buscar" onclick="$('#mk_buscar').modal('open');"><i class="material-icons">search</i></a>
 {% if ($searchMsg!='') %}{% echo $searchMsg; %} <i class="tiny material-icons red white-text" title="Limpiar busqueda" onclick="_search_buscar(true);">close</i>{% /if %}
 	<div id="mk_buscar" class="modal modal-fixed-footer">
+	<h4 class="modal-tit">Busqueda</h4>
 	<form id="_searchform" autocomplete="off">
 	    <div class="modal-content">
-	      <h4>Busqueda</h4>
 	      <div class="row search1" data-count='0'>
 	            <div class="input-field col s3" >
 	    <select id="search_campo" name='search_campo[]' class="_search browser-default" onchange="_search_campo_change(this)" autocomplete='false' >
@@ -630,10 +635,10 @@ return -1;
 <!-- :ajax -->
 </div>
 	<div id="mk_formulario" class="modal modal-fixed-footer">
+	    <h4 class="modal-tit">
+			Adicionar
+		</h4>
 	    <div class="modal-content">
-	    <div class="titulo">
-			<h1 > Adicionar</h1>
-		</div>
 <div class="errorList"></div>
 <form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
 <div class="row">
@@ -642,9 +647,7 @@ return -1;
 
 
 
-<div class="input-field col s12">
-	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-</div>
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
  
 
 		<div class="input-field col s12">

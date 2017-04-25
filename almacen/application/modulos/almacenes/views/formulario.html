@@ -42,11 +42,11 @@ return -1;
 <script type='text/javascript' src='js/confirm/confirm.js'></script>
 <script type='text/javascript' src='js/datedropper/datedropper.js'></script>
 {% /append %}
+	    <h4 class="modal-tit">
+			<h1 > Adicionar</h1>
+		</h4>
 <div class="container">
 <!-- ajax: -->
-<div class="titulo">
-<h1 > {% echo $modTitulo; %}</h1>
-</div>
 <div class="errorList"></div>
 <form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
 <div class="row">
@@ -55,9 +55,7 @@ return -1;
 
 
 
-<div class="input-field col s12">
-	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-</div>
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
  
 
 		<div class="input-field col s12">

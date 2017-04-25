@@ -378,7 +378,7 @@ namespace Mk\Shared
 		return $where;
 	}
 
-	public function getAnexos($anexos=array()){
+	public function getAnexos($anexos=array(),$join=false){
 		return $anexos;
 	}
 
@@ -462,7 +462,7 @@ namespace Mk\Shared
 		$view = $this-> getActionView();
 		$view
 		-> set("item", $this->_model->loadToArray())
-		-> set("anexos", $this->getAnexos($this->_model->getColumns()))
+		-> set("anexos", $this->getAnexos($this->_model->getColumns(),1))
 		-> set("modTitulo", "Ver ".$this->_model->_tSingular);
 		$this->afterVer();
 	}

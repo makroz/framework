@@ -60,9 +60,7 @@ function isUnique_[[var:]]id[[:var]](){
 
 
 [* if '[[var:]]tipo[[:var]]'=='oculto' *]
-<div class="input-field col [[var:]]clase[[:var]]">
-	          <input  id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="hidden" value='{% echo $item[[[var:]]id[[:var]]]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-</div>
+	          <input  id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="hidden" value='{% echo $item[[[var:]]id[[:var]]]; %}' >
 [* /if *]
 
 [* if '[[var:]]tipo[[:var]]'=='check' *]

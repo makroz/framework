@@ -27,15 +27,12 @@ $(document).ajaxStop(function(){
     };
 
 {% /append %}
+	    <h4 class="modal-tit">
+			[[component:]]titulos::text=Adicionar[[:component]]
+		</h4>
+
 <div class="container">
 <!-- ajax: -->
-
-<div class="titulo">
-[[component:]]titulos::text={% echo $modTitulo; %}[[:component]]
-</div>
-
 [[component:]]formulario[[:component]]
-
-            
 <!-- :ajax -->
 </div>
