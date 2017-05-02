@@ -289,6 +289,27 @@ namespace Mk\Tools
 			return  $date;
 		}
 
+		public static function getNodesHtml($nodes,$parent=''){
+			$r='';
+			if ($parent==''){
+				$nodes='{"R":{"t":"Recepcion"},"A":{"t":"Almacen"},"C":{"t":"Cuarentena"},"S":{"t":"Salida"}}';
+				$nodes=json_decode($nodes);
+			}
+
+
+			if (count($nodes)==0){return $r;}
+
+			foreach ($nodes as $key => $value) {
+			$parent='';
+			if ($value->p!=''){
+				$parent="treegrid-parent-{$value->p}";
+			}
+
+			
+				$r.="<tr id='node-{$key}' class='treegrid-{$key} {$parent} '><td>".$value->t."</td><td><a class='btn-floating  waves-effect waves-light green' title='Adicionar'><i class='material-icons'>add</i></a><a class='btn-floating  waves-effect waves-light red' title='Borrar'><i class='material-icons'>delete</i></a><a class='btn-floating  waves-effect waves-light yellow' title='Editar'><i class='material-icons'>edit</i></a></td></tr>";
+			}
+			return  $r;
+		}
 		/*public static function getOptions($items=array(),$sel='',$msg='Selecione...'){
 			$r='';
 			if (trim($msg!='')){

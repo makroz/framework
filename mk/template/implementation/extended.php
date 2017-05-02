@@ -145,6 +145,7 @@ namespace Mk\Template\Implementation
 		protected function _getValue($key)
 		{
 			$data = Registry::get($this->getDefaultKey());
+			//echo "<br>Datas: $key<br>".print_r($data);echo "<hr>";
 			if (isset($data[$key]))
 			{
 				return $data[$key];
@@ -168,10 +169,10 @@ namespace Mk\Template\Implementation
 				$key = $this-> _getKey($key);
 			}
 			//\Mk\Debug::msg(print_r($key,true).": $value");
-			
-			$vcompile = new \Mk\View();
-			$value=stripslashes($vcompile-> render($value));
 
+			//$vcompile = new \Mk\View();
+			//$value=stripslashes($vcompile-> render($value));
+			//echo "<hr>set $key<br>$value<hr>";
 
 			$this->_setValue($key, $value);
 		}
@@ -196,7 +197,9 @@ namespace Mk\Template\Implementation
 		}
 		public function yield($tree, $content)
 		{
+
 			$key = trim($tree["raw"]);
+			//echo "<hr>$key<br>".$this-> _getValue($key)."<hr>";
 			if (StringMethods::indexOf($this-> _getValue($key), "\$_text") >= 0)
 			{
 				return $this-> _getValue($key);

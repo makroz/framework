@@ -21,7 +21,12 @@ namespace Mk\Database\Query
 			$rows = array();
 			for ($i = 0; $i < $result->num_rows; $i++)
 			{
-				$rows[] = $result->fetch_array(MYSQLI_ASSOC);
+				$data=$result->fetch_array(MYSQLI_ASSOC);
+				foreach ($data as $key => $value) {
+					$data[$key]=stripslashes($data[$key]);
+				}
+				$rows[]=$data;
+				//$rows[] = $result->fetch_array(MYSQLI_ASSOC);
 			}
 			//var_dump($rows);echo "<hr>";
 			return $rows;

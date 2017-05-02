@@ -52,14 +52,16 @@ namespace Mk\Tools
 			) 
 		*/
 	
-			public static function getCodes(&$string,$start,$end,$_reemplazo='',$startend=''){
-				$out = array();
+			public static function getCodes(&$string,$start,$end,$_reemplazo='',$startend='',$type='a',$out=array()){
+				//$out = array();
 				$ini=stripos($string,$start);
 					$i=0;
 				while ($ini!==false){
-					$ini1=$ini;
+					$ini1=$ini;$nappend='';
 					if ($startend!=''){
+
 						$ini=stripos($string,$startend,$ini);	
+						$nappend=trim(substr($string,$ini1+strlen($start),$ini-($ini1+strlen($start))));
 					}
 					if ($ini!==false){
 						if ($startend!=''){
@@ -70,16 +72,55 @@ namespace Mk\Tools
 						$fin=stripos($string,$end,$ini);
 						if ($fin!==false){
 							$value=substr($string,$ini,$fin-$ini);
-							if (stripos($value,'{%')!==false){
+							//if (stripos($value,'{%')!==false){
 								$i++;
-								$out[$i]=$value;
-								if ($_reemplazo!=''){
-									$code="[[code:{$_reemplazo}:{$i}]]";
-									$string=substr_replace($string, $code, $ini,$fin-$ini);
-									$fin=$ini+strlen($code);
+								if ($_reemplazo!==false){ 
+									if ($_reemplazo!=''){
+										$code="[[code:{$_reemplazo}:{$nappend}{$i}]]";
+										//$previus='';
+										$nappend=$nappend.$i;
+										if (stripos($out[$nappend],$value)===false){
+											if ($type=='a'){
+												$value=$out[$nappend].$value;
+											}
+											if ($type=='p'){
+												$value=$value.$out[$nappend];
+											}
+											$out[$nappend]=$value;
+										}
+										$string=substr_replace($string, $code, $ini,$fin-$ini);
+										$fin=$ini+strlen($code);
+										$ini=stripos($string,$start,$fin+strlen($end));
+									}else{
+										$code='';
+										if (stripos($out[$nappend],$value)===false){
+											if ($type=='a'){
+												$value=$out[$nappend].$value;
+											}
+											if ($type=='p'){
+												$value=$value.$out[$nappend];
+											}
+
+											$out[$nappend]=$value;
+										}
+										$string=substr_replace($string, $code, $ini1,($fin+strlen($end))-$ini1);
+										$fin=$ini1;
+										$ini=stripos($string,$start,$fin);
+									}
+								}else{
+									if (stripos($out[$nappend],$value)===false){
+										if ($type=='a'){
+												$value=$out[$nappend].$value;
+										}
+										if ($type=='p'){
+											$value=$value.$out[$nappend];
+										}
+										$out[$nappend]=$value;
+									}
+									$ini=stripos($string,$start,$fin+strlen($end));
 								}
-							}
-							$ini=stripos($string,$start,$fin+strlen($end));
+							//}
+							//$ini=stripos($string,$start,$fin+strlen($end));
 						}else{
 							$ini=false;
 						}

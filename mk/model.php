@@ -23,6 +23,7 @@ namespace Mk
 		protected $_types = array(
 			"autonumber",
 			"text",
+			"tinytext",
 			"integer",
 			"int",
 			"decimal",
@@ -91,7 +92,7 @@ namespace Mk
 					$prop = "_{$key}";
 					if (!empty($previous[$key]) && property_exists($this, $prop))
 					{
-						$this->$prop = $previous[$key];
+						$this->$prop = stripslashes($previous[$key]);
 					}
 
 
@@ -141,7 +142,7 @@ namespace Mk
 					if (!isset($this->$key))
 					{
 
-						$this->$key = $value;
+						$this->$key = stripslashes($value);
 					}
 				}
 			}

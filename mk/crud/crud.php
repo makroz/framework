@@ -69,6 +69,7 @@ namespace Mk\Crud {
 			$lusof['datetime']                = 'Fecha y Hora';
 			$lusof['pass']                    = 'Password';
 			$lusof['selecdb']                 = 'DB Lista';
+			$lusof['tree'] = 'Lista Tree';
 			$lusof['buscardb']                = 'DB Buscar';
 			$lusof['multiple']                = 'Lista Multiple';
 			$lusof['oculto']                  = 'Oculto';
@@ -211,6 +212,7 @@ namespace Mk\Crud {
 					'text',
 					'varchar',
 					'char',
+					'tinytext',
 					'mediumtext',
 					'largetext'
 				), true)) {
@@ -225,11 +227,14 @@ namespace Mk\Crud {
 					}
 					//$pedir['tamlista']['val'][$key]=$pedir['tam']['val'][$key];
 					if (in_array($field['type'], array(
+						'tinytext',
 						'mediumtext',
 						'largetext'
 					), true)) {
 						$pedir['usof']['val'][$key]     = 'area';
 						$pedir['tamlista']['val'][$key] = '';
+						$pedir['tipolista']['val'][$key] = '-1';
+						$pedir['search']['val'][$key]   = '0';
 					}
 					if ($field['args'][0] == 1) {
 						$pedir['usof']['val'][$key]       = 'check';
@@ -384,6 +389,10 @@ namespace Mk\Crud {
 					$pedir['tamlista']['val'][$key]  = '150';
 					$pedir['usof']['val'][$key]      = 'selecdb';
 					$pedir['funcion']['val'][$key]   = '-1';
+				}
+				$pos = stripos($Name, 't_');
+				if ($pos !== false) {
+					$pedir['usof']['val'][$key]      = 'tree';
 				}
 				$pos = stripos($Name, 'sk_');
 				if ($pos !== false) {
@@ -653,7 +662,7 @@ namespace Mk\Crud {
 				}
 				
 				if ($field['usof'] == 'date') {
-					$cargaDateForm++;
+					//$cargaDateForm++;
 				}
 				$txtCampos .= implode($lines, PHP_EOL) . PHP_EOL;
 				//print_r($field);
@@ -710,7 +719,7 @@ namespace Mk\Crud {
 			}
 
 			if ($cargaDateForm>0){
-				$anexos[] = '$anexos' . "['cargaDateForm']=1;";
+				//$anexos[] = '$anexos' . "['cargaDateForm']=1;";
 			}
 
 			$anexos    = implode($anexos, PHP_EOL . "\t\t") . PHP_EOL;
@@ -877,6 +886,7 @@ namespace Mk\Crud {
 			$codeUnique['jsfiles']['index']     = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.files %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['styleinline']['index'] = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.inline %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['stylefiles']['index']  = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.files %}', '{% /append %}', 2, 'index', ' ');
+			$codeUnique['jsopenform']['index']  = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.openform %}', '{% /append %}', 2, 'index', ' ');
 
 
 			$js  = implode($codeUnique['jsfiles'], " ");
@@ -900,6 +910,7 @@ namespace Mk\Crud {
 			$js        = $css . $js;
 			$plantilla = PHP_EOL . '{% append js.files %}' . $js . '{% /append %}' . PHP_EOL . $plantilla;
 			//$plantilla = PHP_EOL.'{% append js.files %}'.implode($codeUnique['jsfiles']," ").PHP_EOL.'{% /append %}'.PHP_EOL.$plantilla;
+			$plantilla = PHP_EOL . '{% append js.openform %}' . implode($codeUnique['jsopenform'], " ") . PHP_EOL . '{% /append %}' . PHP_EOL . $plantilla;
 			$plantilla = PHP_EOL . '{% append js.inline %}' . implode($codeUnique['jsinline'], " ") . PHP_EOL . '{% /append %}' . PHP_EOL . $plantilla;
 			$plantilla = PHP_EOL . '{% append js.onready %}' . implode($codeUnique['jsonready'], " ") . PHP_EOL . '{% /append %}' . PHP_EOL . $plantilla;
 			$plantilla = PHP_EOL . '{% append style.inline %}' . implode($codeUnique['styleinline'], " ") . PHP_EOL . '{% /append %}' . PHP_EOL . $plantilla;

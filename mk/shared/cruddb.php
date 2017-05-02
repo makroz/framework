@@ -87,10 +87,10 @@ namespace Mk\Shared
 			while ($row=$result->fetch_row())
 			{
 				if ($tag!=''){
-					$lista[$row[0]]['text']=$row[1];
-					$lista[$row[0]]['tag']=$row[2];
+					$lista[$row[0]]['text']=stripslashes($row[1]);
+					$lista[$row[0]]['tag']=stripslashes($row[2]);
 				}else{
-					$lista[$row[0]]=$row[1];	
+					$lista[$row[0]]=stripslashes($row[1]);	
 				}
 			}
 			return $lista;

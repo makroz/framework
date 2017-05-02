@@ -34,14 +34,14 @@ if (msg=='error'){
 return -1;
 }
 
-function initOpenForm(_respond){
+function initOpenForm(_respond,ejecutar){
+if (ejecutar){
 [[compile:]]
 	$$variables[codejsopenform]
 [[:compile]]
-if ('{% echo $anexos[cargaDateForm] %}'=='1'){
-	$('input.datafecha').dateDropper();
+[[printvar:openform]]
 }
-return 0;
+return '001';
 }
 
 
@@ -71,6 +71,10 @@ function _openForm(f, idAction,tit){
 				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
 				{% /if %}
 				{% /foreach %}
+				if (idAction=='add'){
+				[[printvar:openform]]
+				}
+				
 			}
 			$(f).data('ultAction',idAction);
 		}

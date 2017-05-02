@@ -275,10 +275,12 @@ namespace Mk
 
 				$_code_ = \Mk\Tools\String::getCodes($template,'{% append', '{% /append %}', 'compile',' %}');
 				foreach ($_code_ as $key2 => $html) {
+					//echo "<hr>Append: $key2 <br> $html<hr>";
 					$vcompile = new Template(array(
 						"implementation" => new Template\Implementation\Extended()
 					));
 					$vcompile->parse($html,$_data,$msg+1);
+					//echo "<hr>Append: $key2 <br> "$html"<hr>";print_r($_data);
 					$template = str_replace("[[code:compile:{$key2}]]",stripslashes($vcompile->process($_data)),$template);
 				}
 
@@ -294,6 +296,9 @@ namespace Mk
 				echo "<hr>Error en tenplate:<br> ";print_r($this->code);
 				throw $this->_Exception($e);
 			}
+
+			
+
 			return $this;
 		}
 		public function process($data = array())

@@ -74,6 +74,15 @@ protected $_lapso;
 /**
 * @column
 * @readwrite
+* @type tinytext
+* @uso A
+* @funcion st
+* @label Ubicaciones del Almacen
+*/
+protected $_t_ubicaciones;
+/**
+* @column
+* @readwrite
 * @type char
 * @uso G
 * @funcion custom

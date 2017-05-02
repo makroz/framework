@@ -2,15 +2,16 @@
 unidades=pk,nombre,base,relBase,tipo(unico=X,unidad=U,peso=P,distancia=D,volumen=V,tiempo=T), status
 resp=pk, doc,nombre,iniciales, tel, cel,mail,dir, status
 categorias=pk, nombre, nivel, sk_padre, descrip, status
-
 almacenes
-pk, nombre, dir, ultinv, lapso,fk_resp, estado,status
+pk, nombre, dir, ultinv, lapso,fk_resp, estado,t_ubicaciones,status
+ubicacion R:Recepcion|A:Almacen|C:Cuarentena|S:Salida
+1:en transito
 
-productos
-pk, fk_almacenes, nombre, fk_unidades, cant, costo, precio, codbarra, fk_categorias,serial,vence status
+prod
+pk, fk_almacenes, nombre, fk_unidades, cant, costo, precio, codbarra, fk_categorias,tserial,tvence,status
 
-almProdAlm
-pk,fk_almProd,fk_almacen, costo, cant, minStock,fk_unidad, status
+prodAlm
+pk,fk_prod,fk_almacen, costo, precio, cant, minStock,maxStock,recompra,serial,fecvenc,ubicacion status
 
 almIngreso
 pk, fecha, fk_almProd, fk_almacen, costo, cant, fk_unidad, tipo(C=compra,I=InvInicial,T=traspaso,D=Devolucion,A=ajuste), iddoc, nfactura,seriales,fecVence,fk_resp, status

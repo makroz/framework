@@ -327,6 +327,15 @@ namespace Mk
 					}
 
 					$results = \Mk\Tools\String::quitarSaltosDobles($results);
+	
+					$_var_ = \Mk\Tools\String::getCodes($results,'[[setvar:', '[[:setvar]]', '',']]');
+					$_var_ = \Mk\Tools\String::getCodes($results,'<!--setvar:', '<!--:setvar-->', false,'-->','a',$_var_);
+					$_var_ = \Mk\Tools\String::getCodes($results,'<!--prevar:', '<!--:prevar-->', false,'-->','p',$_var_);
+					$_var_ = \Mk\Tools\String::getCodes($results,'[[prevar:', '[[:prevar]]', '',']]','p',$_var_);
+					foreach ($_var_ as $key2 => $html) {
+						$results = str_replace("[[printvar:{$key2}]]",stripslashes($html),$results);
+					}
+	
 					echo $results;
 					if ($runScript!=''){
 							echo "<script type='text/javascript'> $runScript </script>";

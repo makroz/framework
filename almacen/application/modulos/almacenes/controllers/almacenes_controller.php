@@ -28,7 +28,6 @@ class Almacenes_controller extends CrudDb
 		$anexos['lapso']['options']['6']='Trimestral';
 		$anexos['lapso']['options']['7']='Semestral';
 		$anexos['lapso']['options']['8']='Anual';
-		$anexos['cargaDateForm']=1;
 		if ($join!=0){
 			$anexos['fk_resp']['options']=$this->actionGetListFor('fk_resp',$anexos);
 		}

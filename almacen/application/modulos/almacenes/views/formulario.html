@@ -3,6 +3,15 @@
 {% /append %}
 {% append style.inline %}
 
+
+
+.treeg tr td a{
+	display:none;
+}
+.treeg tr:hover td a{
+	display:inline-block;
+	margin-right:5px;
+}
 {% /append %}
 {% append js.onready %}
 
@@ -11,9 +20,6 @@ $(document).ajaxStop(function(){
 });
 	$("select").material_select();
 	showMensajes();
-
-
-	 $('input.datafecha').dateDropper();
 {% /append %}
 {% append js.inline %}  
 
@@ -36,11 +42,89 @@ if (msg=='ok'){
 }
 return -1;
 }
+
+
+function binderNodeTree(){
+	$( '.treeg tr td' ).off( "click", "**" );
+	 $('.treeg tr td').on('click','i:contains("add")',function(){addNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("edit")',function(){editNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("delete")',function(){delNodeTree(this)});
+}
+var nodedeltree;
+function delNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		nodedeltree=node;
+		var t=node.find('td:eq(0)').text();
+		$.confirm({
+		    title: 'Confirmacion',
+		    content: '¿Esta seguro de querer borrar este Nodo?:'+t,
+		    type:'red',
+		    buttons: {
+		        confirm: function () {
+		        	var pp1='#'+$(nodedeltree).closest('table').prop('id');
+		        	nodedeltree.remove();
+        			$(pp1).treegrid();
+        			$('#'+$(pp1).attr('for')).val(getNodosTree(pp1));
+		        },
+		        cancel: function () {
+		        }
+		    }
+		});
+	}
+}
+function editNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		var id=node.prop('id')
+		var t=node.find('td:eq(0)').text();
+		var t1 = prompt("Ingrese el Texto para Editar", t);
+		if (t1 != null) {
+			t1=node.find('td:eq(0)').html().replace(t,t1);
+			node.find('td:eq(0)').html(t1);
+		}
+		var pp='#'+$(node).closest('table').prop('id');
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+	}
+}
+function addNodeTree(node){
+	node=$(node).closest('tr');
+	var id=node.prop('id');
+	id=id.replace('node-','');
+	var idp=node.treegrid('getParentNodeId')
+	var t1 = prompt("Ingrese el Texto para Adicionar", '');
+	var n=node.clone();
+	var pp='#'+$(node).closest('table').prop('id');
+	var nid;
+	if (t1 != null) {
+		nid=$(pp).find('tr').length+1;
+		$(pp).treegrid('getAllNodes').each(function(){
+			var oid=$(this).prop('id');
+			oid=oid.replace('node-n','');
+			if (isNaN(oid)==false){
+				if (oid>=nid){
+					nid=oid+1;
+				}
+			}
+		});
+		$(n).removeClass('treegrid-'+id).removeClass('treegrid-expanded').removeClass('treegrid-parent-'+idp).addClass('treegrid-n'+nid).addClass('treegrid-parent-'+id).prop('id','node-n'+nid);
+		n.find('td:eq(0)').html(t1);
+		node.after(n);
+		$(pp).treegrid();
+		binderNodeTree();
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+		//setNodosTree(pp,$('#'+$(pp).attr('for')).val());
+	}
+}
+{% /append %}
+{% append js.openform %}
 {% /append %}
 {% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
 <link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
+<link type='text/css' rel='stylesheet' href='js/treegrid/treegrid.css'/>
 <script type='text/javascript' src='js/confirm/confirm.js'></script>
 <script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+<script type='text/javascript' src='js/treegrid/treegrid.js'></script>
 {% /append %}
 	    <h4 class="modal-tit">
 			<h1 > Adicionar</h1>
@@ -53,6 +137,15 @@ return -1;
 
 {% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 
+[[setvar: openform]]
+	$('input.datafecha').dateDropper();
+[[:setvar]]
+
+
+[[setvar: openform]]
+	 $('.treeg').treegrid();
+	 binderNodeTree();
+[[:setvar]]
 
 
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
@@ -125,6 +218,19 @@ return -1;
 		</div>
  
 
+ 
+
+[[prevar: openform]]
+	setNodosTree('#tree-t_ubicaciones',$('#t_ubicaciones').val());
+[[:prevar]]
+		<div class="input-field col s12">
+			  <input  id="t_ubicaciones" name="t_ubicaciones" type="hidden" value='{% echo $item[t_ubicaciones]; %}' >
+	          <label class="labeltop" for="t_ubicaciones">{% echo $anexos[t_ubicaciones][labelf] %}</label>
+	          <div class="error_input">{$errors[t_ubicaciones][0]}</div>
+			<table  id="tree-t_ubicaciones" name="tree-t_ubicaciones" class="treeg" for="t_ubicaciones">
+			{% echo $nodes %}
+			</table>
+		</div>
 </div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>

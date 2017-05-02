@@ -81,8 +81,8 @@ function getCookie(cname) {
 
         if (div!=''){
           $(div).html(msg);
-          if (r==0){
-            success(msg);
+          if (r=='001'){
+            success(msg,true);
           }
         }
 
@@ -403,3 +403,61 @@ function actualizarUI(){
   $("select").material_select();
     Materialize.updateTextFields();
 }
+
+function getNodosTree(nodo){
+  var r= new Object();
+  var tree=$(nodo);
+  $(tree).treegrid('getAllNodes').each(function() {
+    var key=$(this).treegrid('getNodeId');
+    var p=$(this).treegrid('getParentNodeId');
+    var t=$(this).find('td:eq(0)').text();
+    var r1= new Object();
+    r1.t=t;
+    if (p!=null){
+     r1.p=p;
+    }
+    r[key]=r1;
+  });
+  r=JSON.stringify(r);
+  return r;
+
+}
+
+function stripslashes (str) {
+
+  return (str + '').replace(/\\(.?)/g, function (s, n1) {
+    switch (n1) {
+    case '\\':
+      return '\\';
+    case '0':
+      return '\u0000';
+    case '':
+      return '';
+    default:
+      return n1;
+    }
+  });
+}
+
+function setNodosTree(nodo,data){
+  if (data==''){
+    data='{"R":{"t":"Recepcion"},"A":{"t":"Almacen"},"C":{"t":"Cuarentena"},"S":{"t":"Salida"}}';
+    //return false;
+  }else{
+    data=stripslashes(data);
+  }
+  data= JSON.parse(data);
+  var html='';
+  $.each(data, function(i, item) {
+    var parent='';
+    if (item.p){
+      parent='treegrid-parent-'+item.p;
+    }
+    html=html+"<tr id='node-"+i+"' class='treegrid-"+i+" "+parent+" '><td>"+item.t+"</td><td><a class='btn-floating  waves-effect waves-light green' title='Adicionar'><i class='material-icons'>add</i></a><a class='btn-floating  waves-effect waves-light red' title='Borrar'><i class='material-icons'>delete</i></a><a class='btn-floating  waves-effect waves-light yellow' title='Editar'><i class='material-icons'>edit</i></a></td></tr>";
+  });
+  $(nodo).html(html);
+  return html;
+
+}
+
+
