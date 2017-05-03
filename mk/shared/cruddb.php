@@ -577,6 +577,7 @@ namespace Mk\Shared
 		-> set("modTitulo", "Listado de ".$this->_model->_tPlural)
 		-> set("modSingular",$this->_model->_tSingular)
 		-> set("anexos", $anexos)
+		-> set("item", $this->_model->loadToArray())
 		-> set("items", $items);
 		$this->afterListar($view);
 	}

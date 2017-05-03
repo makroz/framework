@@ -190,6 +190,10 @@ namespace Mk\Crud {
 			$pedir['validar']['text']       = 'Validacion';
 			$pedir['validar']['type']       = 'sel';
 			$pedir['validar']['opt']        = Form::getOptions($lvalid,'', 'Ninguna');
+
+			$pedir['defVal']['text']           = 'valor por Defecto';
+			$pedir['defVal']['type']           = 'text';
+			$pedir['defVal']['tam']           = 's12';
 			
 
 
@@ -206,6 +210,7 @@ namespace Mk\Crud {
 				$pedir['tamlista']['val'][$key] = '';
 				$pedir['search']['val'][$key]   = '1';
 				$pedir['posf']['val'][$key]   = $posf;
+				$pedir['defVal']['val'][$key]   = $field['default'];
 				$posf++;
 				// Valores por defecto segun tipo de datos de la BD
 				if (in_array($field['type'], array(
@@ -594,7 +599,13 @@ namespace Mk\Crud {
 				}
 				$campos[$key]['validate'] = $validate;
 				$lines[]                  = '*/';
-				$lines[]                  = 'protected $_' . $key . ';';
+				if ($field['defVal']==''){
+					$lines[]                  = 'protected $_' . $key . ';';
+				}else{
+					$lines[]                  = 'protected $_' . $key . "='".$field['defVal']."';";
+					$anexos[] = '$anexos' . "['{$key}']['defVal']='".addslashes($field['defVal'])."';";
+				}
+				
 				if ($field['usof'] == 'check') {
 					$aux = explode('/', $field['checkvalor'] . '/');
 					if ($aux[0] == '') {

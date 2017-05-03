@@ -15,6 +15,7 @@ class Almacenes_controller extends CrudDb
 
 	public function getAnexos($anexos=array(),$join=0){
 		$anexos=parent::getAnexos($anexos);
+		$anexos['estado']['defVal']='1';
 		$anexos['estado']['options']['A']='En Apertura';
 		$anexos['estado']['options']['F']='En Funcionamiento';
 		$anexos['estado']['options']['I']='Inventario en Curso';
@@ -28,6 +29,8 @@ class Almacenes_controller extends CrudDb
 		$anexos['lapso']['options']['6']='Trimestral';
 		$anexos['lapso']['options']['7']='Semestral';
 		$anexos['lapso']['options']['8']='Anual';
+		$anexos['t_ubicaciones']['defVal']='{\"R\":{\"t\":\"Recepcion\"},\"A\":{\"t\":\"Almacen\"},\"C\":{\"t\":\"Cuarentena\"},\"S\":{\"t\":\"Salida\"}}';
+		$anexos['status']['defVal']='1';
 		if ($join!=0){
 			$anexos['fk_resp']['options']=$this->actionGetListFor('fk_resp',$anexos);
 		}

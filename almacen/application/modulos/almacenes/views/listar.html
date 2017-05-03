@@ -161,14 +161,40 @@ if (ejecutar){
 return '001';
 }
 function _openForm(f, idAction,tit){
-		$(f).find('input').val('');
-				$(f).find('select').each(function(index){
-			$(this).find('option:eq(0)').prop('selected', true);
+		$(f).find('select').each(function(index){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			if (def==''){
+				$(this).find('option:eq(0)').prop('selected', true);
+			}else{
+				$(this).val(def);
+			}
 		});
-		$(f).find('.check').prop('checked', false);
+		$(f).find('input').each(function(index){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			$(this).val(def);
+		});
+		$(f).find('.check').each(function(index){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			if (def==''){
+				$(f).find('.check').prop('checked', false);
+			}else{
+				if (def=='1'){
+					$(f).find('.check').prop('checked', true);
+				}
+			}
+		});
 		$(f).find('.error_input').html('');
 		$(f).find('#_save_').val(idAction);
-		$(f).find('.titulo > h1 ').html(tit);
+		$(f).find('h4.modal-tit').html(tit);
 		if (idAction=='ver'){
 			$('#btnSave').hide();
 			$('#btnPrint').show();
@@ -746,18 +772,18 @@ function addNodeTree(node){
 [[:setvar]]
 
 
-	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' >
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
  
 
 		<div class="input-field col s12">
-	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} ata-defVal='{% echo $anexos[nombre][defVal] %}'>
 	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
 		</div>
  
 
 		<div class="input-field col s12">
-	          <input id="dir" name="dir" type="text" class="alfa $clasver " width="" value='{% echo $item[dir]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="dir" name="dir" type="text" class="alfa $clasver " width="" value='{% echo $item[dir]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} ata-defVal='{% echo $anexos[dir][defVal] %}'>
 	          <label for="dir">{% echo $anexos[dir][labelf] %}</label>
 	          <div class="error_input">{$errors[dir][0]}</div>
 		</div>
@@ -766,7 +792,7 @@ function addNodeTree(node){
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][labelf]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
-		<select id="estado" name="estado" class="select $clasver  required"  [[var:]]eventos[[:var]]  >
+		<select id="estado" name="estado" class="select $clasver  required"  [[var:]]eventos[[:var]] data-defval='{% echo $anexos[estado][defVal] %}'  >
       {% echo $options; %}
     </select>
      {% /if %}
@@ -781,7 +807,7 @@ function addNodeTree(node){
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
-		<select id="fk_resp" name="fk_resp" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
+		<select id="fk_resp" name="fk_resp" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_resp][defVal] %}'  >
       {% echo $options; %}
     </select>
      {% /if %}
@@ -795,7 +821,7 @@ function addNodeTree(node){
 
 {% php $valor=\Mk\Tools\Form::dbToDate($item[fecultinv]); %}
 		<div class="input-field col s12 m6">
-	          <input id="fecultinv" name="fecultinv" type="text" class="alfa $clasver datafecha " width="" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true"  data-large-mode="true"  data-default-date="{% echo \Mk\Tools\Form::dbToDate($item[fecultinv],false,'m-d-Y'); %}"  >
+	          <input id="fecultinv" name="fecultinv" type="text" class="alfa $clasver datafecha " width="" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true"  data-large-mode="true"  data-default-date="{% echo \Mk\Tools\Form::dbToDate($item[fecultinv],false,'m-d-Y'); %}" data-defval='{% echo $anexos[fecultinv][defVal] %}' >
 	          <label for="fecultinv">{% echo $anexos[fecultinv][labelf] %}</label>
 	          <div class="error_input">{$errors[fecultinv][0]}</div>
 		</div>
@@ -804,7 +830,7 @@ function addNodeTree(node){
 	{% php $options=\Mk\Tools\Form::getOptions($anexos[lapso][options],$item[lapso],'Seleccione '.$anexos[lapso][labelf]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
-		<select id="lapso" name="lapso" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
+		<select id="lapso" name="lapso" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[lapso][defVal] %}'  >
       {% echo $options; %}
     </select>
      {% /if %}
@@ -822,7 +848,7 @@ function addNodeTree(node){
 	setNodosTree('#tree-t_ubicaciones',$('#t_ubicaciones').val());
 [[:prevar]]
 		<div class="input-field col s12">
-			  <input  id="t_ubicaciones" name="t_ubicaciones" type="hidden" value='{% echo $item[t_ubicaciones]; %}' >
+			  <input  id="t_ubicaciones" name="t_ubicaciones" type="hidden" value='{% echo $item[t_ubicaciones]; %}' data-defval='{% echo $anexos[t_ubicaciones][defVal] %}'  >
 	          <label class="labeltop" for="t_ubicaciones">{% echo $anexos[t_ubicaciones][labelf] %}</label>
 	          <div class="error_input">{$errors[t_ubicaciones][0]}</div>
 			<table  id="tree-t_ubicaciones" name="tree-t_ubicaciones" class="treeg" for="t_ubicaciones">

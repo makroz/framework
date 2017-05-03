@@ -141,7 +141,7 @@ namespace Mk
 					//$prop = "_{$key}";
 					if (!isset($this->$key))
 					{
-
+						//echo "$key:$value<hr>";
 						$this->$key = stripslashes($value);
 					}
 				}
@@ -339,7 +339,7 @@ namespace Mk
 				}
 				if ($primaries !== 1)
 				{
-					throw $this->_Exception("{$class} must have exactly one @primary column");
+					throw $this->_Exception("{$class} must have exactly one @primary column ($primaries)");
 				}
 				$this->_columns = $columns;
 			}

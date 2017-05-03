@@ -441,12 +441,12 @@ function stripslashes (str) {
 
 function setNodosTree(nodo,data){
   if (data==''){
-    data='{"R":{"t":"Recepcion"},"A":{"t":"Almacen"},"C":{"t":"Cuarentena"},"S":{"t":"Salida"}}';
-    //return false;
-  }else{
-    data=stripslashes(data);
+    data='';
+    return false;
   }
+  data=stripslashes(data);
   data= JSON.parse(data);
+
   var html='';
   $.each(data, function(i, item) {
     var parent='';

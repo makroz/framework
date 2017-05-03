@@ -39,7 +39,7 @@ protected $_dir;
 * @label Estado
 * @validate  required
 */
-protected $_estado;
+protected $_estado='1';
 /**
 * @column
 * @readwrite
@@ -79,7 +79,7 @@ protected $_lapso;
 * @funcion st
 * @label Ubicaciones del Almacen
 */
-protected $_t_ubicaciones;
+protected $_t_ubicaciones='{"R":{"t":"Recepcion"},"A":{"t":"Almacen"},"C":{"t":"Cuarentena"},"S":{"t":"Salida"}}';
 /**
 * @column
 * @readwrite
@@ -89,7 +89,7 @@ protected $_t_ubicaciones;
 * @fcustom 1
 * @label St
 */
-protected $_status;
+protected $_status='1';
 public $_tSingular='Almacen';
 public $_tPlural='Almacenes';
 
