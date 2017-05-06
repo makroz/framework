@@ -24,6 +24,27 @@ color:#26a69a;
     margin-rigth: 3rem;
     width: calc(100% - 3rem);
 }
+
+.form-config:hover {
+  background-color:#EFEFEF;
+}
+span.campos-edit{
+  display:none;
+}
+
+.form-config:hover span.campos-edit {
+display:inline-block;
+position:absolute;
+top:-23px;
+right:3px;
+color:grey;
+}
+
+.form-config:hover span.campos-edit i:hover{
+  color:black;
+}
+
+
 {% /append %}
 
 
@@ -111,14 +132,107 @@ $('.listaeventos > i').click(function() {
 $("#modal1").modal();
 
 $("ul.tabs").tabs({ onShow: function(tab) { 
-  if ($(tab).attr('id')=='formulario'){
+  if ($(tab).attr('id')=='tabcodigos'){
     editorjs.refresh();
     editorjsopenform.refresh();
   } 
+  if ($(tab).attr('id')=='formulario'){
+    var html='<div class="row camposform">';
+    var col=[];
+    $('.card-content').each(function(){
+        let nom=$(this).data('campo');
+        let pos=$('#field-'+nom+'-posf').val();
+        //html=html+pos+':'+nom+'<br>';
+        col.push([pos,nom]);
+    });
+    col=sortByCol(col,0);
+    //html=html+'<hr>';
+    $.each(col,function(i,item){
+      let tipo=$('#field-'+item[1]+'-usof').val();
+      let inp='';
+      let clase='';
+      let tam=$('#field-'+item[1]+'-tam').val();
+      if (isNaN(tam)!==false){
+          clase=tam;
+          tam='';
+      }
+      let label=$('#field-'+item[1]+'-labelf').val();
+      if (label==''){
+        label=$('#field-'+item[1]+'-label').val();
+      }
+
+
+      switch(tipo) {
+      case 'oculto':
+          //inp='<span class="form-config" title="'+item[1]+'" data-campo="'+item[1]+'">[x]</span>';
+          break;
+      case 'alfa':
+      case 'date':
+      case 'float':
+      case 'int':
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
+              '<input id="config-'+item[1]+'" type="text" class="alfa" width="'+tam+'" value="" >'+
+              '<label for="config-'+item[1]+'">'+label+'</label>'+
+              '</div>';
+          break;
+      case 'check':
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
+              '<input type="checkbox" id="config-'+item[1]+'"  class="check" value="1" />'+
+              '<label for="config-'+item[1]+'">'+label+'</label>'+
+              '</div>';
+          break;
+      case 'tree':
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
+              '<label class="labeltop"  for="config-'+item[1]+'">'+label+'</label>'+
+              '<table id="config-'+item[1]+'"  class="treeg"  width="'+tam+'">'+
+              '<tr><td>item</td><td><a class="btn-floating  waves-effect waves-light green" title="Adicionar"><i class="material-icons">add</i></a><a class="btn-floating  waves-effect waves-light red" title="Borrar"><i class="material-icons">delete</i></a><a class="btn-floating  waves-effect waves-light yellow" title="Editar"><i class="material-icons">edit</i></a></td></tr>'+
+              '</table>'+
+              '</div>';
+          break;
+ 
+      case 'selec':
+      case 'selecdb':
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
+              '<select id="config-'+item[1]+'" class="select" width="'+tam+'" >'+
+              '<option>opcion1</option><option>opcion2</option>'+
+              '</select>'+
+              '<label for="config-'+item[1]+'">'+label+'</label>'+
+              '</div>';
+          break;
+
+      default:
+          //code block
+      } 
+      //html=html+item[0]+':'+item[1]+' uso:'+tipo+'<br>';
+      html=html+inp;
+    });
+    html=html+'</div>';
+    $('.form-content').html(html);
+    actualizarUI();
+    $(".camposform").sortable({
+       containment: ".camposform",
+        cursor: "move",
+        forceHelperSize: true,
+        handle: ".handle",
+        opacity: 0.5,
+        update: cambioCamposform
+    });
+    $('.form-config').prepend('<span class="campos-edit"><i class="material-icons" onclick="openMenuConfig(this)">settings</i> <i class="material-icons handle">open_with</i></span>');
+
+  }  
 
   } 
 });
 
+function cambioCamposform( event, ui ){
+  //let orden='';
+  $('.form-config').each(function(i){
+    let nom=$(this).data('campo');
+    $('#field-'+nom+'-posf').val(i);
+      //orden=orden+$(this).data('campo')+'('+i+'),';
+  });
+  //alert(orden);
+}
 {% /append %}
 
 {% append js.inline %}
@@ -538,6 +652,61 @@ function closeLista(){
 }
 
 
+var modalconfg='#menu-campos-config';
+
+function resetMenuConfig(id){
+
+  var nom=$(modalconfg).data('key');
+
+  var campo='#field-'+nom+'-'+id;
+  var dato=$(campo).data('reset');
+      $(campo).val(dato);
+
+  dato=$('#option-'+id).data('reset');
+  $('#form-config-'+nom).prop('class',dato);
+
+}
+
+
+function saveMenuConfig(id){
+  var dato=$('#option-'+id).val();
+  var nom=$(modalconfg).data('key');
+  var olddatos=$('#field-'+nom+'-'+id).val();
+  $('#field-'+nom+'-tam').val(dato);
+  var clase=$('#form-config-'+nom).prop('class');
+  clase=clase.replace(olddatos,dato);
+  $('#form-config-'+nom).prop('class',clase);
+}
+
+function openMenuConfig(campo){
+  if (!campo){
+    return false;
+  }
+  
+  campo=$(campo).parent().parent();
+  var nom=$(campo).data('campo');
+  $(modalconfg).find('h4').html('Opciones para el campo: '+nom);
+  $(modalconfg).modal();
+  $(modalconfg).data('key',nom);
+ 
+
+  var id='tam';
+  //var datos=$(campo).prop('class');
+  //datos=datos.match(/([smlSML][0-9]{1,2})/g);
+  //$('#option-'+id).val(datos.join(' '));
+   var datos=$('#field-'+nom+'-'+id).val();
+  $('#field-'+nom+'-'+id).data('reset',datos);
+  $('#option-'+id).val(datos).data('reset',$(campo).prop('class'));
+ 
+ 
+
+  $(modalconfg).modal('open');
+  actualizarUI();
+ }
+
+function closeMenuConfig(){
+  $(modalconfg).modal('close');
+}
 
 
 {% /append %}
@@ -580,9 +749,10 @@ function closeLista(){
 <div class="row">
   <div class="col s12">
     <ul class="tabs z-depth-1"">
-      <li class="tab col s4"><a class="active" href="#tabcampos">CAMPOS</a></li>
-      <li class="tab col s4"><a  class="" href="#listas">LISTA</a></li>
-      <li class="tab col s4 "><a  class="" href="#formulario">FORMUARIO</a></li>
+      <li class="tab col s3"><a class="active" href="#tabcampos">CAMPOS</a></li>
+      <li class="tab col s3"><a class="" href="#tabcodigos">CODIGOS</a></li>
+      <li class="tab col s3"><a  class="" href="#listas">LISTA</a></li>
+      <li class="tab col s3 "><a  class="" href="#formulario">FORMULARIO</a></li>
     </ul>
   </div>
   <div   id="tabcampos" class="col s12">
@@ -599,13 +769,18 @@ function closeLista(){
     {% include campos.html %}
    
   </div>
-  <div id="listas" class="col s12">Lista</div>
-  <div id="formulario" class="col s12">Formulario
+  <div id="tabcodigos" class="col s12"><h3>Codigos en Formulario</h3>
                 <label for="codejs" style="color: black;">Codigo Js en formulario</label>
                 <textarea id="codejs" name='codejs'  class="validate plantilla codejs" data-type="text"  ></textarea>
                 <label for="codejsopenform" style="color: black;">Codigo Js al abrir el formulario</label>
                 <textarea id="codejsopenform" name='codejsopenform'  class="validate plantilla codejs" data-type="text"  ></textarea>
                 
+  </div>
+  <div id="listas" class="col s12">Lista</div>
+  <div id="formulario" class="col s12">Formulario
+  <div class="form-content container" style="width: 50%;">
+    
+  </div>
   </div>
 </div>
 
@@ -812,7 +987,29 @@ function closeLista(){
     </div>
     <div class="modal-footer">
      <button class="modal-action  waves-effect waves-green btn-flat" onclick="closeLista();">Ok</button>
-      
+
+    </div>
+  </div>
+
+   <!-- Modal Structure -->
+  <div id="menu-campos-config" data-key="" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h4 id="modal-tit">Menu opciones del Campo</h4>
+
+        <div class="row row-tam">
+          <div class="input-field col s9">
+                    <input id="option-tam" name='option-tam' type="text" value="" >
+                    <label for="option-tam" >Tamano del Campo:</label>
+          </div>
+          <div class="col s3">
+              <div class="btn z-depth-2 waves-effect waves-light green" onclick="saveMenuConfig('tam');" >Ok</div>
+              <div class="btn z-depth-2 waves-effect waves-light green" onclick="resetMenuConfig('tam');" >Reset</div>
+          </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+     <button class="modal-action  waves-effect waves-green btn-flat" onclick="closeMenuConfig();">Cerrar</button>
     </div>
   </div>
 

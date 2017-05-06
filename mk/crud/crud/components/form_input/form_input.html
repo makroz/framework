@@ -33,7 +33,7 @@ function isUnique_[[var:]]id[[:var]](){
 
 [* if '[[var:]]tipo[[:var]]'=='alfa' *]
 		<div class="input-field col [[var:]]clase[[:var]]">
-	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver [[var:]]validate[[:var]]" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} ata-defVal='{% echo $anexos[[[var:]]id[[:var]]][defVal] %}'>
+	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver [[var:]]validate[[:var]]" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[[[var:]]id[[:var]]][defVal] %}'>
 	          <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
 	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
@@ -179,7 +179,7 @@ function addNodeTree(node){
 	          <label class="labeltop" for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
 	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 			
-			<table  id="tree-[[var:]]id[[:var]]" name="tree-[[var:]]id[[:var]]" class="treeg" for="[[var:]]id[[:var]]">
+			<table  id="tree-[[var:]]id[[:var]]" name="tree-[[var:]]id[[:var]]" class="treeg" for="[[var:]]id[[:var]]" width="[[var:]]tam[[:var]]">
 			{% echo $nodes %}
 			</table>
 
@@ -225,7 +225,7 @@ function addNodeTree(node){
 	{% php $options=\\Mk\\Tools\\Form::getOptions($anexos[[[var:]]id[[:var]]][options],$item[[[var:]]id[[:var]]],'Seleccione '.$anexos[[[var:]]id[[:var]]][labelf]); %}
 		<div class="input-field col [[var:]]clase[[:var]]">
 		 {% if $_action!='ver' %} 
-		<select id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" class="select $clasver [[var:]]validate[[:var]]"  [[var:]]eventos[[:var]] data-defval='{% echo $anexos[[[var:]]id[[:var]]][defVal] %}'  >
+		<select id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" class="select $clasver [[var:]]validate[[:var]]"  [[var:]]eventos[[:var]] data-defval='{% echo $anexos[[[var:]]id[[:var]]][defVal] %}' width="[[var:]]tam[[:var]]" >
       {% echo $options; %}
     </select>
      {% /if %}
