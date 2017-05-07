@@ -91,6 +91,8 @@ function initListTable(){
 				[[component:]]listtable_checkrow[[:component]]
 			</td>	
 			[[php:]]filas[[:php]]
+
+			{% if ($anexos['listAction']=='show') %}
 			<td style="overflow: visible;" class="noprinter"> 
 				<div style="position: relative;">
 					<div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block;top: -18px;">
@@ -103,7 +105,7 @@ function initListTable(){
 					</div>
 				</div>
 			</td>
-
+			{% /if %}
 		</tr>
 		{% /foreach %}
 		{% if $nr<$limit %}
@@ -112,7 +114,9 @@ function initListTable(){
 
 			<td class="noprinter" >&nbsp; </td>
 			[[php:]]filasvacias[[:php]]
+			{% if ($anexos['listAction']=='show') %}
 			<td class="noprinter" > </td>
+			{% /if %}
 		</tr>
 		{% /foreach %}
 		{% /if %}

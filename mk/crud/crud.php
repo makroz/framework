@@ -649,6 +649,8 @@ namespace Mk\Crud {
 					}
 				}
 
+
+
 				if ($field['usof'] == 'selecdb') {
 					echo "<hr> usof selec DB:" . $field['campojoin'] . '<hr>';
 					$aux = explode('|', $field['campojoin'] . '||||');
@@ -671,6 +673,8 @@ namespace Mk\Crud {
 						$selecdb[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
 					}
 				}
+
+				$anexos[] = '$anexos' . "['listAction']=".'"'. Inputs::post('listAction').'";';
 				
 				if ($field['usof'] == 'date') {
 					//$cargaDateForm++;

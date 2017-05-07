@@ -15,12 +15,18 @@ class Almacenes_controller extends CrudDb
 
 	public function getAnexos($anexos=array(),$join=0){
 		$anexos=parent::getAnexos($anexos);
+		$anexos['listAction']="-1";
+		$anexos['listAction']="-1";
+		$anexos['listAction']="-1";
 		$anexos['estado']['defVal']='1';
 		$anexos['estado']['options']['A']='En Apertura';
 		$anexos['estado']['options']['F']='En Funcionamiento';
 		$anexos['estado']['options']['I']='Inventario en Curso';
+		$anexos['listAction']="-1";
 		$anexos['fk_resp']['join']['table']='resp';
 		$anexos['fk_resp']['join']['campo']='nombre';
+		$anexos['listAction']="-1";
+		$anexos['listAction']="-1";
 		$anexos['lapso']['options']['1']='Diario';
 		$anexos['lapso']['options']['2']='Semanal';
 		$anexos['lapso']['options']['3']='Quincenal';
@@ -29,8 +35,11 @@ class Almacenes_controller extends CrudDb
 		$anexos['lapso']['options']['6']='Trimestral';
 		$anexos['lapso']['options']['7']='Semestral';
 		$anexos['lapso']['options']['8']='Anual';
+		$anexos['listAction']="-1";
 		$anexos['t_ubicaciones']['defVal']='{\"R\":{\"t\":\"Recepcion\"},\"A\":{\"t\":\"Almacen\"},\"C\":{\"t\":\"Cuarentena\"},\"S\":{\"t\":\"Salida\"}}';
+		$anexos['listAction']="-1";
 		$anexos['status']['defVal']='1';
+		$anexos['listAction']="-1";
 		if ($join!=0){
 			$anexos['fk_resp']['options']=$this->actionGetListFor('fk_resp',$anexos);
 		}
