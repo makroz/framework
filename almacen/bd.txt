@@ -21,3 +21,9 @@ pk, fecha, fk_almProd, fk_almacen, precio, cant, fk_unidad, tipo(V=venta,T=trasp
 
 
 me falta modificar el sendform para que no envie si es que un ajax o unique no es correcto.
+
+
+88:79:7e:d9:28:ca
+date.timezone=America/La_Paz
+
+

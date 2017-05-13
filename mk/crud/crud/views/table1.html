@@ -251,11 +251,7 @@ $( ".comp_dragable" ).draggable({
 {% /append %}
 
 {% append js.inline %}
-var i_tools_config='<span class="campos-edit">'+
-      ' <i class="material-icons" onclick="openMenuConfig(this)">settings</i>'+
-      ' <i class="material-icons handle">open_with</i>'+
-      ' </span>';
-var tagfin="<!-- fin -->";      
+
 function showLista(){
     var html= '<div class="row camposLista" >'+
               '<table class="striped bordered highlight tablaLista" id="camposLista">'+
@@ -370,90 +366,23 @@ var nomvar=$('input:radio[name=listatamvar1]:checked').val();
 
 }
 
-var flagcambios=0;
 function cambioCamposform( event, ui ){
-if (flagcambios==0){
-  flagcambios=1;
-  var c=0;
-  var contenido=$('.form-content').html();
-
-  contenido=contenido.replace(i_tools_config,'');
-  contenido=contenido.replace('ui-sortable','');
-  contenido=contenido.replace('ui-droppable','');
-  var nom;
-  var ult;
-  var nombres=[];
+  //let orden='';
   $('.form-config').each(function(i){
-
-    nom=$(this).data('campo');
-    if (nombres[nom]==1){
-        return false;
-    }else{
-      nombres[nom]=1;
+    let nom=$(this).data('campo');
     $('#field-'+nom+'-posf').val(i);
-    $('#field-'+nom+'-i_pos').val('');
-    $('#field-'+nom+'-i_pre').val('');
-    ult=nom;
-    var posi=contenido.indexOf('<div id="form-config-'+nom+'"');
-    if (posi>=0){
-      var i_pre=contenido.substr(0,posi);
-      posi=contenido.indexOf(tagfin);
-      posi=contenido.indexOf('</div>',posi);
-      contenido=contenido.substr(posi+6);
-      $('#field-'+nom+'-i_pre').val(i_pre);
-      c++;
-    }
-    }
-
+      //orden=orden+$(this).data('campo')+'('+i+'),';
   });
-  $('#field-'+ult+'-i_pos').val(contenido);
-  flagcambios=0;
-}
-}
-
-function initComponentes(){
-  
-    $(".form-content").sortable({
-        items: "> .form-config-section",
-        cursor: "move",
-        greedy: true,
-        helper: "clone",
-        forceHelperSize: true,
-        handle: ".handle",
-        opacity: 0.5,
-         update: function( event, ui ) { cambioCamposform();}
-    });
-
-    $(".form-config-section, .dropin").sortable({
-      items: "> .form-config",
-       containment: ".form-content",
-       connectWith: ".form-config-section, .dropin",
-        cursor: "move",
-        greedy: true,
-        helper: "clone",
-        forceHelperSize: true,
-        handle: ".handle",
-        opacity: 0.5,
-         update: function( event, ui ) { cambioCamposform();}
-    });
-
-    $("ul.i_tab").tabs();
-
+  //alert(orden);
 }
 
 function showFormulario(){
-    var html='';
+    var html='<div class="row camposform form-config-section">';
     var col=[];
-    var i_append=0;
     $('.card-content').each(function(){
         let nom=$(this).data('campo');
         let pos=$('#field-'+nom+'-posf').val();
-        if ($('#field-'+nom+'-i_pos').val()!=''){
-          i_append++;
-        }
-        if ($('#field-'+nom+'-i_pre').val()!=''){
-          i_append++;
-        }
+        //html=html+pos+':'+nom+'<br>';
         col.push([pos,nom]);
     });
     col=sortByCol(col,0);
@@ -472,74 +401,80 @@ function showFormulario(){
         label=$('#field-'+item[1]+'-label').val();
       }
 
+
       switch(tipo) {
       case 'oculto':
-          //inp='<span class="form-config" title="'+item[1]+'" data-campo="'+item[1]+'" data-type="field">[x]</span>';
+          //inp='<span class="form-config" title="'+item[1]+'" data-campo="'+item[1]+'">[x]</span>';
           break;
       case 'alfa':
       case 'date':
       case 'float':
       case 'int':
-          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'"" data-type="field">'+
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
               '<input id="config-'+item[1]+'" type="text" class="alfa" width="'+tam+'" value="" >'+
               '<label for="config-'+item[1]+'">'+label+'</label>'+
-              tagfin+
               '</div>';
           break;
       case 'check':
-          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'" data-type="field">'+
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
               '<input type="checkbox" id="config-'+item[1]+'"  class="check" value="1" />'+
               '<label for="config-'+item[1]+'">'+label+'</label>'+
-              tagfin+
               '</div>';
           break;
       case 'tree':
-          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'" data-type="field">'+
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
               '<label class="labeltop"  for="config-'+item[1]+'">'+label+'</label>'+
               '<table id="config-'+item[1]+'"  class="treeg"  width="'+tam+'">'+
               '<tr><td>item</td><td><a class="btn-floating  waves-effect waves-light green" title="Adicionar"><i class="material-icons">add</i></a><a class="btn-floating  waves-effect waves-light red" title="Borrar"><i class="material-icons">delete</i></a><a class="btn-floating  waves-effect waves-light yellow" title="Editar"><i class="material-icons">edit</i></a></td></tr>'+
               '</table>'+
-              tagfin+
               '</div>';
           break;
  
       case 'selec':
       case 'selecdb':
-          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'" data-type="field">'+
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'">'+
               '<select id="config-'+item[1]+'" class="select" width="'+tam+'" >'+
               '<option>opcion1</option><option>opcion2</option>'+
               '</select>'+
               '<label for="config-'+item[1]+'">'+label+'</label>'+
-              tagfin+
               '</div>';
           break;
 
       default:
           //code block
-      }
-      if (inp!=''){
-        inp=$('#field-'+item[1]+'-i_pre').val()+inp+$('#field-'+item[1]+'-i_pos').val();
       } 
-      
+      //html=html+item[0]+':'+item[1]+' uso:'+tipo+'<br>';
       html=html+inp;
     });
-
-    if (i_append==0){
-      html='<div class="row camposform form-config-section"  id="section-0" data-campo="section-0" data-type="c-section">'+html+'</div>';
-    }
-
+    html=html+'</div>';
     $('.form-content').html(html);
     actualizarUI();
+    $(".form-config-section").sortable({
+      items: "> .form-config",
+       containment: ".form-content",
+       connectWith: ".form-config-section",
+        cursor: "move",
+        helper: "clone",
+        forceHelperSize: true,
+        handle: ".handle",
+        opacity: 0.5,
+        update: cambioCamposform
+    });
+    $('.form-config,.form-config-section ').prepend('<span class="campos-edit"><i class="material-icons" onclick="openMenuConfig(this)">settings</i> <i class="material-icons handle">open_with</i></span>');
 
-    $('.form-config,.form-config-section ').prepend(i_tools_config);
+    $(".form-content").sortable({
+        items: "> .form-config-section",
+        cursor: "move",
+        helper: "clone",
+        forceHelperSize: true,
+        handle: ".handle",
+        opacity: 0.5
+    });
 
-    initComponentes();
 
 $( ".form-content" ).droppable({
   hoverClass: "drop-hover",
-  greedy: true,
   drop: function( event, ui ) {
-  //alert(inspeccionar(event));
   var idcomp=$(ui.draggable).prop('id');
     addComponente(idcomp,this,ui);
   }
@@ -549,53 +484,69 @@ $( ".form-content" ).droppable({
   
 }
 
-
-
 function addComponente(id,quien,ui){
-//alert('Dropable:'+id+' Quien:'+quien);
-var si=0;
-    var nitem=$('#'+id).data('nitem');
-    if (nitem==undefined){
-      nitem=$('.i_'+id).length;
-    }
-    nitem++;
-    $('#'+id).data('nitem',nitem);
-
+var tools='<span class="campos-edit">'+
+      ' <i class="material-icons" onclick="openMenuConfig(this)">settings</i>'+
+      ' <i class="material-icons handle">open_with</i>'+
+      ' </span>';
 switch(id){
   case 'c-section':
 
     $(quien).append(
-      '<div class="row componente form-config-section" id="section-'+nitem+'" data-campo="section-'+nitem+'" data-type="'+id+'">'+
-      i_tools_config+
+      '<div class="row componente form-config-section" id="section-'+$('.form-config-section').length+'">'+
+      tools+
       '</div>'
     );
-    si++;
   break;
   case 'c-tab':
+    let ntab=$('#'+id).data('nitem');
+    if (ntab==undefined){
+      ntab=$('.i_tabulador').length;
+    }
+    ntab++;
+    $('#'+id).data('nitem',ntab);
     $(quien).append(
-        '<div class="row i_'+id+' form-config-section" id="divtab-'+nitem+'" data-campo="tab-'+nitem+'" data-type="'+id+'" >'+
-        i_tools_config+
-        '    <ul class="tabs z-depth-1 i_tab" id="tab-'+nitem+'">'+
-        '      <li class="tab col s11"><a class="active" href="#tab-'+nitem+'-1">TAB-'+nitem+'-1</a></li>'+
-        '      <li class="tab col s1"><a class="" href="#tab-'+nitem+'-0">+</a></li>'+
+        '<div class="row i_tabulador  form-config-section" id="divtab-'+ntab+'">'+
+        tools+
+        '    <ul class="tabs z-depth-1" id="tab-'+ntab+'">'+
+        '      <li class="tab col s11"><a class="active" href="#tab-'+ntab+'-1">TAB-'+ntab+'-1</a></li>'+
+        '      <li class="tab col s1"><a class="" href="#tab-'+ntab+'-0">+</a></li>'+
         '    </ul>'+
-        '    <div  id="tab-'+nitem+'-1" class="col s12 dropin"></div>'+
-        '    <div  id="tab-'+nitem+'-0" class="col s12 dropin">'+
+        '    <div  id="tab-'+ntab+'-1" class="col s12 dropin"></div>'+
+        '    <div  id="tab-'+ntab+'-0" class="col s12 dropin">'+
         '    Configuracion'+
         '    </div>'+
         '</div>'
     );
-    si++;
+    $("ul#tab-"+ntab).tabs();
   break;
 
   default:
   break;
 }
 
-initComponentes();
-if (si>0){
-cambioCamposform();
-}
+    $(".form-content").sortable({
+        items: "> .form-config-section",
+        cursor: "move",
+        helper: "clone",
+        forceHelperSize: true,
+        handle: ".handle",
+        opacity: 0.5
+    });
+
+    $(".form-config-section, .dropin").sortable({
+      items: "> .form-config",
+       containment: ".form-content",
+       connectWith: ".form-config-section, .dropin",
+        cursor: "move",
+        helper: "clone",
+        forceHelperSize: true,
+        handle: ".handle",
+        opacity: 0.5,
+        update: cambioCamposform
+    });
+
+
 }
 
 function cargarConfig(){
@@ -1016,30 +967,15 @@ function closeLista(){
 var modalconfg='#menu-campos-config';
 
 function resetMenuConfig(id){
-  var tipo=$(modalconfg).data('type');
+
   var nom=$(modalconfg).data('key');
 
-  switch(tipo){
-  case 'field':
-    //comienzan los datos que se pueden editar
-      var campo='#field-'+nom+'-'+id;
-      var dato=$(campo).data('reset');
+  var campo='#field-'+nom+'-'+id;
+  var dato=$(campo).data('reset');
       $(campo).val(dato);
-      $('#option-'+id).val(dato);
-      dato=$('#option-'+id).data('reset');
-      $('#form-config-'+nom).prop('class',dato);
-    //terminan los campos que se pueden editar
-  break;
-  case 'c-section':
-  break;
-  case 'c-tab':
-  break;
 
-  default:
-  break;
-}
-
-
+  dato=$('#option-'+id).data('reset');
+  $('#form-config-'+nom).prop('class',dato);
 
 }
 
@@ -1047,32 +983,11 @@ function resetMenuConfig(id){
 function saveMenuConfig(id){
   var dato=$('#option-'+id).val();
   var nom=$(modalconfg).data('key');
-  var tipo=$(modalconfg).data('type');
-
-  switch(tipo){
-  case 'field':
-    //comienzan los datos que se pueden editar
-      var olddatos=$('#field-'+nom+'-'+id).val();
-      $('#field-'+nom+'-'+id).val(dato);
-      var clase=$('#form-config-'+nom).prop('class');
-      clase=clase.replace(olddatos,dato);
-      $('#form-config-'+nom).prop('class',clase);
-    //terminan los campos que se pueden editar
-  break;
-  case 'c-section':
-  break;
-  case 'c-tab':
-    var clase=$('#'+nom).prop('class');
-    clase=clase.replace(/([smlSML][0-9]{1,2})/g,'');
-    clase=clase+' '+$('#option-'+id).val();
-    $('#'+nom).prop('class',clase);
-  break;
-
-  default:
-  break;
-}
-
-
+  var olddatos=$('#field-'+nom+'-'+id).val();
+  $('#field-'+nom+'-tam').val(dato);
+  var clase=$('#form-config-'+nom).prop('class');
+  clase=clase.replace(olddatos,dato);
+  $('#form-config-'+nom).prop('class',clase);
 }
 
 
@@ -1096,55 +1011,26 @@ var campo;
       tpadre='Col > '+tpadre;
     }
     if ($(padre).hasClass('row')){
-      tpadre=$(padre).prop('id')+' > '+tpadre;
+      tpadre='Section > '+tpadre;
     }
     padre=$(padre).parent();
   }
   tpadre='::'+tpadre;
-
-  var tipo =$(campo).data('type');
   var nom=$(campo).data('campo');
-
   $(modalconfg).find('h4').html(tpadre+nom);
-  $(modalconfg).data('key',nom).data('type',tipo);
-  
-  switch(tipo){
-  case 'field':
-
-    //comienzan los datos que se pueden editar
-    var id='tam';
-    alert('#field-'+nom+'-'+id);
-    var datos=$('#field-'+nom+'-'+id).val();
-    $('#field-'+nom+'-'+id).data('reset',datos);
-    $('#option-'+id).val(datos).data('reset',$(campo).prop('class'));
-    //terminan los campos que se pueden editar
-    
-  break;
-  case 'c-section':
-    var clase=$('#'+nom).prop('class');
-    $('#option-'+id).data('reset',clase);
-    clase=clase.match(/([smlSML][0-9]{1,2})/g);
-    $('#option-'+id).val(clase.join(' '));
-
-  break;
-  case 'c-tab':
-    var clase=$('#'+nom).prop('class');
-    $('#option-'+id).data('reset',clase);
-    clase=clase.match(/([smlSML][0-9]{1,2})/g);
-    $('#option-'+id).val(clase.join(' '));
-
-  break;
-
-  default:
-  break;
-}
-
-  $(modalconfg).find('.op-edit').hide();
-  $(modalconfg).find('.op-edit-'+tipo).show();
+  $(modalconfg).data('key',nom);
+ 
+ //comienzan los datos que se pueden editar
+  var id='tam';
+  var datos=$('#field-'+nom+'-'+id).val();
+  $('#field-'+nom+'-'+id).data('reset',datos);
+  $('#option-'+id).val(datos).data('reset',$(campo).prop('class'));
+ 
+ 
+//terminan los campos que se pueden editar
   $(modalconfg).show();
   actualizarUI();
-
-}
+ }
 
 
 function openMenuConfig1(campo){
@@ -1152,7 +1038,8 @@ function openMenuConfig1(campo){
     return false;
   }
   
- 
+  campo=$(campo).parent().parent();
+  var nom=$(campo).data('campo');
   $(modalconfg).find('h4').html('Opciones para el campo: '+nom);
   $(modalconfg).modal();
   $(modalconfg).data('key',nom);
@@ -1279,7 +1166,7 @@ function closeMenuConfig1(){
       <strong style="font-size: 8px;">Opciones del Campo:</strong><h4 id="modal-tit" style="margin-top: 0px;"></h4>
     <div class="modal-content z-depth-3">
 <br>
-        <div class="row row-tam op-edit op-edit-field op-edit-c-tab">
+        <div class="row row-tam">
           <div class="input-field col s9">
                     <input id="option-tam" name='option-tam' type="text" value="" >
                     <label for="option-tam" >Tamano del Campo:</label>

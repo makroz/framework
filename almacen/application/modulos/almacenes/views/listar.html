@@ -207,7 +207,7 @@ function _openForm(f, idAction,tit){
 				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
 			}else{
 				{% foreach $row in $anexos %}
-				{% if $row['cargaAjax']==1 %}
+				{% if @$row['cargaAjax']==1 %}
 				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
 				{% /if %}
 				{% /foreach %}
@@ -649,7 +649,9 @@ function addNodeTree(node){
 <label for="list_check_all"></label>
 			</th>
 			<th data-field="pk" width="60px" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="nombre" width="398.25px" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nombre][label] %} </th><th data-field="dir" width="" class="sortable {% if ($order=='dir') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[dir][label] %} </th><th data-field="estado" width="193px" class="sortable {% if ($order=='estado') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[estado][label] %} </th><th data-field="fk_resp" width="114px" class="sortable {% if ($order=='fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="fecultinv" width="141px" class="sortable {% if ($order=='fecultinv') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecultinv][label] %} </th><th data-field="lapso" width="116px" class="sortable {% if ($order=='lapso') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[lapso][label] %} </th><th data-field="status" width="59px" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
+			{% if ($anexos['listAction']=='show') %}
 			<th data-field="act" width="290" class=" noprinter">Accion</th>
+			{% /if %}
 		</tr>
 	</thead>
 	<tbody>

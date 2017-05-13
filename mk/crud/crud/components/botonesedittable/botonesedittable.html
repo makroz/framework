@@ -97,7 +97,7 @@ function _openForm(f, idAction,tit){
 				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
 			}else{
 				{% foreach $row in $anexos %}
-				{% if $row['cargaAjax']==1 %}
+				{% if @$row['cargaAjax']==1 %}
 				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
 				{% /if %}
 				{% /foreach %}

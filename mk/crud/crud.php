@@ -536,6 +536,9 @@ namespace Mk\Crud {
 			$view->set('campos',$campos);
 			$view->set('variables',$variables);
 
+			$anexos[] = '$anexos' . "['listAction']=".'"'. Inputs::post('listAction').'";';
+
+
 			foreach ($campos as $key => $field) {
 				$key     = str_replace("'", "", $key);
 				//echo "<br> $key: <br>";print_r($field);echo "<hr>";
@@ -674,7 +677,6 @@ namespace Mk\Crud {
 					}
 				}
 
-				$anexos[] = '$anexos' . "['listAction']=".'"'. Inputs::post('listAction').'";';
 				
 				if ($field['usof'] == 'date') {
 					//$cargaDateForm++;

@@ -76,7 +76,10 @@ function initListTable(){
 				[[component:]]listtable_checkall[[:component]]
 			</th>
 			[[php:]]encabezados[[:php]]
+
+			{% if ($anexos['listAction']=='show') %}
 			<th data-field="act" width="290" class=" noprinter">Accion</th>
+			{% /if %}
 		</tr>
 	</thead>
 
