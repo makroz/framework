@@ -495,3 +495,10 @@ function inspeccionar(obj)
   }
   return msg;
 }
+
+function isFunction(nombreFuncion){
+  if( typeof nombreFuncion !== 'undefined' && jQuery.isFunction( nombreFuncion ) ) {
+    return true;
+  }
+  return false;
+}

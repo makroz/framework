@@ -881,7 +881,6 @@ modalistaeventos['addTr']='addTrListaeventos';
 modalistaeventos['tit']='Lista de Eventos';
 modalistaeventos['head']='<tr><th data-field="evento">EVENTO</th><th data-field="codigo">CODIGO</th><th data-field="action">Accion</th></tr>';
 
-
 function openLista(objeto){
   if (!objeto){
     objeto=modalistalista;
@@ -1045,13 +1044,14 @@ function resetMenuConfig(id){
 
 
 function saveMenuConfig(id){
-  var dato=$('#option-'+id).val();
   var nom=$(modalconfg).data('key');
   var tipo=$(modalconfg).data('type');
 
   switch(tipo){
   case 'field':
-    //comienzan los datos que se pueden editar
+     //comienzan los datos que se pueden editar
+      var id='tam';
+      var dato=$('#option-'+id).val();
       var olddatos=$('#field-'+nom+'-'+id).val();
       $('#field-'+nom+'-'+id).val(dato);
       var clase=$('#form-config-'+nom).prop('class');
@@ -1062,20 +1062,46 @@ function saveMenuConfig(id){
   case 'c-section':
   break;
   case 'c-tab':
-    var clase=$('#'+nom).prop('class');
-    clase=clase.replace(/([smlSML][0-9]{1,2})/g,'');
-    clase=clase+' '+$('#option-'+id).val();
-    $('#'+nom).prop('class',clase);
+     $('#tabtable').find('tbody tr').each(function( index ) {
+        var i=$( this ).data('i');
+        let key=$( this ).data('key');
+        if (key!=''){
+          var links = $( 'a[href="#'+key+'"]' );
+        }else{
+          var links = [];
+        }
+        var newid=$(this).find('#id-'+i).val();
+        var newlabel=$(this).find('#label-'+i).val();
+        var newtam=$(this).find('#tam-'+i).val()
+       // alert('legth de link href=:'+key+' : '+$(links).length);
+        if ($(links).length>0){
+          $( this ).data('key',newid);
+          $('#'+key).prop('id',newid);  
+          $(links).html(newlabel);
+          $(links).prop('href','#'+newid);
+          var clase=$(links).parent().prop('class');
+          var clase1=clase;
+          clase1=clase1.replace('tab col ','');
+          clase=clase.replace(clase1,newtam);
+          $(links).parent().prop('class',clase);
+        }else{
+          $( this ).data('key',newid);
+//          alert('Adicionando nuevo tab:'+newid);
+          $('#'+nom).append('<li class="tab col '+newtam+'"><a  href="#'+newid+'" style="">'+newlabel+'</a></li>');
+          $('#'+nom).after('<div id="'+newid+'" class="col s12 dropin"></div>');
+        }
+
+      });
+      $('#'+nom).tabs();
   break;
 
   default:
   break;
 }
-
-
+closeMenuConfig();
 }
 
-
+//todo:borrar todo lo referente a reset y los versiones 1; el delete crear lista, ver que tab esta visible para cargar el formulario la lista cuando se recarga la configuracon
 function openMenuConfig(campo1){
 var campo;
   if (!campo1){
@@ -1113,7 +1139,7 @@ var campo;
 
     //comienzan los datos que se pueden editar
     var id='tam';
-    alert('#field-'+nom+'-'+id);
+    //alert('#field-'+nom+'-'+id);
     var datos=$('#field-'+nom+'-'+id).val();
     $('#field-'+nom+'-'+id).data('reset',datos);
     $('#option-'+id).val(datos).data('reset',$(campo).prop('class'));
@@ -1121,24 +1147,26 @@ var campo;
     
   break;
   case 'c-section':
-    var clase=$('#'+nom).prop('class');
-    $('#option-'+id).data('reset',clase);
-    clase=clase.match(/([smlSML][0-9]{1,2})/g);
-    $('#option-'+id).val(clase.join(' '));
 
   break;
   case 'c-tab':
-    var clase=$('#'+nom).prop('class');
-    $('#option-'+id).data('reset',clase);
-    clase=clase.match(/([smlSML][0-9]{1,2})/g);
-    $('#option-'+id).val(clase.join(' '));
+      var datos='';
+      $('#'+nom+' li  a').each(function(){
+        let tam=$(this).parent().prop('class');
+        tam=tam.replace('tab col ','');
+        let ref=$(this).prop('href');
+        ref=ref.substr(ref.indexOf('#')+1);
+        datos=datos+ref+'|'+$(this).text()+'|'+tam+'*';
+      });
+      $('#tabtable').data('campo',nom);
+      _tablaShow('#tabtable', datos,addTrTab,delTrTab);
+
 
   break;
 
   default:
-  break;
+  break;delTrTab
 }
-
   $(modalconfg).find('.op-edit').hide();
   $(modalconfg).find('.op-edit-'+tipo).show();
   $(modalconfg).show();
@@ -1178,6 +1206,97 @@ function closeMenuConfig(){
 
 function closeMenuConfig1(){
   $(modalconfg).modal('close');
+}
+
+
+
+function _tablaShow(tabla, campo,addTr,delTr,thead){
+  if (thead){
+    $(tabla+' thead').html(thead);
+  }
+  
+  var datos;
+  if (isFunction(campo)){
+    datos=campo(tabla);
+  }else{
+    datos=campo;
+  }
+  $(tabla).data('indice','0').data('delTr',delTr);
+  datos=datos+'*';
+  var tr=datos.split('*');
+  $(tabla+' tbody tr').remove();
+  for (i = 0; i < tr.length; i++) {
+    if (tr[i]!=''){
+      var dato=(tr[i]).split('|');
+      if (isFunction(addTr)){
+        addTr(tabla,dato);
+      }
+    }
+  }
+}
+
+function _tablaIndice(tabla){
+  var ind= $(tabla).data('indice');
+  ind++;
+  $(tabla).data('indice',ind);
+  return ind;  
+}
+
+function _tablaDelTr(tr){
+tr=$(tr).closest('tr');
+var delTr=$(tr).closest('table').data('delTr');
+if (isFunction(delTr)){
+  if (delTr(tr)==false){
+    alert('No puede Eliminarse, No Esta Vacio');
+    return false;
+  }
+}
+$(tr).remove();
+}
+
+function _tablaSave(tabla,campo){
+  var dato='';
+  $(tabla).find('tbody tr').each(function( index ) {
+    var i=$( this ).data('i');
+    $(tabla).find('.dato'+i).each(function( index ) {
+      if ($( this ).prop("tagName")!='DIV'){
+        dato=dato+$( this ).val()+'|';
+      }
+    });
+    dato=dato+'*';
+  });
+  if (campo){
+    $(campo).val(dato);
+  }
+  return dato;
+}
+
+function delTrTab(tr){
+  var key=$(tr).data('key');
+  if (key==''){
+      return true;
+  }else{
+    if ($('#'+key).is(':empty')){
+    return true;
+    }else{
+    return false;
+    }
+  }
+}
+
+function addTrTab(tabla,dato){
+var i=_tablaIndice(tabla);
+if (dato==''){
+  dato=[];
+  dato[0]='';dato[1]='';dato[2]='';
+
+}
+$(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[0]+'">'+
+  '<td><input id="id-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[0]+'"></td>'+
+  '<td><input id="label-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
+  '<td><input id="tam-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[2]+'"></td>'+
+  '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="_tablaDelTr(this);" style="cursor: pointer;" >delete</i></td>'+
+  '</tr>');
 }
 
 
@@ -1279,20 +1398,43 @@ function closeMenuConfig1(){
       <strong style="font-size: 8px;">Opciones del Campo:</strong><h4 id="modal-tit" style="margin-top: 0px;"></h4>
     <div class="modal-content z-depth-3">
 <br>
-        <div class="row row-tam op-edit op-edit-field op-edit-c-tab">
-          <div class="input-field col s9">
+        <div class="row row-tam op-edit op-edit-field ">
+          <div class="input-field col s12">
                     <input id="option-tam" name='option-tam' type="text" value="" >
                     <label for="option-tam" >Tamano del Campo:</label>
           </div>
-          <div class="col s3">
-              <a class="btn-floating  waves-effect waves-light green" onclick="saveMenuConfig('tam');" ><i class="material-icons">done</i></a> 
-              <a class="btn-floating  waves-effect waves-light blue" onclick="resetMenuConfig('tam');" ><i class="material-icons">redo</i></a>
-          </div>
         </div>
+
+
+  <div class="row row-tab op-edit op-edit-c-tab">
+  <div class="input-field col s12">
+                    
+                    <label for="option-tam" >Crear Tabuladores:</label>
+          </div>
+          
+    <table class="striped" id="tabtable">
+        <thead>
+          <tr>
+              <th data-field="valor">idTAB</th>
+              <th data-field="texto">Label</th>
+              <th data-field="tag">Tamano</th>
+              <th data-field="action"><a class="btn-floating  waves-effect waves-light green" onclick="addTrTab('#tabtable','');" ><i class="material-icons">add</i></a></th>
+          </tr>
+        </thead>
+
+        <tbody>
+         
+
+        </tbody>
+      </table>
+
+
+    </div>
 
     </div>
     <div class="modal-footer">
      <a class="modal-action  waves-effect waves-green btn-flat" onclick="closeMenuConfig();">Cerrar</a>
+     <a class="modal-action  waves-effect waves-green btn-flat" onclick="saveMenuConfig();" >Grabar</a>
     </div>
   </div>
 
