@@ -526,6 +526,7 @@ namespace Mk\Crud {
 			}
 			$this->addViewData('tableName', $table);
 			$campos    = Inputs::post('field');
+
 			$fields    = $this->database->getFields($table);
 			$anexos    = array();
 			$selecdb    = array();
@@ -868,11 +869,14 @@ namespace Mk\Crud {
 							//$compile = str_replace('\\','[[**]]',$compile);
 							$compile  = str_replace('[* ', '{% ', $compile);
 							$compile  = str_replace(' *]', ' %}', $compile);
+
 							$vcompile = new \Mk\View();
 							$vcompile->set('campos', $campos);
 							$vcompile->set('variables', $variables);
 
+							echo '<strong style="color:red"><hr>Copilacion de: <hr>'.$compile.'<hr><hr></strong>';
 							$compile  = $vcompile->render($compile);
+							echo '<strong style="color:blue"><hr>Copilacion de: <hr>'.$compile.'<hr><hr></strong>';
 							$compile  = str_replace('[% ', '{% ', $compile);
 							$compile  = str_replace(' %]', ' %}', $compile);
 							$compile  = str_replace('[[]]', '$', $compile);

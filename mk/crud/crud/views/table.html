@@ -3,7 +3,7 @@
 
 .form-config-section:empty, .dropin:empty{
 padding:20px;
-border:1px solid grey;
+border:1px dotted red;
 }
 
 .form-config-section, .dropin{
@@ -226,14 +226,15 @@ $("#modal1").modal();
 
 
 $("ul#tabs").tabs({ onShow: function(tab) { 
-  if ($(tab).attr('id')=='tabcodigos'){
+  idtabshow=$(tab).attr('id');
+  if (idtabshow=='tabcodigos'){
     editorjs.refresh();
     editorjsopenform.refresh();
   } 
-  if ($(tab).attr('id')=='formulario'){
+  if (idtabshow=='formulario'){
     showFormulario();
   }  
-  if ($(tab).attr('id')=='lista'){
+  if (idtabshow=='lista'){
     showLista();
   }  
 
@@ -370,16 +371,18 @@ var nomvar=$('input:radio[name=listatamvar1]:checked').val();
 
 }
 
+
+
 var flagcambios=0;
 function cambioCamposform( event, ui ){
 if (flagcambios==0){
   flagcambios=1;
   var c=0;
-  var contenido=$('.form-content').html();
-
-  contenido=contenido.replace(i_tools_config,'');
-  contenido=contenido.replace('ui-sortable','');
-  contenido=contenido.replace('ui-droppable','');
+  var contenido=''+$('.form-content').html()+'';
+  contenido=iReplace(contenido,i_tools_config,'');
+  contenido=iReplace(contenido,'ui-sortable','');
+  contenido=iReplace(contenido,'ui-droppable','');
+  //alert(contenido);
   var nom;
   var ult;
   var nombres=[];
@@ -525,7 +528,7 @@ function showFormulario(){
     });
 
     if (i_append==0){
-      html='<div class="row camposform form-config-section"  id="section-0" data-campo="section-0" data-type="c-section">'+html+'</div>';
+      html='<div class="row form-config-section componente"  id="section-0" data-campo="section-0" data-type="c-section">'+html+'</div>';
     }
 
     $('.form-content').html(html);
@@ -565,24 +568,22 @@ switch(id){
   case 'c-section':
 
     $(quien).append(
-      '<div class="row componente form-config-section" id="section-'+nitem+'" data-campo="section-'+nitem+'" data-type="'+id+'">'+
+      '<div class="row form-config-section componente" id="section-'+nitem+'" data-campo="section-'+nitem+'" data-type="'+id+'">'+
       i_tools_config+
+      '<div class="dropin" >'+
+      '</div>'+
       '</div>'
     );
     si++;
   break;
   case 'c-tab':
     $(quien).append(
-        '<div class="row i_'+id+' form-config-section" id="divtab-'+nitem+'" data-campo="tab-'+nitem+'" data-type="'+id+'" >'+
+        '<div class="row form-config-section componente  i_'+id+'" id="divtab-'+nitem+'" data-campo="tab-'+nitem+'" data-type="'+id+'" >'+
         i_tools_config+
         '    <ul class="tabs z-depth-1 i_tab" id="tab-'+nitem+'">'+
         '      <li class="tab col s11"><a class="active" href="#tab-'+nitem+'-1">TAB-'+nitem+'-1</a></li>'+
-        '      <li class="tab col s1"><a class="" href="#tab-'+nitem+'-0">+</a></li>'+
         '    </ul>'+
         '    <div  id="tab-'+nitem+'-1" class="col s12 dropin"></div>'+
-        '    <div  id="tab-'+nitem+'-0" class="col s12 dropin">'+
-        '    Configuracion'+
-        '    </div>'+
         '</div>'
     );
     si++;
@@ -638,6 +639,20 @@ editorjsopenform.refresh();
 
   $('select').material_select();
    Materialize.updateTextFields();
+
+  if (idtabshow=='tabcodigos'){
+    editorjs.refresh();
+    editorjsopenform.refresh();
+  } 
+
+  if (idtabshow=='formulario'){
+    showFormulario();
+  }  
+
+  if (idtabshow=='lista'){
+    showLista();
+  }  
+
   alert('Configuraion Cargada!!');
 }
 
@@ -1101,6 +1116,7 @@ function saveMenuConfig(id){
 closeMenuConfig();
 }
 
+var idtabshow='';
 //todo:borrar todo lo referente a reset y los versiones 1; el delete crear lista, ver que tab esta visible para cargar el formulario la lista cuando se recarga la configuracon
 function openMenuConfig(campo1){
 var campo;

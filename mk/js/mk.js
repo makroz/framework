@@ -402,6 +402,9 @@ function alertfocus(msg,inp,color,def,){
 function actualizarUI(){
   $("select").material_select();
     Materialize.updateTextFields();
+  if ($('ul.tabs').length>0){
+      $('ul.tabs').tabs();
+  }
 }
 
 function getNodosTree(nodo){
@@ -502,3 +505,25 @@ function isFunction(nombreFuncion){
   }
   return false;
 }
+
+
+function myType(obj){
+
+var toType = function(obj) {
+return ({}).toString.call(obj).replace(/^\[.+?\s(\w+)\]$/,"$1").toLowerCase();
+}
+/*var toType = function(obj) {
+  return ({}).toString.call(obj).match(/\s([a-z|A-Z]+)/)[1].toLowerCase()
+}
+*/
+ return window.fff && Object.toType(fff);
+}
+
+
+  function iReplace(target,str1, str2){
+    var ignore='';
+  str1=str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&");
+
+  str2=(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2;
+  return target.replace(new RegExp(str1,(ignore?"gi":"g")),str2);
+} 
