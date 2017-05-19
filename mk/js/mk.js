@@ -527,3 +527,149 @@ return ({}).toString.call(obj).replace(/^\[.+?\s(\w+)\]$/,"$1").toLowerCase();
   str2=(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2;
   return target.replace(new RegExp(str1,(ignore?"gi":"g")),str2);
 } 
+
+
+
+function _extend(destination, source) {
+  source || ( source = {} );
+  for (var property in source)
+    destination[property] = source[property];
+  return destination;
+}
+
+
+
+ 
+
+var mk_componentes = {};
+(function (modulo){
+  var items = [];
+  var tools ='<span class="campos-edit">'+
+      ' <i class="material-icons" onclick="openMenuConfig(this)">settings</i>'+
+      ' <i class="material-icons handle">open_with</i>'+
+      ' </span>';
+  var tagfin='<!-- fin -->';
+
+  modulo.setTagFin=function(tag){
+    tagfin=tag;
+  }
+
+  modulo.setTools=function(t){
+    tools=t;
+  }
+
+  modulo.add = function(item){
+    if (item.type){
+    items[item.type]=item;
+    }
+  };
+
+
+  modulo.show=function(type){
+    if (items[type]){
+      
+      let item='<div class="comp_dragable" id="'+items[type].type+'" style="text-align: center;display: inline-block;margin:5px;">'+
+        '<a class="btn-floating  waves-effect waves-light green"><i class="material-icons">'+items[type].icon+'</i></a>'+
+        '<div style="font-size: 9px;text-align: center;">'+items[type].name+'</div>'+
+        '</div>';
+        return item;
+    }else{
+      return 'no existe';
+    }
+  };
+  modulo.showAll=function(){
+    for (let item in items){
+
+    }
+  };
+  modulo.create=function(mod){
+    return 
+  }
+
+
+
+})(mk_componentes);
+
+function mk_componente(options){
+  this.type= options.type || 'c-base';
+  this.name= options.name || 'Base';
+  this.icon=  options.icon || 'extension';
+  this.color=  options.color || 'green';
+  this.color=  options.color || 'green';
+  this.add = options.add || function(type){}
+  //_extend(this,options);
+  };
+
+var prueba= new mk_componente({
+  name:'Tabuladores',
+  type:'c-tab',
+  icon:'tab', 
+  add:function(nitem){
+            '<div class="row form-config-section componente  i_'+this.type+'" id="divtab-'+nitem+'" data-campo="tab-'+nitem+'" data-type="'+this.type+'" >'+
+        tools+
+        '    <ul class="tabs z-depth-1 i_tab" id="tab-'+nitem+'">'+
+        '      <li class="tab col s11"><a class="active" href="#tab-'+nitem+'-1">TAB-'+nitem+'-1</a></li>'+
+        '    </ul>'+
+        '    <div  id="tab-'+nitem+'-1" class="col s12 dropin"></div>'+
+        '</div>'
+
+
+  }
+});
+
+
+mk_componentes.add(prueba);
+
+//console.log('componente:', mk_componentes.show(0),mk_componentes.show(1));
+
+/*var mk_componentebase = {};  
+(function(){  
+  var type = 'c-base';  
+  var name = 'Base';  
+
+  this.getName = function( ){
+  return name;  
+  };  
+  
+  this.getType = function(){  
+  return type;  
+  };  
+
+}).apply( mk_componentebase );
+*/
+
+
+
+/*
+(function( context ){
+  var globals = { viewGlobals : true },
+      startGlobals = [],
+      newGlobals = [];
+ 
+  for (var j in window) {
+    globals[j] = true;
+    startGlobals.push(j);
+  }
+ 
+  setInterval(function() {
+    for ( var j in window ) {
+      if ( !globals[j] ) {
+        globals[j] = true;
+        newGlobals.push(j);
+        console.warn( 'New Global: ' + j + ' = ' + window[j] + '. Typeof: ' + (typeof window[j]) );
+      }
+    }
+  }, 1000);
+ 
+  context.viewGlobals = function(){
+    console.groupCollapsed( 'View globals' );
+      console.groupCollapsed( 'Initial globals' );
+        console.log( startGlobals.sort().join( ",\n" ) );
+      console.groupEnd();
+      console.groupCollapsed( 'New globals' );
+        console.warn( newGlobals.sort().join( ",\n" ) );
+      console.groupEnd();
+    console.groupEnd();
+  };
+ 
+})(this);*/

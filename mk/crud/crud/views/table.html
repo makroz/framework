@@ -152,7 +152,6 @@ color:red;
 <script src="../mk/js/codemirror/addon/fold/xml-fold.js"></script>
 <script src="../mk/js/codemirror/addon/edit/closetag.js"></script>
 <script src="../mk/js/codemirror/addon/edit/matchtags.js"></script>
-<script src="../mk/js/codemirror/addon/display/autorefresh.js.js"></script>
 <script src="../mk/js/codemirror/mode/javascript/javascript.js"></script>
 <link href='../mk/js/colresize/colResizable.css' rel='stylesheet'>
 <script src='../mk/js/colresize/colResizable.js'></script>
@@ -162,6 +161,8 @@ color:red;
 {% /append %}
 
 {% append js.onready %}
+
+$('#panelComponentes').html(mk_componentes.show('c-tab'));
 
 editorjs = CodeMirror.fromTextArea(document.getElementById("codejs"), {
     lineNumbers: true,
@@ -1389,10 +1390,12 @@ $(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[
   </div>
 
   <div id="formulario" class="col s12">
+  
   <div id="f-1" class="col s3">
   Componentes:
   <hr>
   
+
   <div class="comp_dragable" id="c-section" style="text-align: center;display: inline-block;margin:5px;">
   <a class="btn-floating  waves-effect waves-light green"><i class="material-icons">crop_7_5</i></a>
   <div style="font-size: 9px;text-align: center;">Seccion</div>
@@ -1402,9 +1405,11 @@ $(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[
   <a class="btn-floating  waves-effect waves-light green"><i class="material-icons">tab</i></a>
   <div style="font-size: 9px;text-align: center;">Tabulador</div>
   </div>
-
+<div id="panelComponentes">Compon</div>
 
   </div>
+
+
   <div class="form-content container col s6" style="padding-top: 30px;" >
     
   </div>
