@@ -162,7 +162,7 @@ color:red;
 
 {% append js.onready %}
 
-$('#panelComponentes').html(mk_componentes.show('c-tab'));
+$('#panelComponentes').html(Mk_Componentes.showAll());
 
 editorjs = CodeMirror.fromTextArea(document.getElementById("codejs"), {
     lineNumbers: true,
@@ -253,11 +253,6 @@ $( ".comp_dragable" ).draggable({
 {% /append %}
 
 {% append js.inline %}
-var i_tools_config='<span class="campos-edit">'+
-      ' <i class="material-icons" onclick="openMenuConfig(this)">settings</i>'+
-      ' <i class="material-icons handle">open_with</i>'+
-      ' </span>';
-var tagfin="<!-- fin -->";      
 function showLista(){
     var html= '<div class="row camposLista" >'+
               '<table class="striped bordered highlight tablaLista" id="camposLista">'+
@@ -415,37 +410,9 @@ if (flagcambios==0){
 }
 }
 
-function initComponentes(){
-  
-    $(".form-content").sortable({
-        items: "> .form-config-section",
-        cursor: "move",
-        greedy: true,
-        helper: "clone",
-        forceHelperSize: true,
-        handle: ".handle",
-        opacity: 0.5,
-         update: function( event, ui ) { cambioCamposform();}
-    });
-
-    $(".form-config-section, .dropin").sortable({
-      items: "> .form-config",
-       containment: ".form-content",
-       connectWith: ".form-config-section, .dropin",
-        cursor: "move",
-        greedy: true,
-        helper: "clone",
-        forceHelperSize: true,
-        handle: ".handle",
-        opacity: 0.5,
-         update: function( event, ui ) { cambioCamposform();}
-    });
-
-    $("ul.i_tab").tabs();
-
-}
 
 function showFormulario(){
+    var tagfin='<!-- fin -->';
     var html='';
     var col=[];
     var i_append=0;
@@ -520,6 +487,7 @@ function showFormulario(){
 
       default:
           //code block
+          break;
       }
       if (inp!=''){
         inp=$('#field-'+item[1]+'-i_pre').val()+inp+$('#field-'+item[1]+'-i_pos').val();
@@ -535,69 +503,11 @@ function showFormulario(){
     $('.form-content').html(html);
     actualizarUI();
 
-    $('.form-config,.form-config-section ').prepend(i_tools_config);
+    $('.form-config,.form-config-section ').prepend(Mk_Componentes.getTools());
 
-    initComponentes();
-
-$( ".form-content" ).droppable({
-  hoverClass: "drop-hover",
-  greedy: true,
-  drop: function( event, ui ) {
-  //alert(inspeccionar(event));
-  var idcomp=$(ui.draggable).prop('id');
-    addComponente(idcomp,this,ui);
-  }
-});
-
-
+    Mk_Componentes.initComponentes(cambioCamposform);
+    Mk_Componentes.init('.form-content');
   
-}
-
-
-
-function addComponente(id,quien,ui){
-//alert('Dropable:'+id+' Quien:'+quien);
-var si=0;
-    var nitem=$('#'+id).data('nitem');
-    if (nitem==undefined){
-      nitem=$('.i_'+id).length;
-    }
-    nitem++;
-    $('#'+id).data('nitem',nitem);
-
-switch(id){
-  case 'c-section':
-
-    $(quien).append(
-      '<div class="row form-config-section componente" id="section-'+nitem+'" data-campo="section-'+nitem+'" data-type="'+id+'">'+
-      i_tools_config+
-      '<div class="dropin" >'+
-      '</div>'+
-      '</div>'
-    );
-    si++;
-  break;
-  case 'c-tab':
-    $(quien).append(
-        '<div class="row form-config-section componente  i_'+id+'" id="divtab-'+nitem+'" data-campo="tab-'+nitem+'" data-type="'+id+'" >'+
-        i_tools_config+
-        '    <ul class="tabs z-depth-1 i_tab" id="tab-'+nitem+'">'+
-        '      <li class="tab col s11"><a class="active" href="#tab-'+nitem+'-1">TAB-'+nitem+'-1</a></li>'+
-        '    </ul>'+
-        '    <div  id="tab-'+nitem+'-1" class="col s12 dropin"></div>'+
-        '</div>'
-    );
-    si++;
-  break;
-
-  default:
-  break;
-}
-
-initComponentes();
-if (si>0){
-cambioCamposform();
-}
 }
 
 function cargarConfig(){
@@ -1017,8 +927,6 @@ $('#tablalista tbody').append('<tr id="trlista'+i+'" data-i="'+i+'">'+
   $('select').material_select();
 }
 
-
-
 function closeLista(){
   var modal=modalista['modal'];
   //var id=$(modal).attr('data-key');
@@ -1027,295 +935,7 @@ function closeLista(){
   $(modal).modal('close');
 }
 
-
-var modalconfg='#menu-campos-config';
-
-function resetMenuConfig(id){
-  var tipo=$(modalconfg).data('type');
-  var nom=$(modalconfg).data('key');
-
-  switch(tipo){
-  case 'field':
-    //comienzan los datos que se pueden editar
-      var campo='#field-'+nom+'-'+id;
-      var dato=$(campo).data('reset');
-      $(campo).val(dato);
-      $('#option-'+id).val(dato);
-      dato=$('#option-'+id).data('reset');
-      $('#form-config-'+nom).prop('class',dato);
-    //terminan los campos que se pueden editar
-  break;
-  case 'c-section':
-  break;
-  case 'c-tab':
-  break;
-
-  default:
-  break;
-}
-
-
-
-}
-
-
-function saveMenuConfig(id){
-  var nom=$(modalconfg).data('key');
-  var tipo=$(modalconfg).data('type');
-
-  switch(tipo){
-  case 'field':
-     //comienzan los datos que se pueden editar
-      var id='tam';
-      var dato=$('#option-'+id).val();
-      var olddatos=$('#field-'+nom+'-'+id).val();
-      $('#field-'+nom+'-'+id).val(dato);
-      var clase=$('#form-config-'+nom).prop('class');
-      clase=clase.replace(olddatos,dato);
-      $('#form-config-'+nom).prop('class',clase);
-    //terminan los campos que se pueden editar
-  break;
-  case 'c-section':
-  break;
-  case 'c-tab':
-     $('#tabtable').find('tbody tr').each(function( index ) {
-        var i=$( this ).data('i');
-        let key=$( this ).data('key');
-        if (key!=''){
-          var links = $( 'a[href="#'+key+'"]' );
-        }else{
-          var links = [];
-        }
-        var newid=$(this).find('#id-'+i).val();
-        var newlabel=$(this).find('#label-'+i).val();
-        var newtam=$(this).find('#tam-'+i).val()
-       // alert('legth de link href=:'+key+' : '+$(links).length);
-        if ($(links).length>0){
-          $( this ).data('key',newid);
-          $('#'+key).prop('id',newid);  
-          $(links).html(newlabel);
-          $(links).prop('href','#'+newid);
-          var clase=$(links).parent().prop('class');
-          var clase1=clase;
-          clase1=clase1.replace('tab col ','');
-          clase=clase.replace(clase1,newtam);
-          $(links).parent().prop('class',clase);
-        }else{
-          $( this ).data('key',newid);
-//          alert('Adicionando nuevo tab:'+newid);
-          $('#'+nom).append('<li class="tab col '+newtam+'"><a  href="#'+newid+'" style="">'+newlabel+'</a></li>');
-          $('#'+nom).after('<div id="'+newid+'" class="col s12 dropin"></div>');
-        }
-
-      });
-      $('#'+nom).tabs();
-  break;
-
-  default:
-  break;
-}
-closeMenuConfig();
-}
-
 var idtabshow='';
-//todo:borrar todo lo referente a reset y los versiones 1; el delete crear lista, ver que tab esta visible para cargar el formulario la lista cuando se recarga la configuracon
-function openMenuConfig(campo1){
-var campo;
-  if (!campo1){
-    return false;
-  }
-  campo=$(campo1).closest('.form-config');
-  if ($(campo).prop('class')==undefined){
-    campo=$(campo1).closest('.form-config-section');
-  }
-  if ($(campo).prop('class')==undefined){
-    return false;
-  }
-  var tpadre='';
-  var padre=$(campo).parent();
- 
-  while ((padre)&&(!$(padre).hasClass('form-content'))){
-    if ($(padre).hasClass('col')){
-      tpadre='Col > '+tpadre;
-    }
-    if ($(padre).hasClass('row')){
-      tpadre=$(padre).prop('id')+' > '+tpadre;
-    }
-    padre=$(padre).parent();
-  }
-  tpadre='::'+tpadre;
-
-  var tipo =$(campo).data('type');
-  var nom=$(campo).data('campo');
-
-  $(modalconfg).find('h4').html(tpadre+nom);
-  $(modalconfg).data('key',nom).data('type',tipo);
-  
-  switch(tipo){
-  case 'field':
-
-    //comienzan los datos que se pueden editar
-    var id='tam';
-    //alert('#field-'+nom+'-'+id);
-    var datos=$('#field-'+nom+'-'+id).val();
-    $('#field-'+nom+'-'+id).data('reset',datos);
-    $('#option-'+id).val(datos).data('reset',$(campo).prop('class'));
-    //terminan los campos que se pueden editar
-    
-  break;
-  case 'c-section':
-
-  break;
-  case 'c-tab':
-      var datos='';
-      $('#'+nom+' li  a').each(function(){
-        let tam=$(this).parent().prop('class');
-        tam=tam.replace('tab col ','');
-        let ref=$(this).prop('href');
-        ref=ref.substr(ref.indexOf('#')+1);
-        datos=datos+ref+'|'+$(this).text()+'|'+tam+'*';
-      });
-      $('#tabtable').data('campo',nom);
-      _tablaShow('#tabtable', datos,addTrTab,delTrTab);
-
-
-  break;
-
-  default:
-  break;delTrTab
-}
-  $(modalconfg).find('.op-edit').hide();
-  $(modalconfg).find('.op-edit-'+tipo).show();
-  $(modalconfg).show();
-  actualizarUI();
-
-}
-
-
-function openMenuConfig1(campo){
-  if (!campo){
-    return false;
-  }
-  
- 
-  $(modalconfg).find('h4').html('Opciones para el campo: '+nom);
-  $(modalconfg).modal();
-  $(modalconfg).data('key',nom);
- 
-
-  var id='tam';
-  //var datos=$(campo).prop('class');
-  //datos=datos.match(/([smlSML][0-9]{1,2})/g);
-  //$('#option-'+id).val(datos.join(' '));
-   var datos=$('#field-'+nom+'-'+id).val();
-  $('#field-'+nom+'-'+id).data('reset',datos);
-  $('#option-'+id).val(datos).data('reset',$(campo).prop('class'));
- 
- 
-
-  $(modalconfg).modal('open');
-  actualizarUI();
- }
-
-function closeMenuConfig(){
-  $(modalconfg).hide();
-}
-
-function closeMenuConfig1(){
-  $(modalconfg).modal('close');
-}
-
-
-
-function _tablaShow(tabla, campo,addTr,delTr,thead){
-  if (thead){
-    $(tabla+' thead').html(thead);
-  }
-  
-  var datos;
-  if (isFunction(campo)){
-    datos=campo(tabla);
-  }else{
-    datos=campo;
-  }
-  $(tabla).data('indice','0').data('delTr',delTr);
-  datos=datos+'*';
-  var tr=datos.split('*');
-  $(tabla+' tbody tr').remove();
-  for (i = 0; i < tr.length; i++) {
-    if (tr[i]!=''){
-      var dato=(tr[i]).split('|');
-      if (isFunction(addTr)){
-        addTr(tabla,dato);
-      }
-    }
-  }
-}
-
-function _tablaIndice(tabla){
-  var ind= $(tabla).data('indice');
-  ind++;
-  $(tabla).data('indice',ind);
-  return ind;  
-}
-
-function _tablaDelTr(tr){
-tr=$(tr).closest('tr');
-var delTr=$(tr).closest('table').data('delTr');
-if (isFunction(delTr)){
-  if (delTr(tr)==false){
-    alert('No puede Eliminarse, No Esta Vacio');
-    return false;
-  }
-}
-$(tr).remove();
-}
-
-function _tablaSave(tabla,campo){
-  var dato='';
-  $(tabla).find('tbody tr').each(function( index ) {
-    var i=$( this ).data('i');
-    $(tabla).find('.dato'+i).each(function( index ) {
-      if ($( this ).prop("tagName")!='DIV'){
-        dato=dato+$( this ).val()+'|';
-      }
-    });
-    dato=dato+'*';
-  });
-  if (campo){
-    $(campo).val(dato);
-  }
-  return dato;
-}
-
-function delTrTab(tr){
-  var key=$(tr).data('key');
-  if (key==''){
-      return true;
-  }else{
-    if ($('#'+key).is(':empty')){
-    return true;
-    }else{
-    return false;
-    }
-  }
-}
-
-function addTrTab(tabla,dato){
-var i=_tablaIndice(tabla);
-if (dato==''){
-  dato=[];
-  dato[0]='';dato[1]='';dato[2]='';
-
-}
-$(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[0]+'">'+
-  '<td><input id="id-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[0]+'"></td>'+
-  '<td><input id="label-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
-  '<td><input id="tam-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[2]+'"></td>'+
-  '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="_tablaDelTr(this);" style="cursor: pointer;" >delete</i></td>'+
-  '</tr>');
-}
-
 
 {% /append %}
 
@@ -1394,19 +1014,7 @@ $(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[
   <div id="f-1" class="col s3">
   Componentes:
   <hr>
-  
-
-  <div class="comp_dragable" id="c-section" style="text-align: center;display: inline-block;margin:5px;">
-  <a class="btn-floating  waves-effect waves-light green"><i class="material-icons">crop_7_5</i></a>
-  <div style="font-size: 9px;text-align: center;">Seccion</div>
-  </div>
-
- <div class="comp_dragable" id="c-tab" style="text-align: center;display: inline-block;margin:5px;">
-  <a class="btn-floating  waves-effect waves-light green"><i class="material-icons">tab</i></a>
-  <div style="font-size: 9px;text-align: center;">Tabulador</div>
-  </div>
-<div id="panelComponentes">Compon</div>
-
+    <div id="panelComponentes"></div>
   </div>
 
 
@@ -1414,52 +1022,20 @@ $(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[
     
   </div>
   <div id="f-3" class="col s3">
-     <!-- Modal Structure -->
+  <!-- Modal Structure -->
   <div id="menu-campos-config" data-key="" class="oculto modal1 modal-fixed-footer">
-      <strong style="font-size: 8px;">Opciones del Campo:</strong><h4 id="modal-tit" style="margin-top: 0px;"></h4>
-    <div class="modal-content z-depth-3">
-<br>
-        <div class="row row-tam op-edit op-edit-field ">
-          <div class="input-field col s12">
-                    <input id="option-tam" name='option-tam' type="text" value="" >
-                    <label for="option-tam" >Tamano del Campo:</label>
-          </div>
-        </div>
-
-
-  <div class="row row-tab op-edit op-edit-c-tab">
-  <div class="input-field col s12">
-                    
-                    <label for="option-tam" >Crear Tabuladores:</label>
-          </div>
-          
-    <table class="striped" id="tabtable">
-        <thead>
-          <tr>
-              <th data-field="valor">idTAB</th>
-              <th data-field="texto">Label</th>
-              <th data-field="tag">Tamano</th>
-              <th data-field="action"><a class="btn-floating  waves-effect waves-light green" onclick="addTrTab('#tabtable','');" ><i class="material-icons">add</i></a></th>
-          </tr>
-        </thead>
-
-        <tbody>
-         
-
-        </tbody>
-      </table>
-
-
-    </div>
-
-    </div>
+    <strong style="font-size: 8px;">Opciones del Campo:</strong><h4 id="modal-tit" style="margin-top: 0px;"></h4>
+    <br>
+ 
+    <div class="modal-content z-depth-3"></div>
+ 
     <div class="modal-footer">
-     <a class="modal-action  waves-effect waves-green btn-flat" onclick="closeMenuConfig();">Cerrar</a>
-     <a class="modal-action  waves-effect waves-green btn-flat" onclick="saveMenuConfig();" >Grabar</a>
+     <a class="modal-action  waves-effect waves-green btn-flat" onclick="Mk_Componentes.closeConfig();">Cerrar</a>
+     <a class="modal-action  waves-effect waves-green btn-flat" onclick="Mk_Componentes.saveConfig();" >Grabar</a>
     </div>
   </div>
-
-
+ <!-- Modal Structure -->
+ 
   </div>
   </div>
 </div>

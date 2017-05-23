@@ -529,6 +529,75 @@ return ({}).toString.call(obj).replace(/^\[.+?\s(\w+)\]$/,"$1").toLowerCase();
 } 
 
 
+function _tablaShow(tabla, campo,addTr,delTr,thead){
+  if (thead){
+    $(tabla+' thead').html(thead);
+  }
+  
+  var datos;
+  if (isFunction(campo)){
+    datos=campo(tabla);
+  }else{
+    datos=campo;
+  }
+  $(tabla).data('indice','0').data('delTr',delTr).data('addTr',addTr);
+  datos=datos+'*';
+  var tr=datos.split('*');
+  $(tabla+' tbody tr').remove();
+  for (i = 0; i < tr.length; i++) {
+    if (tr[i]!=''){
+      var dato=(tr[i]).split('|');
+      if (isFunction(addTr)){
+        addTr(tabla,dato);
+      }
+    }
+  }
+}
+
+function _tablaIndice(tabla){
+  var ind= $(tabla).data('indice');
+  ind++;
+  $(tabla).data('indice',ind);
+  return ind;  
+}
+
+function _tablaDelTr(tr){
+tr=$(tr).closest('tr');
+var delTr=$(tr).closest('table').data('delTr');
+if (isFunction(delTr)){
+  if (delTr(tr)==false){
+    alert('No puede Eliminarse, No Esta Vacio');
+    return false;
+  }
+}
+$(tr).remove();
+}
+
+function _tablaAddTr(tabla,dato){
+var addTr=$(tabla).data('addTr');
+if (isFunction(addTr)){
+  addTr(tabla,dato);
+}
+}
+
+function _tablaSave(tabla,campo){
+  var dato='';
+  $(tabla).find('tbody tr').each(function( index ) {
+    var i=$( this ).data('i');
+    $(tabla).find('.dato'+i).each(function( index ) {
+      if ($( this ).prop("tagName")!='DIV'){
+        dato=dato+$( this ).val()+'|';
+      }
+    });
+    dato=dato+'*';
+  });
+  if (campo){
+    $(campo).val(dato);
+  }
+  return dato;
+}
+
+
 
 function _extend(destination, source) {
   source || ( source = {} );
@@ -541,135 +610,366 @@ function _extend(destination, source) {
 
  
 
-var mk_componentes = {};
+var Mk_Componentes = {};
 (function (modulo){
+  var modalConfig='#menu-campos-config';
   var items = [];
   var tools ='<span class="campos-edit">'+
-      ' <i class="material-icons" onclick="openMenuConfig(this)">settings</i>'+
+      ' <i class="material-icons" onclick="Mk_Componentes.openConfig(this)">settings</i>'+
       ' <i class="material-icons handle">open_with</i>'+
       ' </span>';
   var tagfin='<!-- fin -->';
+  var updateCB=function(){};
+  modulo.cur_Type='';
+  modulo.cur_Id='';
 
-  modulo.setTagFin=function(tag){
-    tagfin=tag;
+  function Mk_Componente(options){
+  this.type= options.type || 'c-base';
+  this.name= options.name || 'Base';
+  this.icon=  options.icon || 'extension';
+  this.color=  options.color || 'green';
+  this.hide=  options.hide || false;
+  this.index=  options.index || -1;
+  this.init = options.init || false;
+  this.add = options.add || false;
+  this.saveConfig = options.saveConfig || false;
+  this.openConfig = options.openConfig || false;
+  this.showConfig = options.showConfig || false;
+
+  //_extend(this,options);
+  };
+  
+  modulo.setModalConfig=function(value){
+    modalConfig=value;
+  };
+
+  modulo.getModalConfig=function(value){
+    return modalConfig;
+  };
+
+  modulo.setTagFin=function(value){
+    tagfin=value;
   }
 
-  modulo.setTools=function(t){
-    tools=t;
+  modulo.setTools=function(value){
+    tools=value;
+  };
+
+  modulo.getTools=function(){
+    return tools;
+  };
+
+  modulo.init=function(quien){
+    $(quien) .droppable({
+      hoverClass: "drop-hover",
+      greedy: true,
+      drop: function( event, ui ) {
+        var id=$(ui.draggable).prop('id');
+          $(this).append(Mk_Componentes.showComponente(id));
+          Mk_Componentes.initComponentes();
+      }
+    });
+  };
+
+  modulo.initComponentes=function(update){
+    if (!isFunction(update)){
+      update=this.updateCB;
+    }
+    this.updateCB=update;
+     $(".form-content").sortable({
+        items: "> .form-config-section",
+        cursor: "move",
+        greedy: true,
+        helper: "clone",
+        forceHelperSize: true,
+        handle: ".handle",
+        opacity: 0.5,
+         update: function( event, ui ) { update();}
+    });
+
+    $(".form-config-section, .dropin").sortable({
+      items: "> .form-config",
+       containment: ".form-content",
+       connectWith: ".form-config-section, .dropin",
+        cursor: "move",
+        greedy: true,
+        helper: "clone",
+        forceHelperSize: true,
+        handle: ".handle",
+        opacity: 0.5,
+         update: function( event, ui ) { update();}
+    });
+
+    for (let item in items){
+      if (item.init){
+        item.init();
+      }
+    }
+
+    update();
+
   }
 
   modulo.add = function(item){
     if (item.type){
-    items[item.type]=item;
+      items[item.type]=new Mk_Componente(item);
     }
   };
 
 
+  modulo.showComponente = function(type){
+    //console.log('showComponente:',type,':',items[type]);
+    if((items[type])&&(items[type].add)){
+      if (items[type].index<0){
+        $('.componente .i_'+type).each(function(){
+            let n=this.prop(id);
+            n=n.replace(type+'-','');
+            n=n*1;
+            if ((!isNaN(n))&&(n>items[type].index)){
+              items[type].index=n;
+            }
+        });
+        if (items[type].index<0){
+          items[type].index=0;
+        }
+      }
+      items[type].index++;
+      return '<div class="row form-config-section componente i_'+type+'" id="'+type+'-'+items[type].index+'" data-campo="'+type+'-'+items[type].index+'" data-type="'+type+'">'+
+      tools+
+      items[type].add(items[type].index)+
+      '</div>';
+    }
+  };
+
+  modulo.saveConfig = function(){
+    if(items[this.cur_Type].saveConfig){
+      items[this.cur_Type].saveConfig(this.cur_Id);
+    }
+    this.closeConfig();
+  };
+
+  modulo.closeConfig= function(){
+    $(this.getModalConfig()).hide();
+  };
+
+  modulo.openConfig = function(boton){
+    if (!boton){
+      return false;
+    }
+
+    var campo=$(boton).closest('.form-config');
+
+    if ($(campo).prop('class')==undefined){
+      campo=$(boton).closest('.form-config-section');
+    }
+
+    if ($(campo).prop('class')==undefined){
+      return false;
+    }
+
+    var tpadre='';
+    var padre=$(campo).parent();
+    
+    while ((padre)&&(!$(padre).hasClass('form-content'))){
+      if ($(padre).hasClass('col')){
+        tpadre='Col > '+tpadre;
+      }
+      if ($(padre).hasClass('row')){
+        tpadre=$(padre).prop('id')+' > '+tpadre;
+      }
+      padre=$(padre).parent();
+    }
+    tpadre='::'+tpadre;
+    this.cur_Type =$(campo).data('type');
+    this.cur_Id=$(campo).data('campo');
+
+    if ((items[this.cur_Type].showConfig)&&(items[this.cur_Type].openConfig)){
+
+      $(this.getModalConfig())
+        .find('h4')
+          .html(tpadre+this.cur_Id)
+        .end()
+        .find('.modal-content')
+          .html('<div class="row op-edit op-edit-'+this.cur_Type+'">'+
+            items[this.cur_Type].showConfig()+
+            '</div')
+        .end()
+        .show(); 
+
+      items[this.cur_Type].openConfig(this.cur_Id);
+      actualizarUI();
+    }
+
+
+
+  };
+
   modulo.show=function(type){
     if (items[type]){
-      
-      let item='<div class="comp_dragable" id="'+items[type].type+'" style="text-align: center;display: inline-block;margin:5px;">'+
+      return '<div class="comp_dragable" id="'+items[type].type+'" style="text-align: center;display: inline-block;margin:5px;">'+
         '<a class="btn-floating  waves-effect waves-light green"><i class="material-icons">'+items[type].icon+'</i></a>'+
         '<div style="font-size: 9px;text-align: center;">'+items[type].name+'</div>'+
         '</div>';
-        return item;
     }else{
       return 'no existe';
     }
   };
   modulo.showAll=function(){
+    let r='';
     for (let item in items){
-
+      //console.log('item es:',items[item]);
+      if (items[item].hide!=1){
+        r=r+this.show(item);
+      }
     }
+    return r;
   };
-  modulo.create=function(mod){
-    return 
+
+
+})(Mk_Componentes);
+
+Mk_Componentes.add({
+  name:'Campos',
+  type:'field',
+  hide:1,
+  openConfig:function(id){
+    var idp='tam';
+    var datos=$('#field-'+id+'-'+idp).val();
+    $('#option-'+idp).val(datos);
+  },
+  saveConfig:function(id){
+    var idt='tam';
+    var dato=$('#option-'+idt).val();
+    var olddatos=$('#field-'+id+'-'+idt).val();
+    $('#field-'+id+'-'+idt).val(dato);
+    var clase=$('#form-config-'+id).prop('class');
+    clase=clase.replace(olddatos,dato);
+    $('#form-config-'+id).prop('class',clase);
+  },
+  showConfig:function(){
+    return ' '+
+     '<div class="input-field col s12">'+
+     '   <input id="option-tam" name="option-tam" type="text" value="" >'+
+     '   <label for="option-tam" >Tamano del Campo:</label>'+
+     ' </div>';
   }
+});
 
-
-
-})(mk_componentes);
-
-function mk_componente(options){
-  this.type= options.type || 'c-base';
-  this.name= options.name || 'Base';
-  this.icon=  options.icon || 'extension';
-  this.color=  options.color || 'green';
-  this.color=  options.color || 'green';
-  this.add = options.add || function(type){}
-  //_extend(this,options);
-  };
-
-var prueba= new mk_componente({
-  name:'Tabuladores',
-  type:'c-tab',
-  icon:'tab', 
+Mk_Componentes.add({
+  name:'Seccion',
+  type:'c-section',
+  icon:'crop_7_5', 
   add:function(nitem){
-            '<div class="row form-config-section componente  i_'+this.type+'" id="divtab-'+nitem+'" data-campo="tab-'+nitem+'" data-type="'+this.type+'" >'+
-        tools+
-        '    <ul class="tabs z-depth-1 i_tab" id="tab-'+nitem+'">'+
-        '      <li class="tab col s11"><a class="active" href="#tab-'+nitem+'-1">TAB-'+nitem+'-1</a></li>'+
-        '    </ul>'+
-        '    <div  id="tab-'+nitem+'-1" class="col s12 dropin"></div>'+
-        '</div>'
-
-
+      return '<div class="dropin" >'+
+      '</div>';
   }
 });
 
 
-mk_componentes.add(prueba);
+Mk_Componentes.add({
+  name:'Tabulador',
+  type:'c-tab',
+  icon:'tab', 
+  init:function(){
+    $("ul.i_tab").tabs();
+  },
+  add:function(nitem){
+        return '<ul class="tabs z-depth-1 i_tab" id="tab-'+nitem+'">'+
+        '<li class="tab col s12"><a class="active" href="#tab-'+nitem+'-1">TAB-'+nitem+'-1</a></li>'+
+        '</ul>'+
+        '<div  id="tab-'+nitem+'-1" class="col s12 dropin"></div>';
+  },
+  saveConfig:function(id){
 
-//console.log('componente:', mk_componentes.show(0),mk_componentes.show(1));
-
-/*var mk_componentebase = {};  
-(function(){  
-  var type = 'c-base';  
-  var name = 'Base';  
-
-  this.getName = function( ){
-  return name;  
-  };  
-  
-  this.getType = function(){  
-  return type;  
-  };  
-
-}).apply( mk_componentebase );
-*/
-
-
-
-/*
-(function( context ){
-  var globals = { viewGlobals : true },
-      startGlobals = [],
-      newGlobals = [];
- 
-  for (var j in window) {
-    globals[j] = true;
-    startGlobals.push(j);
-  }
- 
-  setInterval(function() {
-    for ( var j in window ) {
-      if ( !globals[j] ) {
-        globals[j] = true;
-        newGlobals.push(j);
-        console.warn( 'New Global: ' + j + ' = ' + window[j] + '. Typeof: ' + (typeof window[j]) );
+       $('#tabtable').find('tbody tr').each(function( index ) {
+        var i=$( this ).data('i');
+        var key=$( this ).data('key');
+        if (key!=''){
+          var links = $( 'a[href="#'+key+'"]' );
+        }else{
+          var links = [];
+        }
+        var newid=$(this).find('#id-'+i).val();
+        var newlabel=$(this).find('#label-'+i).val();
+        var newtam=$(this).find('#tam-'+i).val()
+        if ($(links).length>0){
+          $( this ).data('key',newid);
+          $('#'+key).prop('id',newid);  
+          $(links).html(newlabel);
+          $(links).prop('href','#'+newid);
+          var clase=$(links).parent().prop('class');
+          var clase1=clase;
+          clase1=clase1.replace('tab col ','');
+          clase=clase.replace(clase1,newtam);
+          $(links).parent().prop('class',clase);
+        }else{
+          $( this ).data('key',newid);
+          $('#'+id+' ul').append('<li class="tab col '+newtam+'"><a  href="#'+newid+'" style="">'+newlabel+'</a></li>');
+          $('#'+id+' ul').after('<div id="'+newid+'" class="col s12 dropin"></div>');
+        }
+      });
+      $('#'+id).tabs();
+  },
+  openConfig:function(id){
+    function delTrTab(tr){
+      var key=$(tr).data('key');
+      if (key==''){
+          return true;
+      }else{
+        if ($('#'+key).is(':empty')){
+        return true;
+        }else{
+        return false;
+        }
       }
     }
-  }, 1000);
- 
-  context.viewGlobals = function(){
-    console.groupCollapsed( 'View globals' );
-      console.groupCollapsed( 'Initial globals' );
-        console.log( startGlobals.sort().join( ",\n" ) );
-      console.groupEnd();
-      console.groupCollapsed( 'New globals' );
-        console.warn( newGlobals.sort().join( ",\n" ) );
-      console.groupEnd();
-    console.groupEnd();
-  };
- 
-})(this);*/
+
+    function addTrTab(tabla,dato){
+      var i=_tablaIndice(tabla);
+      if (dato==''){
+        dato=[];
+        dato[0]='';dato[1]='';dato[2]='';
+      }
+      $(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[0]+'">'+
+        '<td><input id="id-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[0]+'"></td>'+
+        '<td><input id="label-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
+        '<td><input id="tam-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[2]+'"></td>'+
+        '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="_tablaDelTr(this);" style="cursor: pointer;" >delete</i></td>'+
+        '</tr>');
+    }
+
+    var datos='';
+    $('#'+id+' li  a').each(function(){
+      let tam=$(this).parent().prop('class');
+      tam=tam.replace('tab col ','');
+      let ref=$(this).prop('href');
+      ref=ref.substr(ref.indexOf('#')+1);
+      datos=datos+ref+'|'+$(this).text()+'|'+tam+'*';
+    });
+    $('#tabtable').data('campo',id);
+    _tablaShow('#tabtable', datos,addTrTab,delTrTab);
+  },
+  showConfig:function(){
+    return ' '+
+      '<div class="input-field col s12">'+
+      '  <label for="option-tam" >Crear Tabuladores:</label>'+
+      '</div>'+
+          
+      '<table class="striped" id="tabtable">'+
+      '  <thead>'+
+      '    <tr>'+
+      '        <th data-field="valor">idTAB</th>'+
+      '        <th data-field="texto">Label</th>'+
+      '        <th data-field="tag">Tamano</th>'+
+      '        <th data-field="action">'+
+      '          <a class="btn-floating  waves-effect waves-light green" onclick="_tablaAddTr(\'#tabtable\',\'\');" >'+
+      '           <i class="material-icons">add</i>'+
+      '          </a>'+
+      '        </th>'+
+      '    </tr>'+
+      '  </thead>'+
+      '  <tbody>'+
+      '  </tbody>'+
+      '</table>';
+  }
+});
