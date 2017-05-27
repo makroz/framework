@@ -618,7 +618,7 @@ var Mk_Componentes = {};
       ' <i class="material-icons" onclick="Mk_Componentes.openConfig(this)">settings</i>'+
       ' <i class="material-icons handle">open_with</i>'+
       ' </span>';
-  var tagfin='<!-- fin -->';
+  var tagFin='<!-- fin -->';
   var updateCB=function(){};
   modulo.cur_Type='';
   modulo.cur_Id='';
@@ -629,6 +629,7 @@ var Mk_Componentes = {};
   this.icon=  options.icon || 'extension';
   this.color=  options.color || 'green';
   this.hide=  options.hide || false;
+  this.openForm=  options.openForm || '';
   this.index=  options.index || -1;
   this.init = options.init || false;
   this.add = options.add || false;
@@ -648,7 +649,11 @@ var Mk_Componentes = {};
   };
 
   modulo.setTagFin=function(value){
-    tagfin=value;
+    tagFin=value;
+  }
+
+  modulo.getTagFin=function(value){
+    return tagFin;
   }
 
   modulo.setTools=function(value){
@@ -720,9 +725,11 @@ var Mk_Componentes = {};
   modulo.showComponente = function(type){
     //console.log('showComponente:',type,':',items[type]);
     if((items[type])&&(items[type].add)){
+      //console.log('componente antes:',items[type].index,'.componente .i_'+type);
       if (items[type].index<0){
-        $('.componente .i_'+type).each(function(){
-            let n=this.prop(id);
+        $('.componente.i_'+type).each(function(){
+            let n=$(this).prop('id');
+            //console.log('componente:',n);
             n=n.replace(type+'-','');
             n=n*1;
             if ((!isNaN(n))&&(n>items[type].index)){
@@ -734,9 +741,14 @@ var Mk_Componentes = {};
         }
       }
       items[type].index++;
+      let openF='';
+      if (items[type].openForm!=''){
+        openF='<span class"oculto">[[setvar: openform]]'+items[type].openForm+'[[:setvar]]</span>';
+      }
       return '<div class="row form-config-section componente i_'+type+'" id="'+type+'-'+items[type].index+'" data-campo="'+type+'-'+items[type].index+'" data-type="'+type+'">'+
       tools+
       items[type].add(items[type].index)+
+      openF+
       '</div>';
     }
   };
@@ -744,7 +756,42 @@ var Mk_Componentes = {};
   modulo.saveConfig = function(){
     if(items[this.cur_Type].saveConfig){
       items[this.cur_Type].saveConfig(this.cur_Id);
+      this.updateCB();
     }
+    this.closeConfig();
+  };
+
+  modulo.delConfig = function(seguro){
+    var canDel=0;
+    var c=$('#'+this.cur_Id).find('.dropin').each(function(){
+      if ($(this).is(':empty')==false){
+        canDel++;
+      }
+    });
+
+    if (canDel>0){
+      $.alert('No esta Vacio!!!');
+      return false;
+    }
+
+    if (!seguro){
+      $.confirm({
+          title: 'Eliminar?',
+          content: '¿Esta seguro de querer borrar este Componente?:',
+          type:'red',
+          buttons: {
+              confirm: function () {
+                Mk_Componentes.delConfig(true);
+              },
+              cancel: function () {
+              }
+          }
+      });
+      return false; 
+    }
+
+    $('#'+this.cur_Id).remove();
+    this.updateCB();
     this.closeConfig();
   };
 
@@ -784,6 +831,14 @@ var Mk_Componentes = {};
     this.cur_Id=$(campo).data('campo');
 
     if ((items[this.cur_Type].showConfig)&&(items[this.cur_Type].openConfig)){
+
+      if (items[this.cur_Type].hide!=1){
+          $(this.getModalConfig())
+        .find('#config-borrar').show();        
+      }else{
+        $(this.getModalConfig())
+        .find('#config-borrar').hide();
+      }
 
       $(this.getModalConfig())
         .find('h4')
@@ -832,6 +887,7 @@ Mk_Componentes.add({
   name:'Campos',
   type:'field',
   hide:1,
+  openForm:'$("ul.tabs").tabs();',
   openConfig:function(id){
     var idp='tam';
     var datos=$('#field-'+id+'-'+idp).val();
@@ -904,11 +960,12 @@ Mk_Componentes.add({
           $(links).parent().prop('class',clase);
         }else{
           $( this ).data('key',newid);
-          $('#'+id+' ul').append('<li class="tab col '+newtam+'"><a  href="#'+newid+'" style="">'+newlabel+'</a></li>');
-          $('#'+id+' ul').after('<div id="'+newid+'" class="col s12 dropin"></div>');
+          $('#'+id+' ul.tabs').append('<li class="tab col '+newtam+'"><a  href="#'+newid+'" style="">'+newlabel+'</a></li>');
+          $('#'+id+' ul.tabs').after('<div id="'+newid+'" class="col s12 dropin"></div>');
         }
       });
-      $('#'+id).tabs();
+      $('#'+id+' ul').tabs();
+
   },
   openConfig:function(id){
     function delTrTab(tr){
@@ -916,7 +973,7 @@ Mk_Componentes.add({
       if (key==''){
           return true;
       }else{
-        if ($('#'+key).is(':empty')){
+        if (($('#'+key).is(':empty'))||($('#'+key).html()=='')||($('#'+key).html()==undefined)){
         return true;
         }else{
         return false;
@@ -928,9 +985,18 @@ Mk_Componentes.add({
       var i=_tablaIndice(tabla);
       if (dato==''){
         dato=[];
-        dato[0]='';dato[1]='';dato[2]='';
+        let n=Mk_Componentes.cur_Id.replace(/[^\d]/g, '');
+        //console.log('cur id',n,Mk_Componentes.cur_Id);
+        n='tab-'+n+'-'+($(tabla+' tbody tr').length+1);
+        dato[0]=n;
+        //console.log('vacio?',$('#'+n).is(':empty'),$('#'+n).html());
+        dato[1]=n.toUpperCase();
+        dato[2]='s'+(12/($(tabla+' tbody tr').length+1));
+        dato[3]='';
+      }else{
+        dato[3]=dato[0];
       }
-      $(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[0]+'">'+
+      $(tabla+' tbody').append('<tr id="trlista'+i+'" data-i="'+i+'" data-key="'+dato[3]+'">'+
         '<td><input id="id-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[0]+'"></td>'+
         '<td><input id="label-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
         '<td><input id="tam-'+i+'" type="text" class="validate dato'+i+'" value="'+dato[2]+'"></td>'+

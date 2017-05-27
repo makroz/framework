@@ -151,7 +151,7 @@ function addNodeTree(node){
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
  
 
-<div class="row    " id="section-0" data-campo="section-0" data-type="c-section" style="">
+<div class="row           " id="section-0" data-campo="section-0" data-type="c-section" style="">
 		<div class="input-field col s12">
 	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[nombre][defVal] %}'>
 	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
@@ -159,7 +159,7 @@ function addNodeTree(node){
 		</div>
  
 
-</div><div class="row   i_c-tab " id="divtab-1" data-campo="tab-1" data-type="c-tab">    <ul class="tabs z-depth-1 i_tab" id="tab-1">      <li class="tab col s6"><a class="active" href="#tab-1-1" style="">Datos</a></li>    <li class="tab col s6"><a href="#tab-1-2" style="" class="">Ubicaciones</a></li><div class="indicator" style="right: 475.383px; left: 0px;"></div></ul><div id="tab-1-2" class="col s12 dropin " style="display: none;">
+</div><div class="row   i_c-tab        " id="c-tab-1" data-campo="c-tab-1" data-type="c-tab">    <ul class="tabs z-depth-1 i_tab" id="tab-1">      <li class="tab col s4"><a class="active" href="#tab-1-1" style="">Datos</a></li>    <li class="tab col s4"><a href="#tab-1-2" style="" class="">Ubicaciones</a></li><li class="tab col s4"><a href="#tab-1-3" style="">Permisos</a></li><div class="indicator" style="right: 626.833px; left: 0px;"></div></ul><div id="tab-1-3" class="col s12 dropin      " style="display: none;"></div><div id="tab-1-2" class="col s12 dropin        " style="display: none;">
 [[prevar: openform]]
 	setNodosTree('#tree-t_ubicaciones',$('#t_ubicaciones').val());
 [[:prevar]]
@@ -173,7 +173,7 @@ function addNodeTree(node){
 		</div>
  
 
-</div>    <div id="tab-1-1" class="col s12 dropin  active" style="">
+</div>    <div id="tab-1-1" class="col s12 dropin  active " style="">
 		<div class="input-field col s12">
 	          <input id="dir" name="dir" type="text" class="alfa $clasver " width="" value='{% echo $item[dir]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[dir][defVal] %}'>
 	          <label for="dir">{% echo $anexos[dir][labelf] %}</label>
@@ -232,7 +232,7 @@ function addNodeTree(node){
     	          <label for="lapso">{% echo $anexos[lapso][labelf] %}</label>
     	          <div class="error_input">{$errors[lapso][0]}</div>
 		</div>
-</div></div>
+</div><span class="oculto">[[setvar: openform]] $("ul.tabs").tabs(); [[:setvar]]</span> </div>
  
 
 </div>

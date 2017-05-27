@@ -155,12 +155,18 @@ color:red;
 <script src="../mk/js/codemirror/mode/javascript/javascript.js"></script>
 <link href='../mk/js/colresize/colResizable.css' rel='stylesheet'>
 <script src='../mk/js/colresize/colResizable.js'></script>
+<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
 
-
-    
 {% /append %}
 
 {% append js.onready %}
+
+$('#pindiv').pushpin({
+      top: 10,
+      bottom: 1000,
+      offset: 0
+    });
 
 $('#panelComponentes').html(Mk_Componentes.showAll());
 
@@ -375,7 +381,7 @@ if (flagcambios==0){
   flagcambios=1;
   var c=0;
   var contenido=''+$('.form-content').html()+'';
-  contenido=iReplace(contenido,i_tools_config,'');
+  contenido=iReplace(contenido,Mk_Componentes.getTools(),'');
   contenido=iReplace(contenido,'ui-sortable','');
   contenido=iReplace(contenido,'ui-droppable','');
   //alert(contenido);
@@ -396,8 +402,8 @@ if (flagcambios==0){
     var posi=contenido.indexOf('<div id="form-config-'+nom+'"');
     if (posi>=0){
       var i_pre=contenido.substr(0,posi);
-      posi=contenido.indexOf(tagfin);
-      posi=contenido.indexOf('</div>',posi);
+      posi=contenido.indexOf(Mk_Componentes.getTagFin());
+      posi=contenido.indexOf('</div>',posi);  
       contenido=contenido.substr(posi+6);
       $('#field-'+nom+'-i_pre').val(i_pre);
       c++;
@@ -412,7 +418,6 @@ if (flagcambios==0){
 
 
 function showFormulario(){
-    var tagfin='<!-- fin -->';
     var html='';
     var col=[];
     var i_append=0;
@@ -454,14 +459,14 @@ function showFormulario(){
           inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'"" data-type="field">'+
               '<input id="config-'+item[1]+'" type="text" class="alfa" width="'+tam+'" value="" >'+
               '<label for="config-'+item[1]+'">'+label+'</label>'+
-              tagfin+
+              Mk_Componentes.getTagFin()+
               '</div>';
           break;
       case 'check':
           inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'" data-type="field">'+
               '<input type="checkbox" id="config-'+item[1]+'"  class="check" value="1" />'+
               '<label for="config-'+item[1]+'">'+label+'</label>'+
-              tagfin+
+              Mk_Componentes.getTagFin()+
               '</div>';
           break;
       case 'tree':
@@ -470,7 +475,7 @@ function showFormulario(){
               '<table id="config-'+item[1]+'"  class="treeg"  width="'+tam+'">'+
               '<tr><td>item</td><td><a class="btn-floating  waves-effect waves-light green" title="Adicionar"><i class="material-icons">add</i></a><a class="btn-floating  waves-effect waves-light red" title="Borrar"><i class="material-icons">delete</i></a><a class="btn-floating  waves-effect waves-light yellow" title="Editar"><i class="material-icons">edit</i></a></td></tr>'+
               '</table>'+
-              tagfin+
+              Mk_Componentes.getTagFin()+
               '</div>';
           break;
  
@@ -481,7 +486,7 @@ function showFormulario(){
               '<option>opcion1</option><option>opcion2</option>'+
               '</select>'+
               '<label for="config-'+item[1]+'">'+label+'</label>'+
-              tagfin+
+              Mk_Componentes.getTagFin()+
               '</div>';
           break;
 
@@ -1022,20 +1027,23 @@ var idtabshow='';
     
   </div>
   <div id="f-3" class="col s3">
+  <div id='pindiv'>
   <!-- Modal Structure -->
-  <div id="menu-campos-config" data-key="" class="oculto modal1 modal-fixed-footer">
+  <div id="menu-campos-config" data-key="" class="oculto">
     <strong style="font-size: 8px;">Opciones del Campo:</strong><h4 id="modal-tit" style="margin-top: 0px;"></h4>
     <br>
  
     <div class="modal-content z-depth-3"></div>
  
     <div class="modal-footer">
+      <a class="modal-action  waves-effect waves-green btn-flat " id="config-borrar" onclick="Mk_Componentes.delConfig();">Borrar</a>
      <a class="modal-action  waves-effect waves-green btn-flat" onclick="Mk_Componentes.closeConfig();">Cerrar</a>
      <a class="modal-action  waves-effect waves-green btn-flat" onclick="Mk_Componentes.saveConfig();" >Grabar</a>
     </div>
   </div>
  <!-- Modal Structure -->
  
+  </div>
   </div>
   </div>
 </div>

@@ -27,3 +27,25 @@ me falta modificar el sendform para que no envie si es que un ajax o unique no e
 date.timezone=America/La_Paz
 
 
+ALTER TABLE `mk_pedidos` CHANGE `PK` `PK` INT( 11 ) NOT NULL;
+ALTER TABLE `mk_pedidos` DROP PRIMARY KEY ;
+
+update mk_pedidos set PK=PK+9552, SI=355, SF=355 where PK>0;
+
+ ALTER TABLE `mk_pedidos` ADD PRIMARY KEY ( `PK` ); 
+ ALTER TABLE `mk_pedidos` CHANGE `PK` `PK` INT( 11 ) NOT NULL AUTO_INCREMENT; 
+
+update mk_pedidosdet set FK_PEDIDOS=FK_PEDIDOS+9552, SESION=355 where PK>0;
+
+
+27257
+
+ALTER TABLE `mk_pedidosdet` CHANGE `PK` `PK` INT( 11 ) NOT NULL;
+ALTER TABLE `mk_pedidosdet` DROP PRIMARY KEY ;
+
+update mk_pedidosdet set PK=PK+27257 where PK>0;
+
+ ALTER TABLE `mk_pedidosdet` ADD PRIMARY KEY ( `PK` ); 
+ ALTER TABLE `mk_pedidosdet` CHANGE `PK` `PK` INT( 11 ) NOT NULL AUTO_INCREMENT; 
+
+
