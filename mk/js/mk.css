@@ -100,3 +100,63 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.1);background-color: #fafafa;border-rad
 margin-top:56px;height:calc(100% - 112px);padding-top: 0;
 }
 
+
+
+/* mk_componente */
+.form-config, .form-config-section, .dropin{
+	position: relative;
+}
+.form-config-section:empty, .dropin:empty{
+padding:20px;
+border:1px dotted red;
+}
+
+.form-config-section, .dropin{
+ min-height:20px;
+}
+
+.drop-over{
+  border:1px solid red;
+}
+.ui-droppable-active{
+background-color:#E5FF99;  
+}
+
+.form-config, .form-config-section{
+  position:relative;
+}
+.form-config-section{
+padding-top:10px;
+}
+.form-config:hover {
+  background-color:#EFEFEF;
+}
+
+.form-config-section:hover {
+  background-color:#fff;
+  border:1px dotted grey;
+}
+
+span.campos-edit{
+  display:none;
+}
+
+.form-config:hover > span.campos-edit{
+display:inline-block;
+position:absolute;
+top:-23px;
+right:3px;
+color:grey;
+}
+
+.form-config-section:hover > span.campos-edit{
+display:inline-block;
+position:absolute;
+top:-23px;
+right:3px;
+color:red;
+}
+
+.form-config:hover > span.campos-edit i:hover, form-config-section:hover > span.campos-edit i:hover{
+  color:black;
+}

@@ -570,7 +570,7 @@ if (isFunction(delTr)){
     return false;
   }
 }
-$(tr).remove();
+$(tr).hide().data('delete','1');
 }
 
 function _tablaAddTr(tabla,dato){
@@ -583,6 +583,7 @@ if (isFunction(addTr)){
 function _tablaSave(tabla,campo){
   var dato='';
   $(tabla).find('tbody tr').each(function( index ) {
+    if ($( this ).data('delete')!=1){
     var i=$( this ).data('i');
     $(tabla).find('.dato'+i).each(function( index ) {
       if ($( this ).prop("tagName")!='DIV'){
@@ -590,6 +591,7 @@ function _tablaSave(tabla,campo){
       }
     });
     dato=dato+'*';
+    }
   });
   if (campo){
     $(campo).val(dato);
@@ -625,14 +627,16 @@ var Mk_Componentes = {};
 
   function Mk_Componente(options){
   this.type= options.type || 'c-base';
+  this.isItem= options.isItem || 0;
   this.name= options.name || 'Base';
   this.icon=  options.icon || 'extension';
   this.color=  options.color || 'green';
   this.hide=  options.hide || false;
   this.openForm=  options.openForm || '';
-  this.index=  options.index || -1;
+  this.cant=  options.cant || -1;
   this.init = options.init || false;
   this.add = options.add || false;
+  this.classAdd = options.classAdd || '';
   this.saveConfig = options.saveConfig || false;
   this.openConfig = options.openConfig || false;
   this.showConfig = options.showConfig || false;
@@ -669,6 +673,7 @@ var Mk_Componentes = {};
       hoverClass: "drop-hover",
       greedy: true,
       drop: function( event, ui ) {
+        console.log('droppable:',this.id,$(this).prop('class'));
         var id=$(ui.draggable).prop('id');
           $(this).append(Mk_Componentes.showComponente(id));
           Mk_Componentes.initComponentes();
@@ -682,7 +687,8 @@ var Mk_Componentes = {};
     }
     this.updateCB=update;
      $(".form-content").sortable({
-        items: "> .form-config-section",
+        items: "> .form-config-section, > .form-config",
+        connectWith: ".dropin",
         cursor: "move",
         greedy: true,
         helper: "clone",
@@ -695,7 +701,8 @@ var Mk_Componentes = {};
     $(".form-config-section, .dropin").sortable({
       items: "> .form-config",
        containment: ".form-content",
-       connectWith: ".form-config-section, .dropin",
+       connectWith: ".dropin",
+       //connectWith: ".form-config-section, .dropin",
         cursor: "move",
         greedy: true,
         helper: "clone",
@@ -726,28 +733,38 @@ var Mk_Componentes = {};
     //console.log('showComponente:',type,':',items[type]);
     if((items[type])&&(items[type].add)){
       //console.log('componente antes:',items[type].index,'.componente .i_'+type);
-      if (items[type].index<0){
+      if (items[type].cant<0){
         $('.componente.i_'+type).each(function(){
             let n=$(this).prop('id');
             //console.log('componente:',n);
             n=n.replace(type+'-','');
             n=n*1;
-            if ((!isNaN(n))&&(n>items[type].index)){
-              items[type].index=n;
+            if ((!isNaN(n))&&(n>items[type].cant)){
+              items[type].cant=n;
             }
         });
-        if (items[type].index<0){
-          items[type].index=0;
+        if (items[type].cant<0){
+          items[type].cant=0;
         }
       }
-      items[type].index++;
+      items[type].cant++;
       let openF='';
       if (items[type].openForm!=''){
         openF='<span class"oculto">[[setvar: openform]]'+items[type].openForm+'[[:setvar]]</span>';
       }
-      return '<div class="row form-config-section componente i_'+type+'" id="'+type+'-'+items[type].index+'" data-campo="'+type+'-'+items[type].index+'" data-type="'+type+'">'+
+
+      let isItem='row form-config-section componente';
+      if (items[type].isItem==1){
+        isItem='col s12 form-config';
+      }
+
+      if (items[type].classAdd!=''){
+        isItem=isItem+' '+items[type].classAdd;
+      }
+
+      return '<div class="'+isItem+' i_'+type+'" id="'+type+'-'+items[type].cant+'" data-campo="'+type+'-'+items[type].cant+'" data-type="'+type+'">'+
       tools+
-      items[type].add(items[type].index)+
+      items[type].add(items[type].cant)+
       openF+
       '</div>';
     }
@@ -761,15 +778,22 @@ var Mk_Componentes = {};
     this.closeConfig();
   };
 
-  modulo.delConfig = function(seguro){
-    var canDel=0;
-    var c=$('#'+this.cur_Id).find('.dropin').each(function(){
+  modulo.isEmpty= function(){
+   var canDel=0;
+    $('#'+this.cur_Id).find('.dropin').each(function(){
       if ($(this).is(':empty')==false){
         canDel++;
       }
     });
 
     if (canDel>0){
+      return false;
+    }
+    return true;
+  }
+
+  modulo.delConfig = function(seguro){
+    if (!this.isEmpty()){
       $.alert('No esta Vacio!!!');
       return false;
     }
@@ -830,6 +854,12 @@ var Mk_Componentes = {};
     this.cur_Type =$(campo).data('type');
     this.cur_Id=$(campo).data('campo');
 
+    if ((this.isEmpty)&&(!items[this.cur_Type].openConfig)){
+      this.delConfig();
+      return false;  
+    }
+    
+
     if ((items[this.cur_Type].showConfig)&&(items[this.cur_Type].openConfig)){
 
       if (items[this.cur_Type].hide!=1){
@@ -862,14 +892,14 @@ var Mk_Componentes = {};
   modulo.show=function(type){
     if (items[type]){
       return '<div class="comp_dragable" id="'+items[type].type+'" style="text-align: center;display: inline-block;margin:5px;">'+
-        '<a class="btn-floating  waves-effect waves-light green"><i class="material-icons">'+items[type].icon+'</i></a>'+
+        '<a class="btn-floating  waves-effect waves-light '+items[type].color+'"><i class="material-icons">'+items[type].icon+'</i></a>'+
         '<div style="font-size: 9px;text-align: center;">'+items[type].name+'</div>'+
         '</div>';
     }else{
       return 'no existe';
     }
   };
-  modulo.showAll=function(){
+  modulo.showAll=function(donde){
     let r='';
     for (let item in items){
       //console.log('item es:',items[item]);
@@ -877,7 +907,13 @@ var Mk_Componentes = {};
         r=r+this.show(item);
       }
     }
-    return r;
+    $(donde).html(r);
+
+    $( ".comp_dragable" ).draggable({
+      revert: "invalid",
+      helper:"clone"
+    });
+
   };
 
 
@@ -914,9 +950,22 @@ Mk_Componentes.add({
 Mk_Componentes.add({
   name:'Seccion',
   type:'c-section',
-  icon:'crop_7_5', 
+  icon:'crop_7_5',
+  color:'blue', 
   add:function(nitem){
       return '<div class="dropin" >'+
+      '</div>';
+  }
+});
+
+Mk_Componentes.add({
+  name:'maestro/DETALLE',
+  type:'c-Mdetalle',
+  icon:'view_compact',
+  color:'red', 
+  isItem:1,
+  add:function(nitem){
+      return '<div class="lista row s6" >Esta es una lista'+
       '</div>';
   }
 });
@@ -958,6 +1007,10 @@ Mk_Componentes.add({
           clase1=clase1.replace('tab col ','');
           clase=clase.replace(clase1,newtam);
           $(links).parent().prop('class',clase);
+          if ($( this ).data('delete')==1){
+            $(links).parent().remove();
+            $('#'+key).remove();
+          }
         }else{
           $( this ).data('key',newid);
           $('#'+id+' ul.tabs').append('<li class="tab col '+newtam+'"><a  href="#'+newid+'" style="">'+newlabel+'</a></li>');
