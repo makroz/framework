@@ -160,3 +160,18 @@ color:red;
 .form-config:hover > span.campos-edit i:hover, form-config-section:hover > span.campos-edit i:hover{
   color:black;
 }
+
+
+/* Mastro/Detalle */
+table.tDetalle{
+	border:1px solid black;
+}
+.tDetalle th{
+background-color: blue;
+color:white;
+font-weight: bold;
+}
+.tDetalle td{
+background-color: white;
+color:black;	
+}
