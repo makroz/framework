@@ -89,6 +89,10 @@ color:#26a69a;
 {% append js.files %}
 <link href='js/jquery-ui/jquery-ui.min.css' rel='stylesheet'>
 <script type='text/javascript' src='js/jquery-ui/jquery-ui.min.js'></script>
+<script src="../mk/js/mk_Tablas.js"></script>
+<script src="../mk/js/mk_MasterDetails.js"></script>
+<script src="../mk/js/mk_Componentes.js"></script>
+
 
 <link rel="stylesheet" href="../mk/js/codemirror/lib/codemirror.css">
 <link rel="stylesheet" href="../mk/js/codemirror/theme/material.css">
@@ -331,7 +335,7 @@ if (flagcambios==0){
   var nom;
   var ult;
   var nombres=[];
-  $('.form-config').each(function(i){
+  $('.input-field.form-config').each(function(i){
 
     nom=$(this).data('campo');
     if (nombres[nom]==1){

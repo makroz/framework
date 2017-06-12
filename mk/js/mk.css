@@ -161,7 +161,6 @@ color:red;
   color:black;
 }
 
-
 /* Mastro/Detalle */
 table.tDetalle{
 	border:1px solid black;
@@ -174,4 +173,28 @@ font-weight: bold;
 .tDetalle td{
 background-color: white;
 color:black;	
+}
+
+/* cTablas*/
+
+table.cTabla{
+	border:1px solid black;
+}
+.cTabla th{
+background-color: blue;
+color:white;
+font-weight: bold;
+}
+.cTabla td{
+background-color: white;
+color:black;	
+}
+
+.cTabla .readonly{
+background-color: grey;
+color:white;	
+
+}
+.sortable-placeholder{
+	background-color: red;
 }
