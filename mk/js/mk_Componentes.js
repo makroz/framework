@@ -64,12 +64,13 @@ var Mk_Componentes = {};
   modulo.init=function(quien){
     $(quien) .droppable({
       hoverClass: "drop-hover",
-      greedy: true,
+      greedy: false,
       drop: function( event, ui ) {
         console.log('droppable:',this.id,$(this).prop('class'));
         var id=$(ui.draggable).prop('id');
           $(this).append(Mk_Componentes.showComponente(id));
           Mk_Componentes.initComponentes();
+          helper();
       }
     });
   };
@@ -83,7 +84,7 @@ var Mk_Componentes = {};
         items: "> .form-config-section, > .form-config",
         connectWith: ".dropin",
         cursor: "move",
-        greedy: true,
+        greedy: false,
         helper: "clone",
         forceHelperSize: true,
          hoverClass: "drop-hover",
@@ -100,7 +101,7 @@ var Mk_Componentes = {};
        connectWith: ".dropin",
        //connectWith: ".form-config-section, .dropin",
         cursor: "move",
-        greedy: true,
+        greedy: false,
          hoverClass: "drop-hover",
          placeholder: "sortable-placeholder",
         helper: "clone",
@@ -356,7 +357,7 @@ Mk_Componentes.add({
   icon:'crop_7_5',
   color:'blue', 
   add:function(nitem){
-      return '<div class="dropin" >'+
+      return '<div class="dropin row" >'+
       '</div>';
   }
 });
@@ -524,6 +525,7 @@ Mk_Componentes.add({
       id:nid,
       type:1,
       getDatos:  function(){return ['pruebas'];},
+      index:1,
       master:'masterprueba',
       slave:'slaveprueba'
     });

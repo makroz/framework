@@ -33,7 +33,7 @@ function _tablaIndice(tabla){
 }
 
 function _tablaDelTr(tr){
-tr=$(tr).closest('tr');
+var tr=$(tr).closest('tr');
 var delTr=$(tr).closest('table').data('delTr');
 if (isFunction(delTr)){
   if (delTr(tr)==false){
@@ -83,8 +83,11 @@ function _extend(destination, source) {
 var Mk_Tablas ={};
 (function (modulo){
    var items = [];
-   var optionsTable='<a class="btn-floating  waves-effect waves-light green" onclick="Mk_Tablas.addTr(this);" >'+
+   var optTableAdd='<a class="btn-floating  waves-effect waves-light green" onclick="Mk_Tablas.addTr(this);" >'+
       '<i class="material-icons">add</i>'+
+      '</a>',
+      optTableDel='<a class="btn-floating  waves-effect waves-light red" onclick="Mk_Tablas.delTr(this);" >'+
+      '<i class="material-icons">delete</i>'+
       '</a>';
 
   function Mk_Tabla(options){
@@ -92,12 +95,14 @@ var Mk_Tablas ={};
   this.classTable=  options.classTable || '';
   this.type=  options.type || 0;
   this.moreAttr=  options.moreAttr || '';
-  this.cant=  options.cant || 0;
+  this.index=  options.index || 0;
   this.cols = options.cols || [{id:'id',label:'label',type:'text',tam:'',clase:''}];
   this.addTr = options.addTr || false;
   this.delTr = options.delTr || false;
   this.getDatos = options.getDatos || function(){return [];};
-  this.optionsTable= options.optionsTable || false;
+  this.optTableAdd= options.optTableAdd || false;
+  this.optTableDel= options.optTableDel || false;
+  this.optTableEdit= options.optTableEdit || false;
   
   }
 
@@ -106,12 +111,22 @@ var Mk_Tablas ={};
       var col=0;
     }
     var nrow=0;
-    $('#'+id+' tbody tr').each(function(i,fila){
-        $(this).find('td:eq('+col+')').html(i+1);
+    $('#'+id+' tbody tr').filter(":visible").each(function(i,fila){
+        nrow++;
+        $(this).find('td:eq('+col+')').html(nrow);
     });
 
 
   }
+
+  function _delTr(tr,idr,n,id){
+      if (n==1){
+      $(tr).remove();
+    }else{
+      $(tr).data('delete','1').hide();
+    }
+    return true;
+  };
 
   function _addTr(id,datos){
     var i=items[id];
@@ -128,12 +143,13 @@ var Mk_Tablas ={};
     });
 
      if (i.type==1){
-          //let nrow=$('#'+id+' tbody tr').length+1;
-          fila='<td class="cTabla">.</th>'+fila;
-          fila=fila+'<td class="_rowOptions" >options</td>';
+          let optDel=i.optTableDel||optTableDel;
+          fila='<td class="_rowNum">.</th>'+fila;
+          fila=fila+'<td class="_rowOptions" >'+optDel+'</td>';
       }
-    fila='<tr>'+fila+'</tr>';
+    fila='<tr data-i="'+i.index+'" data-new="1" >'+fila+'</tr>';
     $('#'+id+' tbody').append(fila);
+    i.index++;
     numTabla(id);
   }
 
@@ -145,7 +161,7 @@ var Mk_Tablas ={};
   };
 
  modulo.addTr= function(t,datos){
-      id=$(t).closest('table').prop('id');
+      var id=$(t).closest('table').prop('id');
       //console.log('tablaid:',id);
       if (id!=undefined){
         var i=items[id];
@@ -155,6 +171,26 @@ var Mk_Tablas ={};
         }
       }
   };
+
+  modulo.delTr= function(t){
+    var tr=$(t).closest('tr');
+    var id=$(tr).closest('table').prop('id');
+    var idr=$(tr).data('i');
+    var i=items[id];
+    var n=$(tr).data('new');
+    var delFila=i.delTr || _delTr;
+    if (isFunction(delFila)){
+      if (delFila(tr,idr,n,id)==false){
+        alert('No puede Eliminarse esta Fila!!!');
+        return false;
+      }
+    }
+    numTabla(id);
+    return true;
+  };
+
+
+
 
   modulo.show=function(id,datos,donde){
   var tabla='';
@@ -172,9 +208,9 @@ var Mk_Tablas ={};
 
   if (i.type==1){
       var nrow=0;
-      let opt=i.optionsTable||optionsTable;
+      let optAdd=i.optTableAdd||optTableAdd;
       head='<th data-id="_num" width="10" data-type="num" class="cTabla" >#</th>'+head;
-      head=head+'<th data-id="_options" width="50" data-type="icon"  >'+opt+'</th>';
+      head=head+'<th data-id="_options" width="50" data-type="icon"  >'+optAdd+'</th>';
   }
 
   
@@ -200,15 +236,17 @@ var Mk_Tablas ={};
 
       if (i.type==1){
             nrow++;
-          fila='<td class="cTabla">'+nrow+'</th>'+fila;
-          fila=fila+'<td class="_rowOptions" >options</td>';
+          let optDel=i.optTableDel||optTableDel;
+          fila='<td class="_rowNum">'+nrow+'</th>'+fila;
+          fila=fila+'<td class="_rowOptions" >'+optDel+'</td>';
       }
 
     fila='<tr data-i="'+j+'">'+fila+'</tr>';
+    i.index=j;
     body=body+fila;
   });
 
-  tabla='<table id="'+id+'" class="cTabla" '+i.classTable+'" '+i.moreAttr+' >'+
+  tabla='<table id="'+id+'" class="cTabla striped '+i.classTable+'" '+i.moreAttr+' >'+
     '<thead>'+
     head+
     '</thead>'+

@@ -186,11 +186,9 @@ color:white;
 font-weight: bold;
 }
 .cTabla td{
-background-color: white;
-color:black;	
 }
 
-.cTabla .readonly{
+.cTabla td._rowOptions,.cTabla td._rowNum{
 background-color: grey;
 color:white;	
 
