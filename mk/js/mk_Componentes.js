@@ -523,11 +523,8 @@ Mk_Componentes.add({
     let nid='cTable-'+nitem;
     Mk_Tablas.add({
       id:nid,
-      type:1,
-      getDatos:  function(){return ['pruebas'];},
-      index:1,
-      master:'masterprueba',
-      slave:'slaveprueba'
+      options:'#,options',
+      getDatos:  function(){return [['pruebas']];}
     });
 
     return Mk_Tablas.show(nid);  

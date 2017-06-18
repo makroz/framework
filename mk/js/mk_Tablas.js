@@ -93,10 +93,10 @@ var Mk_Tablas ={};
   function Mk_Tabla(options){
   this.id= options.id || '0';
   this.classTable=  options.classTable || '';
-  this.type=  options.type || 0;
+  this.options= options.options || '';
   this.moreAttr=  options.moreAttr || '';
   this.index=  options.index || 0;
-  this.cols = options.cols || [{id:'id',label:'label',type:'text',tam:'',clase:''}];
+  this.cols = options.cols || [{id:'id',label:'label',type:'input',tam:'',clase:''}];
   this.addTr = options.addTr || false;
   this.delTr = options.delTr || false;
   this.getDatos = options.getDatos || function(){return [];};
@@ -108,15 +108,25 @@ var Mk_Tablas ={};
 
   function numTabla(id,col){
     if (!col){
-      var col=0;
+      var col=-1;
+      $('#'+id+' tbody tr:eq(0) td').each(function(i,fila){
+          if ($(fila).hasClass('_rowNum')){
+            col=i;
+          }
+      });  
     }
+    console.log('Numtabla:',col, id);
+
+    if (col==-1){
+      return false;
+    }
+
     var nrow=0;
     $('#'+id+' tbody tr').filter(":visible").each(function(i,fila){
         nrow++;
         $(this).find('td:eq('+col+')').html(nrow);
     });
-
-
+    
   }
 
   function _delTr(tr,idr,n,id){
@@ -128,7 +138,7 @@ var Mk_Tablas ={};
     return true;
   };
 
-  function _addTr(id,datos){
+  function _addTr(id,datos,ret){
     var i=items[id];
     var fila='';
     $.each(i.cols,function(j,col){
@@ -136,20 +146,47 @@ var Mk_Tablas ={};
           if (datos){
             d=datos[j];
           }
-          if (col.type=='text'){
-            fila=fila+'<td>'+d+'</td>';    
+          var c='<input type="hidden" id="'+col.id+'[]" name="'+col.id+'[]" value="'+d+'">';
+
+          switch(col.type) {
+              case 'text':
+                    d=d+c;
+                  //code block
+                  break;
+              case 'input':
+                  //code block
+                  d='<input type="text" id="'+col.id+'[]" name="'+col.id+'[]" value="'+d+'">';
+                  break;
+
+              default:
+                  //code block
           }
+          var clase='';
+          if (col.clase!=''){
+            clase='class="'+col.clase+'"';
+          }
+          fila=fila+'<td '+clase+' >'+d+'</td>';    
         
     });
 
-     if (i.type==1){
+    i.index++;
+
+     if (i.options.indexOf('#')>=0){
+          fila='<td class="_rowNum">'+i.index+'</th>'+fila;
+      }
+
+     if (i.options.indexOf('options')>=0){
           let optDel=i.optTableDel||optTableDel;
-          fila='<td class="_rowNum">.</th>'+fila;
           fila=fila+'<td class="_rowOptions" >'+optDel+'</td>';
       }
+
     fila='<tr data-i="'+i.index+'" data-new="1" >'+fila+'</tr>';
+
+    if (ret===true){
+      return fila;
+    }
     $('#'+id+' tbody').append(fila);
-    i.index++;
+    
     numTabla(id);
   }
 
@@ -160,14 +197,22 @@ var Mk_Tablas ={};
     }
   };
 
- modulo.addTr= function(t,datos){
-      var id=$(t).closest('table').prop('id');
-      //console.log('tablaid:',id);
+  
+
+  modulo.addTr=function (t,datos,ret){
+   if (ret===true){
+        var id=t;
+      }else{
+        var ret=false;
+        var id=$(t).closest('table').prop('id');  
+      }
+      
+      console.log('tablaid Add:',id, datos);
       if (id!=undefined){
         var i=items[id];
         let addFila=i.addTr || _addTr;
         if (isFunction(addFila)){
-          addFila(id,datos);
+          return addFila(id,datos,ret);
         }
       }
   };
@@ -197,8 +242,6 @@ var Mk_Tablas ={};
   var i=items[id];
   if (i){
   tabla=$(id);
-  //console.log('tabla:',i.getDatos);
-  
   
   var head='';
   
@@ -206,12 +249,14 @@ var Mk_Tablas ={};
   head=head+'<th data-id="'+col.id+'" width="'+col.tam+'" data-type="'+col.type+'"  >'+col.label+'</th>';
   });
 
-  if (i.type==1){
-      var nrow=0;
-      let optAdd=i.optTableAdd||optTableAdd;
+   if (i.options.indexOf('#')>=0){
       head='<th data-id="_num" width="10" data-type="num" class="cTabla" >#</th>'+head;
+   }
+
+     if (i.options.indexOf('options')>=0){
+      let optAdd=i.optTableAdd||optTableAdd;
       head=head+'<th data-id="_options" width="50" data-type="icon"  >'+optAdd+'</th>';
-  }
+      }
 
   
   //$(id+' thead').html(head);
@@ -227,22 +272,8 @@ var Mk_Tablas ={};
     console.log('datos:',datos)
   var body='';
   $.each(datos,function(j,row){
-    i.cant=j+1;
-    let fila='';
-    $.each(i.cols,function(n,col){
-      fila=fila+'<td  >'+row+'</td>';
-    });
-
-
-      if (i.type==1){
-            nrow++;
-          let optDel=i.optTableDel||optTableDel;
-          fila='<td class="_rowNum">'+nrow+'</th>'+fila;
-          fila=fila+'<td class="_rowOptions" >'+optDel+'</td>';
-      }
-
-    fila='<tr data-i="'+j+'">'+fila+'</tr>';
-    i.index=j;
+    let fila=modulo.addTr(id,row,true);
+    //console.log('fila:',fila);
     body=body+fila;
   });
 
