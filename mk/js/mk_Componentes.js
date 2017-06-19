@@ -4,6 +4,7 @@ var Mk_Componentes = {};
   var modalConfig='#menu-campos-config';
   var items = [];
   var tools ='<span class="campos-edit">'+
+      ' <i class="material-icons" onclick="Mk_Componentes.openAdd(this)">add</i>'+
       ' <i class="material-icons" onclick="Mk_Componentes.openConfig(this)">settings</i>'+
       ' <i class="material-icons handle">open_with</i>'+
       ' </span>';
