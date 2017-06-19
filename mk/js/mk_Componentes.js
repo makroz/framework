@@ -3,11 +3,9 @@ var Mk_Componentes = {};
 (function (modulo){
   var modalConfig='#menu-campos-config';
   var items = [];
-  var tools ='<span class="campos-edit">'+
-      ' <i class="material-icons" onclick="Mk_Componentes.openAdd(this)">add</i>'+
+  var tools =' <i class="material-icons" onclick="Mk_Componentes.openAdd(this)">add</i>'+
       ' <i class="material-icons" onclick="Mk_Componentes.openConfig(this)">settings</i>'+
-      ' <i class="material-icons handle">open_with</i>'+
-      ' </span>';
+      ' <i class="material-icons handle">open_with</i>';
   var tagFin='<!-- fin -->';
   var updateCB=function(){};
   modulo.cur_Type='';
@@ -28,13 +26,14 @@ var Mk_Componentes = {};
   this.saveConfig = options.saveConfig || false;
   this.openConfig = options.openConfig || false;
   this.showConfig = options.showConfig || false;
+  this.tools = options.tools || false;
 
   //_extend(this,options);
   };
   
   function helper(){
     $(".form-content > .col").removeClass('col').addClass('row');
-    $(".dropin > .row ").removeClass('row').addClass('col');
+    $(".dropin > .row ").removeClass('row').addClass('col s12');
 
   }
 
@@ -58,11 +57,37 @@ var Mk_Componentes = {};
     tools=value;
   };
 
-  modulo.getTools=function(){
-    return tools;
+  modulo.getTools=function(id){
+    if (items[id]){
+      return items[id].tools || tools;
+    }else{
+      return tools;
+    }
   };
 
+  function binder(items){
+    //alert('binder:'+items);
+    if (!items){
+      var items=".form-config,.form-config-section";
+    }
+
+  $(items).filter(':not(.bindered)')
+  .mouseenter(function() {
+    let id=$(this).data('type');
+    let tt= Mk_Componentes.getTools(id);
+    tt='<span class="campos-edit">'+tt+'</span>';
+    $( this ).prepend(tt);
+  })
+  .mouseleave(function() {
+    $( this ).find( ".campos-edit" ).remove();
+  })
+  .addClass('bindered');
+
+  }
+
   modulo.init=function(quien){
+    $(".form-config,.form-config-section").removeClass('bindered');
+    binder();
     $(quien) .droppable({
       hoverClass: "drop-hover",
       greedy: false,
@@ -77,6 +102,7 @@ var Mk_Componentes = {};
   };
 
   modulo.initComponentes=function(update){
+    //todo: hacer la iniciacion de un solo componente espcifico
     if (!isFunction(update)){
       update=this.updateCB;
     }
@@ -112,6 +138,8 @@ var Mk_Componentes = {};
         opacity: 0.5,
          update: function( event, ui ) { update(); helper();}
     });
+
+    binder();
 
     for (let item in items){
       if (item.init){
@@ -168,7 +196,7 @@ var Mk_Componentes = {};
       }
 
       return '<div class="'+isItem+' i_'+type+'" id="'+type+'-'+items[type].cant+'" data-campo="'+type+'-'+items[type].cant+'" data-type="'+type+'">'+
-      tools+
+      //tools+
       items[type].add(items[type].cant)+
       openF+
       '</div>';

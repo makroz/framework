@@ -138,6 +138,22 @@ padding-top:10px;
 }
 
 span.campos-edit{
+display:inline-block;
+position:absolute;
+top:-23px;
+right:3px;
+color:grey;
+}
+
+.form-config-section > span.campos-edit{
+color:red;
+}
+
+.form-config > span.campos-edit i:hover, form-config-section > span.campos-edit i:hover{
+  color:black;
+}
+
+/* span.campos-edit{
   display:none;
 }
 
@@ -160,7 +176,7 @@ color:red;
 .form-config:hover > span.campos-edit i:hover, form-config-section:hover > span.campos-edit i:hover{
   color:black;
 }
-
+ */
 /* Mastro/Detalle */
 table.tDetalle{
 	border:1px solid black;
