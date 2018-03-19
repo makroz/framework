@@ -30,7 +30,7 @@ protected $_nombre;
 * @label Nivel
 * @validate  required, numeric
 */
-protected $_nivel;
+protected $_nivel='0';
 /**
 * @column
 * @readwrite
@@ -60,11 +60,18 @@ protected $_descrip;
 * @fcustom 1
 * @label St
 */
-protected $_status;
+protected $_status='1';
 public $_tSingular='Categoria';
 public $_tPlural='Categorias';
 
 
+public function __construct($options = array())
+	{
+		parent::__construct($options);
+
+		$this->setJoins('categorias','(categorias.sk_padre=j_categorias.pk)',Array('j_categorias.nombre' => 'join_sk_padre'));
+
+	}
 }
 
 

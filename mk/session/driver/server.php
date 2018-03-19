@@ -16,6 +16,7 @@ namespace Mk\Session\Driver
 		public function get($key, $default = null)
 		{
 			$prefix = $this-> getPrefix();
+			//\Mk\Debug::msg($_SESSION,1,"Get:".$prefix.$key);
 			if (isset($_SESSION[$prefix.$key]))
 			{
 				return $_SESSION[$prefix.$key];
@@ -24,6 +25,7 @@ namespace Mk\Session\Driver
 		}
 		public function set($key, $value)
 		{
+			//\Mk\Debug::msg($_SESSION,1,"Set:".$prefix.$key);
 			$prefix = $this-> getPrefix();
 			$_SESSION[$prefix.$key] = $value;
 			return $this;

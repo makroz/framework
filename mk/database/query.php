@@ -121,6 +121,7 @@ namespace Mk\Database
 				}
 			}
 			//echo "<br>".sprintf($template, $fields, $this->from, $join, $where, $order, $limit)."<br>";
+			\Mk\Debug::msg(sprintf($template, $fields, $this->from, $join, $where, $order, $limit),1);
 			return sprintf($template, $fields, $this->from, $join, $where, $order, $limit);
 		}
 		protected function _buildInsert($data)
@@ -234,8 +235,8 @@ namespace Mk\Database
 			{
 				throw $this->_Exception("Invalid argument (on)");
 			}
-			$this->_fields += array($join =>$fields);
-			$this->_join[] = "LEFT JOIN {$join} ON {$on}";
+			$this->_fields += array('j_'.$join =>$fields);
+			$this->_join[] = "LEFT JOIN {$join} as j_{$join} ON {$on}";
 			return $this;
 		}
 		public function limit($limit, $page = 1)

@@ -38,7 +38,7 @@ namespace Mk
 
 			
 			$this->setFile(strtolower(str_replace("/", DIRECTORY_SEPARATOR, trim($this-> getFile() )) ));
-			//echo "File:".$this-> getFile();
+			//echo "<hr>FileXXXXXX:".$this-> getFile().'<hr>';
 			if (!file_exists($this-> getFile()))
 			{
 
@@ -72,6 +72,8 @@ namespace Mk
 			}
 			$content = file_get_contents($this-> getFile());
 			}
+
+			//echo "Aechivo:".$this-> getFile();
 
 			$this->getVarView();
 			$this-> _template-> parse($content,$this-> _data);

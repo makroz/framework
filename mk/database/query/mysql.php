@@ -22,6 +22,7 @@ namespace Mk\Database\Query
 			for ($i = 0; $i < $result->num_rows; $i++)
 			{
 				$data=$result->fetch_array(MYSQLI_ASSOC);
+				//\Mk\Debug::msg($data,1);
 				foreach ($data as $key => $value) {
 					$data[$key]=stripslashes($data[$key]);
 				}

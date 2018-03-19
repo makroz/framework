@@ -53,16 +53,7 @@ namespace Mk\Shared
 			parent::__construct($options);
 		}
 
-		public function getPrimary(){
-			$primary = $this->_model->primaryColumn;
-			$primary = $primary["name"];
-			return $primary;
-
-		}
-
-
-
-		public function getArrayFromTable($table,$campo,$tag='',$where=""){
+		public function getArrayFromTable($table,$campo,$tag='',$where="", $join=''){
 			$database=\Mk\Registry::get('database');
 			$pk = ($database->getPrimaryKeyOf($table));
 			$pk=$pk[0];
@@ -70,11 +61,11 @@ namespace Mk\Shared
 				$tag=", $tag";
 			}
 			if ($where!=''){
-				$where="({$where})and(status<>'0')";
+				$where="({$where})and($table.status<>'0')";
 			}else{
-				$where="(status<>'0')";
+				$where="($table.status<>'0')";
 			}
-			$sql="select $pk, $campo $tag from $table where $where";
+			$sql="select $table.$pk, $table.$campo $tag from $table $join where $where";
 			$result=$database->execute($sql);
 			//$result = $this->connector->execute($sql);
 			if ($result === false)
@@ -86,11 +77,11 @@ namespace Mk\Shared
 			$lista = array();
 			while ($row=$result->fetch_row())
 			{
+				$lista[$row[0]]['text']=stripslashes($row[1]);
 				if ($tag!=''){
-					$lista[$row[0]]['text']=stripslashes($row[1]);
-					$lista[$row[0]]['tag']=stripslashes($row[2]);
-				}else{
-					$lista[$row[0]]=stripslashes($row[1]);	
+					$row1=$row;
+					$row1=array_slice($row1, 2);
+					$lista[$row[0]]['tag']=stripslashes(implode($row1,','));
 				}
 			}
 			return $lista;
@@ -103,7 +94,7 @@ namespace Mk\Shared
 					return $anexos[$campo]['options'];	
 				}
 				if (isset($anexos[$campo]['join'])){
-					return $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$anexos[$campo]['join']['cond']);
+					return $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$anexos[$campo]['join']['cond'],$anexos[$campo]['join']['join']);
 				}
 				
 				return array();
@@ -115,13 +106,25 @@ namespace Mk\Shared
 				$sel = $this->_model->escape(Inputs::request("sel",''));
 				$anexos=$this->getAnexos($this->_model->getColumns());
 				$msg = $this->_model->escape(Inputs::request("msg",'Seleccione '.$anexos[$campo]['labelf']));
-
+				
+				$grupo=false;
+				if (isset($anexos[$campo]['join']['grupo'])){
+					$grupo=true;
+				}
 				if (isset($anexos[$campo]['options'])){
 
-					echo \Mk\Tools\Form::getOptions($anexos[$campo]['options'],$sel, $msg);	
+					echo \Mk\Tools\Form::getOptions($anexos[$campo]['options'],$sel, $msg,$grupo);	
 				}
 				if (isset($anexos[$campo]['join'])){
-					echo \Mk\Tools\Form::getOptions( $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$anexos[$campo]['join']['cond']),$sel, $msg);
+					$cond='';
+					//print_r($anexos);
+					if (isset($anexos[$campo]['join']['cond'])){
+						$cond=$anexos[$campo]['join']['cond'];
+						$arg = Inputs::request("arg",'');
+						@$cond=call_user_func_array('sprintf', array_merge((array)$cond, $arg)); 
+						\Mk\Debug::msg($cond,1);
+					}
+					echo \Mk\Tools\Form::getOptions( $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$cond,$anexos[$campo]['join']['join']),$sel, $msg,$grupo);
 				}
 
 				return "<option value=''>Sin Datos...</option>";
@@ -277,14 +280,24 @@ namespace Mk\Shared
 								$model->$prop=date("H:i:s");
 							}
 							break;
+						case 'pass':
+							$model->$prop=\Mk\Tools\Form::tbd($model->$prop);
+							break;							
+						case 'useract':
+							$userAct=$this->_isLoged();
+							$model->$prop=$userAct['id'];
+							break;							
+
 						case 'check':
-							$checkvalor=explode('/',$campo['checkvalor'].'/0');
+							$anexos=$this->getAnexos();
+							//$checkvalor=explode('/',$anexos['checkvalor'].'/0');
 							if (is_null($model->$prop)){
-								$model->$prop=$checkvalor[1];
+								$model->$prop=$anexos[$prop]['dataoff'];
 							}else{
-								if ($model->$prop!=$checkvalor[0]){
-									$model->$prop=$checkvalor[1];
+								if ($model->$prop!=$anexos[$prop]['dataon']){
+									$model->$prop=$anexos[$prop]['dataoff'];
 								}
+
 							}
 							break;
 
@@ -311,7 +324,7 @@ namespace Mk\Shared
 
 		public function getSearchWhere(){
 
-		$vacio='(pk>0)';
+		$vacio='('.$this->_model->getTable().'.pk>0)';
 		
 		if (Inputs::get("no_search",'')==1){
 			$this->_searchMsg='';
@@ -340,6 +353,10 @@ namespace Mk\Shared
 				$dd=\Mk\Tools\Bd::getTypes($columns[$value]['type']);
 
 				$dato=$this->_model->escape($search[$dd][$key]);
+				if (stripos($value, '.')===false){
+					$value=$this->_model->getTable().'.'.$value;
+
+				}
 
 				if (($cond[$key]<3)||($cond[$key]>8)){ $dato=strtoupper($dato);}
 				if ($dato!=''){
@@ -491,6 +508,7 @@ namespace Mk\Shared
 		$modelo->load();
 
 
+
 		$view
 		-> set("item", $this->_model->loadToArray())
 		-> set("anexos", $this->getAnexos($this->_model->getColumns(),1))
@@ -520,7 +538,7 @@ namespace Mk\Shared
 		$this->afterAdd();
 	}
 
-	public function beforeLIstar(&$where, &$fields, &$order, &$direction, &$limit, &$page){
+	public function beforeLIstar(&$where, &$fields, &$order, &$direction, &$limit, &$page,&$join){
 		return true;
 	}
 
@@ -541,6 +559,11 @@ namespace Mk\Shared
 		$direction = $this->getParam("direction",'desc');
 		$page = $this->getParam("page",'1');
 		$limit = $this->getParam("limit",'10');
+
+		// if (stripos($order, 'join_')===false){
+		// 			$order=$this->_model->getTable().'.'.$order;
+
+		// }
 		
 		$where=$this->getSearchWhere();
 		
@@ -548,25 +571,30 @@ namespace Mk\Shared
 			$delete=$this->delete(Inputs::get("cod",''));
 		}
 		
+		$anexos=$this->getAnexos($this->_model->getColumns());
+
 		$items = false;
-
-
-		$anexos=$this->getAnexos($this->_model->getColumns(),1);
 
 		$where = array(
 		'?'=>$where
 		);
 
 		$fields = array(
-		"*"
+		$this->_model->getTable().".*"
 		);
+
+		$join=$this->_model->getJoins();
+
 		$count = $this->_model->count($where);
 		if ($page>($count/$limit)){
 			$page=1;
 		}
 
-		$this->beforeListar($where, $fields, $order, $direction, $limit, $page);
-		$items = $this->_model->all($where, $fields, $order, $direction, $limit, $page);
+		
+
+		$this->beforeListar($where, $fields, $order, $direction, $limit, $page,$join);
+		$items = $this->_model->all($where, $fields, $order, $direction, $limit, $page,$join);
+		//\Mk\Debug::msg($items,1);
 		$view
 		-> set("order", $order)
 		-> set("direction", $direction)

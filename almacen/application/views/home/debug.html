@@ -1,0 +1,34 @@
+<hr>
+DEBUG
+<hr>
+<pre style="width: 100%">
+	{% php
+	$r=$_SESSION[DEBUGMSG];
+	if (is_array($r)){
+		$r=array_reverse($r,true); 
+	}
+	$d='';
+	foreach ($r as $key => $val){
+		foreach ($val as $key1 => $val1){
+			$d.=$key.' -> ['.$key1.']     ';
+
+			if ($val1['title']){
+				$d.= 'titulo:'.$val1['title'].' '; 
+			}
+
+			if ($val1['level']){
+				$d.= '(level:'.$val1['level'].') '; 
+			}
+
+			if ($val1['origen']){
+				$d.= '['.$val1['origen'].']'; 
+			}
+			$d.='<pre style="margin-left: 15px;">'.$val1['msg'].'</pre>';
+		}	
+	}
+
+	php %}
+
+{% echo print_r($d,true); %}
+</pre>
+<hr>

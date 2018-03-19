@@ -94,7 +94,14 @@ public $_tSingular='Almacen';
 public $_tPlural='Almacenes';
 
 
+public function __construct($options = array())
+	{
+		parent::__construct($options);
+
+		$this->setJoins('resp','(almacenes.fk_resp=j_resp.pk)',Array('j_resp.nombre' => 'join_fk_resp'));
+
+	}
 }
 
-
+//version MK.CRUD 1.0 
 ?>

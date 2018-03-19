@@ -8,6 +8,7 @@ class Unidades extends Mk\Shared\Model
 * @primary
 * @type autonumber
 * @label Id
+* @validate  numeric
 */
 protected $_pk;
 /**
@@ -28,7 +29,7 @@ protected $_nombre;
 * @label Base
 * @labelf Es Unidad Base?
 */
-protected $_base;
+protected $_base='0';
 /**
 * @column
 * @readwrite
@@ -38,7 +39,7 @@ protected $_base;
 * @label Tipo
 * @validate  required
 */
-protected $_tipo;
+protected $_tipo='X';
 /**
 * @column
 * @readwrite
@@ -49,7 +50,7 @@ protected $_tipo;
 * @labelf Relacion con la Base
 * @validate  numeric
 */
-protected $_relBase;
+protected $_relBase='0.00';
 /**
 * @column
 * @readwrite
@@ -59,7 +60,7 @@ protected $_relBase;
 * @fcustom 1
 * @label St
 */
-protected $_status;
+protected $_status='1';
 /**
 * @column
 * @readwrite

@@ -75,8 +75,12 @@ namespace Mk
 		}		
 		$llave=$controller.'_'.$name;
 		$session = Registry::get("session");
-		$valor = Inputs::get($name, $session->get($llave,$Default));
-		$session->set($llave,$valor);
+		$n=$session->get($llave,$Default);
+		$valor = Inputs::get($name, $n);
+		if ($valor!=$n){
+			$session->set($llave,$valor);	
+		}
+		
 		return $valor;
 	}
 
@@ -158,7 +162,8 @@ namespace Mk
 					$filed=$this->_pathModule.$file;
 				}
 
-
+			$filed=str_replace('\\',DIRECTORY_SEPARATOR,$filed);
+			$filed=str_replace('/',DIRECTORY_SEPARATOR,$filed);
 			return $filed;
 
 		}
@@ -264,7 +269,7 @@ namespace Mk
 			$this->addViewData('isAjax',\Mk\Tools\App::isAjax());
 			setcookie('_config_',json_encode(\Mk\Tools\App::getConfig()->param));
 
-
+			//echo "Archivo Existe:".$this->getActionView()->fileExist().'<hr>';
 			$doAction = $this->getWillRenderActionView() && $this->getActionView()->fileExist();
 			$doLayout = $this->getWillRenderLayoutView() && $this->getLayoutView()->fileExist();
 			
@@ -365,6 +370,7 @@ namespace Mk
 			$this->render();
 			Events::fire("mk.controller.destruct.after", array($this->name));
 		}
+
 	}
 }	
 

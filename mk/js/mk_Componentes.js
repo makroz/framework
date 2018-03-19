@@ -88,7 +88,7 @@ var Mk_Componentes = {};
   modulo.init=function(quien){
     $(".form-config,.form-config-section").removeClass('bindered');
     binder();
-    $(quien) .droppable({
+    /*$(quien) .droppable({
       hoverClass: "drop-hover",
       greedy: false,
       drop: function( event, ui ) {
@@ -98,7 +98,7 @@ var Mk_Componentes = {};
           Mk_Componentes.initComponentes();
           helper();
       }
-    });
+    });*/
   };
 
   modulo.initComponentes=function(update){
@@ -107,7 +107,7 @@ var Mk_Componentes = {};
       update=this.updateCB;
     }
     this.updateCB=update;
-     $(".form-content").sortable({
+     $(".dropin").sortable({
         items: "> .form-config-section, > .form-config",
         connectWith: ".dropin",
         cursor: "move",
@@ -122,7 +122,7 @@ var Mk_Componentes = {};
          update: function( event, ui ) { update(); helper();}
     });
 
-    $(".form-config-section, .dropin").sortable({
+/*    $(".form-config-section, .dropin").sortable({
       items: "> .form-config",
        containment: ".form-content",
        connectWith: ".dropin",
@@ -138,7 +138,7 @@ var Mk_Componentes = {};
         opacity: 0.5,
          update: function( event, ui ) { update(); helper();}
     });
-
+*/
     binder();
 
     for (let item in items){

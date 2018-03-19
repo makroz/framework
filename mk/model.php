@@ -16,6 +16,10 @@ namespace Mk
 		/**
 		* @readwrite
 		*/
+		protected $_joins;
+		/**
+		* @readwrite
+		*/
 		protected $_connector;
 		/**
 		* @read
@@ -100,6 +104,23 @@ namespace Mk
 			return true;
 		}
 
+		public function setJoins($table,$on,$fields= array()){
+			$this->_joins[] = array(
+				'table'=>$table,
+				'on'=> $on,
+				'fields'=> $fields
+			);
+			return true;
+		}
+
+		public function getJoins(){
+			return $this->_joins;
+		}
+
+		public function getData(){
+			return $this->loadToArray();
+		}
+
 		public function loadToArray(){
 			$data=array();
 			foreach ($this->columns as $key => $column)
@@ -127,6 +148,8 @@ namespace Mk
 			$name = $primary["name"];
 			if (!empty($this->$raw))
 			{
+
+
 				$previous = $this->connector
 				->query()
 				->from($this->table)
@@ -134,7 +157,7 @@ namespace Mk
 				->first();
 				if ($previous == null)
 				{
-					throw $this->_Exception("Primary key value invalid");
+					throw $this->_Exception("Ese valor No Existe");
 				}
 				foreach ($previous as $key => $value)
 				{
@@ -353,7 +376,7 @@ namespace Mk
 			}
 			return null;
 		}
-		public function getPrimaryColumn()
+		public function getPrimaryColumn($tipo=0)
 		{
 			if (!isset($this->_primary))
 			{
@@ -368,8 +391,16 @@ namespace Mk
 				}
 				$this->_primary = $primary;
 			}
-			return $this->_primary;
+			if ($tipo==1){
+				return $this->_primary['name'];
+			} 
+			if ($tipo==2){
+				$raw=$this->_primary['raw'];
+				return $this->$raw;
+			} 
+		return $this->_primary;
 		}
+
 		public static function first($where = array(), $fields = array("*"),$order = null, $direction = null)
 		{
 			$model = new static();
@@ -399,12 +430,12 @@ namespace Mk
 			}
 			return null;
 		}
-		public static function all($where = array(), $fields = array("*"),$order = null, $direction = null, $limit = null, $page = null)
+		public static function all($where = array(), $fields = array("*"),$order = null, $direction = null, $limit = null, $page = null, $join = array())
 		{
 			$model = new static();
-			return $model->_all($where, $fields, $order, $direction, $limit, $page);
+			return $model->_all($where, $fields, $order, $direction, $limit, $page,$join);
 		}
-		protected function _all($where = array(), $fields = array("*"),$order = null, $direction = null, $limit = null, $page = null)
+		protected function _all($where = array(), $fields = array("*"),$order = null, $direction = null, $limit = null, $page = null, $join = array())
 		{
 			$query = $this
 			->connector
@@ -414,6 +445,14 @@ namespace Mk
 			{
 				$query->where($clause, $value);
 			}
+			//\Mk\Debug::msg($join,1);
+			if (is_array($join)){
+				foreach ($join as $clause => $value)
+				{
+					
+					$query->join($value['table'],$value['on'],$value['fields']);
+				}
+			}
 			if ($order != null)
 			{
 				$query->order($order, $direction);
@@ -422,6 +461,8 @@ namespace Mk
 			{
 				$query->limit($limit, $page);
 			}
+
+			
 
 			return $query->all();
 			

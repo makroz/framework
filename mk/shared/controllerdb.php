@@ -58,18 +58,29 @@ namespace Mk\Shared
 				$this->addViewData('_table',$this->_model->getTable());
 			}
 
+			$loged=$this-> _isLoged();
+			if ($loged)
+			{
+				$this->addViewData('_loged',$loged);
+			}
+
+
 			$this->addViewData('_param',\Mk\Tools\App::getConfig()->param);
 
 
 			parent::render();
 		}
 
-	
-		public function _secure($key=false)
+
+		protected function processUser($user,$key=false)
 		{
-
-
-			$session = Registry::get("session");
+			$dato=$user->getData();
+			unset($dato['user']['pass']);
+			return $dato;
+		}
+	
+		protected function getKey($key=false)
+		{
 			if (($key)and($key!='')){
 				$secureKey = $key; 	
 			}
@@ -77,13 +88,18 @@ namespace Mk\Shared
 			{
 				$secureKey = $this->_secureKey;	
 			}
-			
+			$secureKey=ucfirst($secureKey);
+			return $secureKey;
+		}
 
-
+		public function _secure($key=false)
+		{
+			$session = Registry::get("session");
+			$secureKey = $this->getKey($key);
 			$user = $session-> get('Secure_'.$secureKey, null);
-			//echo '<hr>Secure_'.$secureKey.' User:';print_r($user);
 			if (!$user)
 			{
+				$session-> set('Secure_page_'.$secureKey,$_SERVER['QUERY_STRING']);
 				header("Location: index.php?url={$secureKey}/login");
 				exit();
 			}
@@ -93,13 +109,7 @@ namespace Mk\Shared
 		{
 
 			$session = Registry::get("session");
-			if (($key)and($key!='')){
-				$secureKey = $key; 	
-			}
-			else
-			{
-				$secureKey = $this->_secureKey;	
-			}
+			$secureKey = $this->getKey($key);
 			
 			return $session-> get('Secure_'.$secureKey, false);
 		}
@@ -107,45 +117,72 @@ namespace Mk\Shared
 			public function _getLoged($key=false)
 		{
 			$session = Registry::get("session");
-			if (($key)and($key!='')){
-				$secureKey = $key; 	
-			}
-			else
-			{
-				$secureKey = $this->_secureKey;	
-			}
+			$secureKey = $this->getKey($key);
 
 			$user = $session-> get('Secure_'.$secureKey, null);
 			if ($user)
 			{
-				return $this->_model->first(array(
+				/* TODO: revsar non esta bien */
+				return processUser($this->_model->first(array(
 					"id = ?" => $user
-					));
+					))
+				);
 			}else{
 				return false;
 			}
 		}
 		
-		public function _setLoged($id,$key=false)
+		public function actionLogout($key)
+		{
+			$this->_setLoged('',null,$key,true);
+			$secureKey = $this->getKey($key);
+			header("Location: index.php?url={$secureKey}/login");
+			exit();
+
+		}
+
+		public function _setLoged($id,$user,$key=false,$logout=false)
 		{
 			$session = Registry::get("session");
-			if (($key)and($key!='')){
-				$secureKey = $key; 	
-			}
-			else
-			{
-				$secureKey = $this->_secureKey;	
-			}
+			$secureKey = $this->getKey($key);
 
-			if (($id)and($id!=''))
+			if (($id)and($id!='')and($user))
 			{
-				return  $session->set('Secure_'.$secureKey, $id);
+				$dato['id']=$id;
+				$dato['time']=date('YmdHis');
+				$dato['user']=$this->processUser($user);
+				$session->set('Secure_'.$secureKey, $dato);
+
+				return  true;
 			}
 			else
 			{
+				if ($logout){
+					$session->erase('Secure_page_'.$secureKey);	
+				}
 				return  $session->erase('Secure_'.$secureKey);
 			}
 		}
+
+		public function getPrimary($mod=null){
+			if (!$mod){
+				$mod=$this->_model;
+			}
+			$primary = $mod->primaryColumn;
+			$primary = $primary["name"];
+			return $primary;
+		}
+
+		public function getPrimaryValue($mod=null){
+			if (!$mod){
+				$mod=$this->_model;
+			}
+			$primary = $mod->primaryColumn;
+			$raw = $primary["raw"];
+			return $mod->$raw;
+		}
+
+
 	}
 }
 ?>

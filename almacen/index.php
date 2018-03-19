@@ -1,6 +1,6 @@
 <?php
 error_reporting( E_ALL ^ E_NOTICE);
-define("DEBUG", 1);
+define("DEBUG", 2);
 define("APP_PATH", dirname(__FILE__));
 define("CORE_PATH", dirname(__FILE__).'\..');
 ini_set( 'date.timezone', 'America/La_Paz' );

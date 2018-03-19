@@ -648,7 +648,7 @@ function addNodeTree(node){
 <input type="checkbox" id="list_check_all" name="list_check_all"  data-type="check" data-on="1" data-off="0" onclick="clicChecked('0');" />
 <label for="list_check_all"></label>
 			</th>
-			<th data-field="pk" width="60px" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="nombre" width="398.25px" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nombre][label] %} </th><th data-field="dir" width="" class="sortable {% if ($order=='dir') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[dir][label] %} </th><th data-field="estado" width="193px" class="sortable {% if ($order=='estado') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[estado][label] %} </th><th data-field="fk_resp" width="114px" class="sortable {% if ($order=='fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="fecultinv" width="141px" class="sortable {% if ($order=='fecultinv') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecultinv][label] %} </th><th data-field="lapso" width="116px" class="sortable {% if ($order=='lapso') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[lapso][label] %} </th><th data-field="status" width="59px" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
+			<th data-field="pk" width="60px" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="nombre" width="398.25px" class="sortable {% if ($order=='nombre') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nombre][label] %} </th><th data-field="dir" width="" class="sortable {% if ($order=='dir') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[dir][label] %} </th><th data-field="estado" width="193px" class="sortable {% if ($order=='estado') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[estado][label] %} </th><th data-field="join_fk_resp" width="114px" class="sortable {% if ($order=='join_fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="fecultinv" width="141px" class="sortable {% if ($order=='fecultinv') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecultinv][label] %} </th><th data-field="lapso" width="116px" class="sortable {% if ($order=='lapso') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[lapso][label] %} </th><th data-field="status" width="59px" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
 			{% if ($anexos['listAction']=='show') %}
 			<th data-field="act" width="290" class=" noprinter">Accion</th>
 			{% /if %}
@@ -686,13 +686,13 @@ function addNodeTree(node){
  
 
 <td >
-     {% echo $anexos[fk_resp]['options'][$row[fk_resp]]; %}
+     {% echo $row[join_fk_resp];  %}
 </td>
  
 
 <td >
      {% echo \Mk\Tools\Form::dbToDate($row[fecultinv]); %}
-</td>
+</td>['text']
  
 
 <td >
@@ -777,7 +777,7 @@ function addNodeTree(node){
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
  
 
-<div class="row           " id="section-0" data-campo="section-0" data-type="c-section" style="">
+<div class="row   i_c-section  bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><div class="dropin row  ">
 		<div class="input-field col s12">
 	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[nombre][defVal] %}'>
 	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
@@ -785,7 +785,7 @@ function addNodeTree(node){
 		</div>
  
 
-</div><div class="row   i_c-tab        " id="c-tab-1" data-campo="c-tab-1" data-type="c-tab">    <ul class="tabs z-depth-1 i_tab" id="tab-1">      <li class="tab col s4"><a class="active" href="#tab-1-1" style="">Datos</a></li>    <li class="tab col s4"><a href="#tab-1-2" style="" class="">Ubicaciones</a></li><li class="tab col s4"><a href="#tab-1-3" style="">Permisos</a></li><div class="indicator" style="right: 626.833px; left: 0px;"></div></ul><div id="tab-1-3" class="col s12 dropin      " style="display: none;"></div><div id="tab-1-2" class="col s12 dropin        " style="display: none;">
+</div> </div><div class="row   i_c-tab         bindered" id="c-tab-1" data-campo="c-tab-1" data-type="c-tab">    <ul class="tabs z-depth-1 i_tab" id="tab-1">      <li class="tab col s4"><a class="active" href="#tab-1-1" style="">Datos</a></li>    <li class="tab col s4"><a href="#tab-1-2" style="" class="">Ubicaciones</a></li><li class="tab col s4"><a href="#tab-1-3" style="">Permisos</a></li><div class="indicator" style="right: 626.833px; left: 0px;"></div></ul><div id="tab-1-3" class="col s12 dropin        " style="display: none;"></div><div id="tab-1-2" class="col s12 dropin          " style="display: none;">
 [[prevar: openform]]
 	setNodosTree('#tree-t_ubicaciones',$('#t_ubicaciones').val());
 [[:prevar]]
@@ -799,7 +799,7 @@ function addNodeTree(node){
 		</div>
  
 
-</div>    <div id="tab-1-1" class="col s12 dropin  active " style="">
+</div> <div id="tab-1-1" class="col s12 dropin  active " style="">
 		<div class="input-field col s12">
 	          <input id="dir" name="dir" type="text" class="alfa $clasver " width="" value='{% echo $item[dir]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[dir][defVal] %}'>
 	          <label for="dir">{% echo $anexos[dir][labelf] %}</label>
@@ -807,7 +807,7 @@ function addNodeTree(node){
 		</div>
  
 
-	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][labelf]); %}
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[estado][options],$item[estado],'Seleccione '.$anexos[estado][labelf],$anexos[estado][join][grupo]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
 		<select id="estado" name="estado" class="select $clasver  required"  [[var:]]eventos[[:var]] data-defval='{% echo $anexos[estado][defVal] %}' width="" >
@@ -815,14 +815,14 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="estado" name="estado" type="text" class="alfa $clasver" width="" value='{% echo $anexos[estado][options][$item[estado]]; %}'  disabled="disabled"  >
+     <input id="estado" name="estado" type="text" class="alfa $clasver" width="" value='{% echo $anexos[estado][options][$item[estado]][text]; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="estado">{% echo $anexos[estado][labelf] %}</label>
     	          <div class="error_input">{$errors[estado][0]}</div>
 		</div>
  
 
-	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf]); %}
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf],$anexos[fk_resp][join][grupo]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
 		<select id="fk_resp" name="fk_resp" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_resp][defVal] %}' width="" >
@@ -830,7 +830,7 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="fk_resp" name="fk_resp" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_resp][options][$item[fk_resp]]; %}'  disabled="disabled"  >
+     <input id="fk_resp" name="fk_resp" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_resp][options][$item[fk_resp]][text]; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="fk_resp">{% echo $anexos[fk_resp][labelf] %}</label>
     	          <div class="error_input">{$errors[fk_resp][0]}</div>
@@ -845,7 +845,7 @@ function addNodeTree(node){
 		</div>
  
 
-	{% php $options=\Mk\Tools\Form::getOptions($anexos[lapso][options],$item[lapso],'Seleccione '.$anexos[lapso][labelf]); %}
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[lapso][options],$item[lapso],'Seleccione '.$anexos[lapso][labelf],$anexos[lapso][join][grupo]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
 		<select id="lapso" name="lapso" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[lapso][defVal] %}' width="" >
@@ -853,7 +853,7 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="lapso" name="lapso" type="text" class="alfa $clasver" width="" value='{% echo $anexos[lapso][options][$item[lapso]]; %}'  disabled="disabled"  >
+     <input id="lapso" name="lapso" type="text" class="alfa $clasver" width="" value='{% echo $anexos[lapso][options][$item[lapso]][text]; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="lapso">{% echo $anexos[lapso][labelf] %}</label>
     	          <div class="error_input">{$errors[lapso][0]}</div>

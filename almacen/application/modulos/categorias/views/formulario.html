@@ -3,6 +3,15 @@
 {% /append %}
 {% append style.inline %}
 
+
+
+.treeg tr td a{
+	display:none;
+}
+.treeg tr:hover td a{
+	display:inline-block;
+	margin-right:5px;
+}
 {% /append %}
 {% append js.onready %}
 
@@ -11,9 +20,6 @@ $(document).ajaxStop(function(){
 });
 	$("select").material_select();
 	showMensajes();
-
-
-	 $('input.datafecha').dateDropper();
 {% /append %}
 {% append js.inline %}  
 
@@ -45,54 +51,140 @@ function valNivel(){
   }
   actualizarUI();
 }
+
+
+function binderNodeTree(){
+	$( '.treeg tr td' ).off( "click", "**" );
+	 $('.treeg tr td').on('click','i:contains("add")',function(){addNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("edit")',function(){editNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("delete")',function(){delNodeTree(this)});
+}
+var nodedeltree;
+function delNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		nodedeltree=node;
+		var t=node.find('td:eq(0)').text();
+		$.confirm({
+		    title: 'Confirmacion',
+		    content: '¿Esta seguro de querer borrar este Nodo?:'+t,
+		    type:'red',
+		    buttons: {
+		        confirm: function () {
+		        	var pp1='#'+$(nodedeltree).closest('table').prop('id');
+		        	nodedeltree.remove();
+        			$(pp1).treegrid();
+        			$('#'+$(pp1).attr('for')).val(getNodosTree(pp1));
+		        },
+		        cancel: function () {
+		        }
+		    }
+		});
+	}
+}
+function editNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		var id=node.prop('id')
+		var t=node.find('td:eq(0)').text();
+		var t1 = prompt("Ingrese el Texto para Editar", t);
+		if (t1 != null) {
+			t1=node.find('td:eq(0)').html().replace(t,t1);
+			node.find('td:eq(0)').html(t1);
+		}
+		var pp='#'+$(node).closest('table').prop('id');
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+	}
+}
+function addNodeTree(node){
+	node=$(node).closest('tr');
+	var id=node.prop('id');
+	id=id.replace('node-','');
+	var idp=node.treegrid('getParentNodeId')
+	var t1 = prompt("Ingrese el Texto para Adicionar", '');
+	var n=node.clone();
+	var pp='#'+$(node).closest('table').prop('id');
+	var nid;
+	if (t1 != null) {
+		nid=$(pp).find('tr').length+1;
+		$(pp).treegrid('getAllNodes').each(function(){
+			var oid=$(this).prop('id');
+			oid=oid.replace('node-n','');
+			if (isNaN(oid)==false){
+				if (oid>=nid){
+					nid=oid+1;
+				}
+			}
+		});
+		$(n).removeClass('treegrid-'+id).removeClass('treegrid-expanded').removeClass('treegrid-parent-'+idp).addClass('treegrid-n'+nid).addClass('treegrid-parent-'+id).prop('id','node-n'+nid);
+		n.find('td:eq(0)').html(t1);
+		node.after(n);
+		$(pp).treegrid();
+		binderNodeTree();
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+		//setNodosTree(pp,$('#'+$(pp).attr('for')).val());
+	}
+}
+{% /append %}
+{% append js.openform %}
 {% /append %}
 {% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
 <link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
+<link type='text/css' rel='stylesheet' href='js/treegrid/treegrid.css'/>
 <script type='text/javascript' src='js/confirm/confirm.js'></script>
 <script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+<script type='text/javascript' src='js/treegrid/treegrid.js'></script>
 {% /append %}
+	    <h4 class="modal-tit">
+			<h1 > Adicionar</h1>
+		</h4>
 <div class="container">
 <!-- ajax: -->
-<div class="titulo">
-<h1 > {% echo $modTitulo; %}</h1>
-</div>
 <div class="errorList"></div>
 <form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
 <div class="row">
 
 {% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 
+[[setvar: openform]]
+	$('input.datafecha').dateDropper();
+[[:setvar]]
 
 
-<div class="input-field col s12">
-	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' {% if $_action=='ver' %} disabled="disabled" {% /if %} >
-</div>
+[[setvar: openform]]
+	 $('.treeg').treegrid();
+	 binderNodeTree();
+[[:setvar]]
+
+
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
  
 
-	{% php $options=\Mk\Tools\Form::getOptions($anexos[nivel][options],$item[nivel],'Seleccione '.$anexos[nivel][labelf]); %}
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"> <div class="dropin row ">
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[nivel][options],$item[nivel],'Seleccione '.$anexos[nivel][labelf],$anexos[nivel][join][grupo]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
-		<select id="nivel" name="nivel" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  onchange='valNivel();'   >
+		<select id="nivel" name="nivel" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  onchange='valNivel();'  data-defval='{% echo $anexos[nivel][defVal] %}' width="" >
       {% echo $options; %}
     </select>
      {% /if %}
      {% else %}
-     <input id="nivel" name="nivel" type="text" class="alfa $clasver" width="" value='{% echo $anexos[nivel][options][$item[nivel]]; %}'  disabled="disabled"  >
+     <input id="nivel" name="nivel" type="text" class="alfa $clasver" width="" value='{% echo $anexos[nivel][options][$item[nivel]][text]; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="nivel">{% echo $anexos[nivel][labelf] %}</label>
     	          <div class="error_input">{$errors[nivel][0]}</div>
 		</div>
  
 
-	{% php $options=\Mk\Tools\Form::getOptions($anexos[sk_padre][options],$item[sk_padre],'Seleccione '.$anexos[sk_padre][labelf]); %}
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[sk_padre][options],$item[sk_padre],'Seleccione '.$anexos[sk_padre][labelf],$anexos[sk_padre][join][grupo]); %}
 		<div class="input-field col s12 m6">
 		 {% if $_action!='ver' %}
-		<select id="sk_padre" name="sk_padre" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'   >
+		<select id="sk_padre" name="sk_padre" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[sk_padre][defVal] %}' width="" >
       {% echo $options; %}
     </select>
      {% /if %}
      {% else %}
-     <input id="sk_padre" name="sk_padre" type="text" class="alfa $clasver" width="" value='{% echo $anexos[sk_padre][options][$item[sk_padre]]; %}'  disabled="disabled"  >
+     <input id="sk_padre" name="sk_padre" type="text" class="alfa $clasver" width="" value='{% echo $anexos[sk_padre][options][$item[sk_padre]][text]; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="sk_padre">{% echo $anexos[sk_padre][labelf] %}</label>
     	          <div class="error_input">{$errors[sk_padre][0]}</div>
@@ -100,17 +192,18 @@ function valNivel(){
  
 
 		<div class="input-field col s12">
-	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="nombre" name="nombre" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nombre]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[nombre][defVal] %}'>
 	          <label for="nombre">{% echo $anexos[nombre][labelf] %}</label>
 	          <div class="error_input">{$errors[nombre][0]}</div>
 		</div>
  
 
 		<div class="input-field col s12">
-	          <input id="descrip" name="descrip" type="text" class="alfa $clasver " width="" value='{% echo $item[descrip]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} >
+	          <input id="descrip" name="descrip" type="text" class="alfa $clasver " width="" value='{% echo $item[descrip]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[descrip][defVal] %}'>
 	          <label for="descrip">{% echo $anexos[descrip][labelf] %}</label>
 	          <div class="error_input">{$errors[descrip][0]}</div>
 		</div>
+</div></div>
  
 
 </div>

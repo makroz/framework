@@ -8,10 +8,10 @@ ubicacion R:Recepcion|A:Almacen|C:Cuarentena|S:Salida
 1:en transito
 
 prod
-pk, fk_almacenes, nombre, fk_unidades, cant, costo, precio, codbarra, fk_categorias,tserial,tvence,status
+pk, nombre, fk_unidades, cant, costo, precio, codbarra, fk_categorias,tserial,tvence,escurrido,status
 
 prodAlm
-pk,fk_prod,fk_almacen, costo, precio, cant, minStock,maxStock,recompra,serial,fecvenc,ubicacion status
+pk,fk_prod,fk_almacen, costo, precio, cant, minStock,maxStock,recompra,serial,fecvenc,ubicacion, status
 
 almIngreso
 pk, fecha, fk_almProd, fk_almacen, costo, cant, fk_unidad, tipo(C=compra,I=InvInicial,T=traspaso,D=Devolucion,A=ajuste), iddoc, nfactura,seriales,fecVence,fk_resp, status

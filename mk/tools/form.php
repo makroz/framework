@@ -13,7 +13,7 @@ namespace Mk\Tools
 		}
 
 
-		public static function getOptions($lista=null,$sel='',$msg="Seleccionar..."){
+		public static function getOptions($lista=null,$sel='',$msg="Seleccionar...",$grupo=false){
 			$r='';
 
 			if (trim($msg!='')){
@@ -25,22 +25,57 @@ namespace Mk\Tools
 			}
 
 			//if ($msg!=''){$r.="<option value=''>$msg</option>";}
-			if (is_array($lista)){
-				foreach ($lista as $key => $val){
-					if (is_array($val)){
-						$valor='';$datas='';
-						foreach ($val as $key1 => $val1){
-							if ($key1=='text'){
-								$valor=$val1;
+			if ($grupo==true){
+				$l2=array();
+
+				if (is_array($lista)){
+					foreach ($lista as $key => $val){
+						if (is_array($val)){
+							if ($val['tag']==0){
+								$l2[$key]['text']=$val['text'];
+								$l2[$key]['tag']=$val['tag'];
 							}else{
-								$datas.=' data-'.$key1."='$val1'";
+								$l2[$val['tag']]['opt'][$key]=$val;
 							}
 						}
-						$val=$valor;
-
 					}
+				$lista=$l2;
+				}
+			}
 
-					$r.="<option value='$key' $datas >$val</option>";
+			if (is_array($lista)){
+				foreach ($lista as $key => $val){
+					$valor='';$datas='';
+					if (is_array($val)){
+						$valor=$val['text'];
+						$datas=" data-tag='".$val['tag']."'";
+						$l2=$val['opt'];
+						$val=$valor;
+					}
+					//print_r($lista);
+					if ($grupo==true){
+						
+						if ((is_array($l2))){
+							$r.="<optgroup label='$val'>";
+							foreach ($l2 as $key1 => $val1){
+								$valor='';$datas='';
+								if (is_array($val1)){
+									$valor=$val1['text'];
+									$datas=" data-tag='".$val1['tag']."'";
+									$val1=$valor;
+								}
+								$r.="<option value='$key1' $datas >$val1</option>";
+							}
+							$r.="</optgroup>";
+						}else{
+							$r.="<option value='$key' $datas >$val</option>";	
+						}
+						
+
+					}else{
+						$r.="<option value='$key' $datas >$val</option>";	
+					}
+					
 				}
 			}
 			if ($sel!='')

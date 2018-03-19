@@ -49,20 +49,85 @@ namespace Mk
             file_put_contents($file,PHP_EOL."Mensaje (".date('Y/m/d H:i:s').")".PHP_EOL.$msg.PHP_EOL, FILE_APPEND);
         }
 
-        public static function msg($msg, $nivel=2,$title='',$key = "")
+        public static function debug_string_backtrace() {
+        ob_start();
+        debug_print_backtrace(0,3);
+        $trace = ob_get_contents();
+        ob_end_clean();
+
+        // Remove first item from backtrace as it's this function which
+        // is redundant.
+        $trace = preg_replace ('/^#0\s+' . __METHOD__ . "[^\n]*\n/", '', $trace, 1);
+
+        // Renumber backtrace items.
+        $trace = preg_replace ('/^#(\d+)/me', '\'#\' . ($1 - 1)', $trace);
+
+        return $trace;
+        } 
+
+        public function whoDidThat() {
+        $who=debug_backtrace();
+        $result="";
+        $count = 0;
+        $last=count($who);
+        foreach($who as $k=>$v) {
+            if ($count++ > 0) {
+                $x="";
+                if ( $count>2) {
+                    $x=">";
+                }
+                $result="[line".$who[$k]['line']."]".$who[$k]['class'].".".$who[$k]['function'].$x.$result;
+            }
+        }
+        return $result;
+        }
+        public static function quienLlamo($step=1) {
+        $who=debug_backtrace(2,4);
+        $result="";
+        $count = 0;
+        $last=count($who);
+        $ini=$last-3;
+        foreach($who as $k=>$v) {
+
+            $count++;
+            if ($count > 0) 
+            {
+                if ( $count==$step+2) {
+                    $result=$who[$k]['class'].".".$who[$k]['function'].$result;
+                }
+                if ($count==$step+1){
+                    $result="[".$who[$k]['line']."]".$result;    
+                }
+                
+            }
+        }
+        return $result;
+        }
+
+
+
+        public static function msg($msg, $nivel=0,$title='')
         {
+
+/*            echo '<hr>';
+            echo self::quienLlamo();
+            echo '<hr>';
+*/
             if (DEBUG>=$nivel)
-            {  
-                if ($key!=''){  
-                echo "<h3>DEBUG msg ($key) </h3>";
-                }
-                 if ($title!='')
-                {
-                    echo "<span style='color:red;'>$title: </span><br>";
-                }
-                echo "<pre>";
-                @print_r($msg);
-                echo "</pre>";
+            {
+            $m=$_SESSION['DEBUGMSG'];
+            $date=date('Y/m/d H:i:s');
+            if ($nivel>0){
+                $m1[$date]['level']=$nivel;
+            }
+            if ($title!=''){  
+                $m1[$date]['titulo']=$title;
+            }
+            $m1[$date]['origen']=self::quienLlamo();
+            $m1[$date]['msg']=$msg;
+            $m[]=$m1;
+            $_SESSION['DEBUGMSG']=$m;
+
             }
         }
 

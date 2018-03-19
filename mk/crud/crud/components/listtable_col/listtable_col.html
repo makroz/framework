@@ -67,7 +67,7 @@ getAjax(link,'GET',{ },item, function(msg){
 [* if '[[var:]]tipo[[:var]]'=='join' *]
 
 <td > 
-     {% echo $anexos[[[var:]]key[[:var]]]['options'][$row[[[var:]]key[[:var]]]]; %}
+     {% echo $row[join_[[var:]]key[[:var]]];  %}
 </td>
 
 [* /if *]
@@ -77,7 +77,7 @@ getAjax(link,'GET',{ },item, function(msg){
 <td > 
 
      {% echo \\Mk\\Tools\\Form::dbToDate($row[[[var:]]key[[:var]]]); %}
-</td>
+</td>['text']
 
 [* /if *]
 

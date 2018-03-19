@@ -1,0 +1,32 @@
+<h1 > Login</h1>
+<form method = "post">
+	<ol>
+		<li>
+			<label>
+				Email:
+				<input type = "text" name = "doc" />
+				{% if isset($doc_error) %}
+				{% echo $doc_error %}
+				{% /if %}
+			</label>
+		</li>
+		<li>
+			<label>
+				Password:
+				<input type = "password" name = "pass" />
+				{% if isset($password_error) %}
+				{% echo $password_error %}
+				{% /if %}
+			</label>
+		</li>
+		<li>
+			
+			 <button class="btn waves-effect waves-light" type="submit" name="login" value="1">login
+    <i class="material-icons right">send</i>
+  </button>
+		</li>
+	</ol>
+</form>
+{% php
+print_r($_data); 
+php %}

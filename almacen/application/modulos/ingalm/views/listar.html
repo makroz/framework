@@ -1,0 +1,963 @@
+
+{% append style.files %}
+{% /append %}
+{% append style.inline %}
+
+
+
+.botonera{
+	padding:1em;
+}
+.botonera-panel > a {
+	margin-right:0.5em;
+	margin-left:0.5em;
+}
+.botonera-panel {
+	padding:1em;
+	display:inline-block;
+	margin-right:0.2em;
+	margin-left:0.2em;
+}
+.separador{
+	border-left:1px solid #000;
+	width:5px;
+}
+.botonera li{
+display: inline-block;
+margin: 0 0 0 0;
+list-style-type: none;
+margin-right:0.5em;
+margin-left:0.5em;
+}
+
+
+	.input-field.col label.labeltop{
+	left: .75rem;
+	position: absolute;
+	top: -14px;
+	font-size: .8rem;
+	color: #9e9e9e;
+	cursor: text;
+	transition: .2s ease-out;
+	}
+	select.browser-default{
+		cursor: pointer;
+	background-color: transparent;
+	border: none;
+	border-bottom: 1px solid #9e9e9e;
+	outline: none;
+	height: 3rem;
+	line-height: 3rem;
+	width: 100%;
+	font-size: 1rem;
+	margin: 0 0 20px 0;
+	padding: 0;
+	display: block;
+	}
+	
+
+table.highlight > tbody > tr:hover {
+    background-color: #BFBFFF;
+}
+.sortable{
+	background-image:url('img/sort.png');
+	background-repeat: no-repeat;
+    background-position: left;
+	padding-left:19px;
+	cursor:pointer;
+}
+.sort_desc{
+	background-image:url('img/sort_desc.png');
+}
+.sort_asc{
+	background-image:url('img/sort_asc.png');
+}
+.tablaLista th{
+	border-right:1px solid #888888;
+	border-left:1px solid #888888;
+}
+.selTR, table.striped > tbody > tr.selTR:nth-child(2n+1), table.striped > tbody > tr.selTR:nth-child(2n+0) {
+    background-color: red;
+}
+
+
+.treeg tr td a{
+	display:none;
+}
+.treeg tr:hover td a{
+	display:inline-block;
+	margin-right:5px;
+}
+{% /append %}
+{% append js.onready %}
+
+$(document).ajaxStop(function(){
+    showMensajes();
+});
+	$('#mk_formulario').modal();
+	$("select").material_select();
+	showMensajes();
+
+
+$('#mk_buscar').modal();
+
+
+	 $('input.datafecha').dateDropper();
+	 _search_campo_change($('#search_campo'));
+	
+
+initListTable();
+{% /append %}
+{% append js.inline %}     
+
+    jconfirm.defaults = {
+        title: 'Aviso',
+        boxWidth: '30%',
+        useBootstrap: false
+    };
+
+
+function _fillForm(msg){
+if (msg=='error'){
+	$('#mk_formulario').modal('close');
+	alert('error');
+}else{
+	var datos=JSON.parse(msg);
+	$.each(datos, function(i, item) {
+		var type=$('#'+i).prop("tagName");
+		if (type=='INPUT'){
+			var type2=$('#'+i).prop("type");
+			if (type2=='checkbox'){
+				if (item==1){
+					item=true;
+				}else{
+					item=false;
+				}
+				$('#'+i).prop('checked', item);
+			}else{
+				$('#'+i).val(item);
+			}
+		}
+		if (type=='SELECT'){
+			$('#'+i).find('option[value="'+item+'"]').prop('selected', true);
+		}
+		//alert(i+' es :'+$('#'+i).prop("tagName"));
+	});
+	$("select").material_select();
+}
+return -1;
+}
+function initOpenForm(_respond,ejecutar){
+if (ejecutar){
+
+
+[[printvar:openform]]
+}
+return '001';
+}
+function _openForm(f, idAction,tit){
+		$(f).find('select').each(function(index){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			if (def==''){
+				$(this).find('option:eq(0)').prop('selected', true);
+			}else{
+				$(this).val(def);
+			}
+		});
+		$(f).find('input').each(function(index){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			$(this).val(def);
+		});
+		$(f).find('.check').each(function(index){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			if (def==''){
+				$(f).find('.check').prop('checked', false);
+			}else{
+				if (def=='1'){
+					$(f).find('.check').prop('checked', true);
+				}
+			}
+		});
+		$(f).find('.error_input').html('');
+		$(f).find('#_save_').val(idAction);
+		$(f).find('h4.modal-tit').html(tit);
+		if (idAction=='ver'){
+			$('#btnSave').hide();
+			$('#btnPrint').show();
+			$(f).data('ultAction',idAction);
+		}else{
+			$('#btnPrint').hide();
+			$('#btnSave').show();
+			$('#mk_formulario  .modal-footer').find('.pag').html('');
+			if (((idAction=='add')&&($(f).data('ultAction')=='ver'))||('{% echo $anexos[cargaAjaxForm] %}'=='1')){
+				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
+			}else{
+				{% foreach $row in $anexos %}
+				{% if @$row['cargaAjax']==1 %}
+				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
+				{% /if %}
+				{% /foreach %}
+				if (idAction=='add'){
+				[[printvar:openform]]
+				}
+			}
+			$(f).data('ultAction',idAction);
+		}
+		actualizarUI();
+		$(f).modal('open');
+}
+function verItem(id){
+	$('.mk_pag').removeClass('active');
+	$('.mk_pag:contains("'+id+'")').addClass('active');
+	reaction('cod='+id,'ver','','#mk_formulario .modal-content');
+}
+function clicBotonera(boton){
+var idSel = $(boton).parent().parent().data('cod');
+var idAction = $(boton).data('action');
+var selCount = 1;
+var div=''
+if (idSel==undefined){
+	idSel = serializar();
+	selCount = $(".list_check:checked").length;
+}
+var options=[];
+	options['cod']=idSel;
+	if (idAction=='add'){
+		options=[];
+		_openForm('#mk_formulario',idAction,'Adicionar Ingreso a Almacen');
+		//reaction(options,idAction,'','#mk_formulario .modal-content');
+		return false;
+	}
+	if (idAction=='edit'){
+		if (selCount!=1){
+		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
+		return false;
+		}
+		_openForm('#mk_formulario',idAction,'Editar Ingreso a Almacen');
+		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
+		reaction(options,idAction,'','#mk_formulario .modal-content',initOpenForm);
+		return false;
+	}
+	if (idAction=='del'){
+		if (selCount==0){
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
+		return false;
+		}
+		idAction='';
+		$.confirm({
+		    title: 'Confirmacion',
+		    content: '¿Esta seguro de querer borrar los registros marcados?',
+		    type:'red',
+		    buttons: {
+		        confirm: function () {
+		            options['_del']='del';
+					idAction='listar';
+					div='.listTable';
+					reaction(options,idAction,'',div);
+		        },
+		        cancel: function () {
+		        }
+		    }
+		});
+	}
+	if (idAction=='ver'){
+		if (selCount==0){
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
+		return false;
+		}
+		var pag='';
+		if (selCount>1){
+			var cods=idSel.split(',');
+			$.each(cods,function(i,item){
+				pag=pag+'<span class="mk_pag" onclick="verItem('+item+');" >'+item+'</span>';
+			});
+		}
+		$('#mk_formulario  .modal-footer').find('.pag').html(pag);
+		_openForm('#mk_formulario',idAction,'Ver Ingreso a Almacen',true);
+		reaction(options,idAction,'','#mk_formulario .modal-content');
+		return false;
+	}
+	if (idAction!=''){
+	reaction(options,idAction,'',div);
+	//alert('Action Seleccionada: '+idAction);
+	}
+	return false;
+}
+
+
+function printerArea(area){
+	$(area).printArea();
+}
+
+
+	function _search_campo_change(elem){
+		var valor=$(elem).val();
+		var tipo= $(elem).find('option[value="' + valor + '"]').attr("class");
+		//alert(valor+':'+tipo);
+		var fila=$(elem).closest('.row');
+		var cond=$(fila).find('.search_cond');
+		$(cond).find('option').hide();
+		$(cond).find('.'+tipo).show().first().prop("selected","selected").change();;
+		//$(cond).find('.'+tipo).
+		$(fila).find('._sc').hide();
+		$(fila).find('.'+tipo).show();
+	}
+	function _search_addcampo(elem){
+		var fila=$(elem).closest('.row');
+		if ($(elem).hasClass('blue')){
+			var copia=$(fila).clone();
+			if ($(copia).find('.red').length==0){
+				$(elem).clone().removeClass('blue').addClass('red').html('<i class="material-icons">delete</i>').appendTo($(copia).find('.blue').parent());
+			}
+			$(copia).find('.blue').html('<i class="material-icons">add</i>');
+			$(elem).hide().parent().addClass('s1').removeClass('s2');
+			$(fila).find('.search_join').show();
+			$(fila).find('.isjoin').val(1);
+			$(copia).find('input:text').val('');
+			var i=$(fila).data('count')+1;
+			$(copia).data('count',i);
+			$(copia).find('input, select').each(function(){
+				$(this).prop('id',$(this).prop('id')+i);
+			});
+			$(copia).find('label').each(function(){
+				$(this).prop('for',$(this).prop('for')+i);
+			});
+			$(copia).appendTo($(fila).parent());
+			_search_campo_change($(copia).find('select:first'));
+			$('input.datafecha').dateDropper();
+		}else{
+			if ($(fila).next().length>0){
+				$(fila).remove();
+			}else{
+				$(fila).prev().find('.blue').show().parent().addClass('s2').removeClass('s1');;
+				$(fila).prev().find('.search_join').hide();
+				$(fila).prev().find('.isjoin').val(0);
+				$(fila).remove();
+			}
+		}
+	}
+	function _search_buscar(clear=false){
+		//alert($('form#_searchform').serialize());
+		if (clear==true){
+			reaction('&no_search=1&_runScriptLoad=initListTable();','','','.listTable');
+		}else{
+			reaction($('form#_searchform').serialize()+'&_runScriptLoad=initListTable();','','','.listTable');
+		}
+	}
+	
+
+function sortTable(th){
+var options=[];
+	if ($(th).hasClass('sort_asc')){
+		options['direction']='desc';
+	}else{
+		if ($(th).hasClass('sort_desc')){
+			options['direction']='asc';
+		}else{
+			options['order']=$(th).data('field');
+		}
+	}
+reaction(options,'','','.listTable');
+}
+function initListTable(){
+  $('.sortable').click(function() {
+	  sortTable(this);
+	});
+	$('#mk_buscar').modal();
+}
+
+
+function serializar(){
+var dato='';
+$(".list_check:checked").each(function() {
+	if (dato==''){dato=dato+this.value;}else{dato=dato+','+this.value;}
+ });
+ return dato;
+}
+function clicsel(){
+$(".list_check").parent().parent().removeClass('selTR');
+$(".list_check:checked").each(function () {
+      $(this).parent().parent().addClass('selTR');
+    });
+if (window.selclic){
+		selclic($('.list_check:checked').length,$('.list_check:checked').val(),$('.list_check:checked').attr("tag"));
+}
+}
+function chequear(d){
+$(".list_check").each(function() {
+   this.checked = d;
+ });
+clicsel();
+}
+function clicChecked(id){
+	if (id==0){
+		chequear($('#list_check_all').is(':checked'));
+	}else{
+	$('#list_check_'+id).attr('checked',!$('#list_check_'+id).is(':checked'));
+	clicsel();
+	}
+}
+
+
+function cambiarStatus(item){
+var pk=$(item).data('pk');
+var status=$(item).data('status');
+var options=[];
+	options['pk']=pk;
+	options['campos[status]']=status;
+var link=reaction(options,'setData','',true);
+getAjax(link,'GET',{ },item, function(msg){
+     if (msg>=0){
+     	var newstatus='0';
+     	var icon='E';
+     	if (status=='0'){
+     		newstatus='1'
+     		icon='X';
+     	}
+     	$(item).data('status',newstatus).attr('src','img/'+icon+'.png');
+     }
+   });
+}
+
+
+function grabado(msg){
+if (msg=='ok'){
+	$('#mk_formulario').modal('close');
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
+function onChangeProd(){
+  var dato=$('#fk_prod option:selected');
+  var sel=$(dato).data('tag');
+  sel=sel.split(',');
+  if (sel[0]>0){
+    reaction('campo=fk_unidades&arg[]='+sel[1]+'&sel='+sel[0],'getListFor','','#fk_unidades',actualizarUI);
+  }
+}
+
+
+function binderNodeTree(){
+	$( '.treeg tr td' ).off( "click", "**" );
+	 $('.treeg tr td').on('click','i:contains("add")',function(){addNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("edit")',function(){editNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("delete")',function(){delNodeTree(this)});
+}
+var nodedeltree;
+function delNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		nodedeltree=node;
+		var t=node.find('td:eq(0)').text();
+		$.confirm({
+		    title: 'Confirmacion',
+		    content: '¿Esta seguro de querer borrar este Nodo?:'+t,
+		    type:'red',
+		    buttons: {
+		        confirm: function () {
+		        	var pp1='#'+$(nodedeltree).closest('table').prop('id');
+		        	nodedeltree.remove();
+        			$(pp1).treegrid();
+        			$('#'+$(pp1).attr('for')).val(getNodosTree(pp1));
+		        },
+		        cancel: function () {
+		        }
+		    }
+		});
+	}
+}
+function editNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		var id=node.prop('id')
+		var t=node.find('td:eq(0)').text();
+		var t1 = prompt("Ingrese el Texto para Editar", t);
+		if (t1 != null) {
+			t1=node.find('td:eq(0)').html().replace(t,t1);
+			node.find('td:eq(0)').html(t1);
+		}
+		var pp='#'+$(node).closest('table').prop('id');
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+	}
+}
+function addNodeTree(node){
+	node=$(node).closest('tr');
+	var id=node.prop('id');
+	id=id.replace('node-','');
+	var idp=node.treegrid('getParentNodeId')
+	var t1 = prompt("Ingrese el Texto para Adicionar", '');
+	var n=node.clone();
+	var pp='#'+$(node).closest('table').prop('id');
+	var nid;
+	if (t1 != null) {
+		nid=$(pp).find('tr').length+1;
+		$(pp).treegrid('getAllNodes').each(function(){
+			var oid=$(this).prop('id');
+			oid=oid.replace('node-n','');
+			if (isNaN(oid)==false){
+				if (oid>=nid){
+					nid=oid+1;
+				}
+			}
+		});
+		$(n).removeClass('treegrid-'+id).removeClass('treegrid-expanded').removeClass('treegrid-parent-'+idp).addClass('treegrid-n'+nid).addClass('treegrid-parent-'+id).prop('id','node-n'+nid);
+		n.find('td:eq(0)').html(t1);
+		node.after(n);
+		$(pp).treegrid();
+		binderNodeTree();
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+		//setNodosTree(pp,$('#'+$(pp).attr('for')).val());
+	}
+}
+{% /append %}
+{% append js.openform %}
+{% /append %}
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
+<link type='text/css' rel='stylesheet' href='js/treegrid/treegrid.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
+<script type='text/javascript' src='js/printarea/printarea.js'></script>
+<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+<script type='text/javascript' src='js/loadingoverlay/loadingoverlay.min.js'></script>
+<script type='text/javascript' src='js/treegrid/treegrid.js'></script>
+{% /append %}
+<div class="mk-section">
+<h1 > {% echo $modTitulo; %}</h1>
+</div>
+<div class="listTable">
+<!-- ajax: -->
+<div class="mk-section">
+<div class="botonera z-depth-1 noprinter" >
+<div class="botonera-panel z-depth-1" >
+<li>
+<a class="btn-floating  waves-effect waves-light green" title="Adicionar" data-action="add" onclick="clicBotonera(this);"><i class="material-icons">add</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
+</li>
+<li>
+<a class="btn-floating waves-effect waves-light red" title="Elimminar" data-action="del" onclick="clicBotonera(this);"><i class="material-icons">delete</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
+</li>
+</div>
+<div class="botonera-panel z-depth-1 "  >
+<a class="btn-floating  waves-effect waves-light blue" title="Imprimir" onclick="printerArea('.listTable');"><i class="material-icons">print</i></a>
+<a class="btn-floating  waves-effect waves-light blue" title="Buscar" onclick="$('#mk_buscar').modal('open');"><i class="material-icons">search</i></a>
+{% if ($searchMsg!='') %}{% echo $searchMsg; %} <i class="tiny material-icons red white-text" title="Limpiar busqueda" onclick="_search_buscar(true);">close</i>{% /if %}
+	<div id="mk_buscar" class="modal modal-fixed-footer">
+	<h4 class="modal-tit">Busqueda</h4>
+	<form id="_searchform" autocomplete="off">
+	    <div class="modal-content">
+	      <div class="row search1" data-count='0'>
+	            <div class="input-field col s3" >
+	    <select id="search_campo" name='search_campo[]' class="_search browser-default" onchange="_search_campo_change(this)" autocomplete='false' >
+	      <option value="pk" class="_sc2">Id</option><option value="fecha" class="_sc4">Fecha</option><option value="fk_almacenes" class="">Almacen</option><option value="fk_prod" class="">Producto</option><option value="cant" class="_sc2">Cant</option><option value="costo" class="_sc2">Costo</option><option value="fk_unidades" class="">Unidad</option><option value="tipo" class="_sc1">Tipo</option><option value="tipodoc" class="_sc1">Tipo Doc.</option><option value="nfac" class="_sc1">Doc</option><option value="fecven" class="">Vence</option><option value="serial" class="_sc1">Serial</option><option value="fk_resp" class="">Resp</option>
+	    </select>
+	          <label for="search_campo" class="labeltop">Campo de busqueda</label>
+				</div>
+	    <div class="input-field col s3" >
+	    <select id="search_cond" name='search_cond[]' class="_search browser-default search_cond"   >
+	      <option value="1" class="_sc1">contiene</option>
+	 	  <option value="2" class="_sc1">no contiene</option>
+	      <option value="3" class="_sc1 _sc2 _sc3 _sc4">igual a</option>
+	      <option value="4" class="_sc1 _sc2 _sc3 _sc4">diferente de</option>
+	      <option value="5" class="_sc2">mayor que</option>
+	      <option value="6" class="_sc2">menor que</option>
+	      <option value="7" class="_sc2">mayor o igual que</option>
+	      <option value="8" class="_sc2">menor o igual que</option>
+	      <option value="9" class="_sc1">empieza por</option>
+	      <option value="10" class="_sc1">no empieza por</option>
+	      <option value="11" class="_sc1">termina por</option>
+	      <option value="12" class="_sc1">no termina por</option>
+	    </select>
+	          <label for="search_cond"  class="labeltop">Condicion de busqueda</label>
+				</div>
+				<div class="input-field col s4 _sc  _sc4 oculto" >
+	          <input id="search_search_date" name='search_search_date[]' type="text" class="_search datafecha" data-format="d/m/Y"  data-large-mode="true" value=''  >
+	          <label for="search_search_date">Criterio de busqueda Fecha</label>
+				</div>
+	            <div class="input-field col s4 _sc _sc1 _sc2" >
+	          <input id="search_search_text" name='search_search_text[]' type="text" class="_search"  value=''>
+	          <label for="search_search_text">Criterio de busqueda</label>
+				</div>
+	            <div class="input-field col s1 oculto search_join" >
+	          <select id="search_join" name='search_join[]' class="_search browser-default" >
+	      <option value="1">y</option>
+	      <option value="2">o</option>
+	    </select>
+	          <label for="search_join" class="labeltop">union</label>
+	          <input type="hidden" name="search_isjoin[]" class="isjoin" value="0">
+				</div>
+				  <div class="input-field col s2" >
+				  <a class="btn-floating  waves-effect waves-light blue search_icon_add" title="Mas criterios" onclick="_search_addcampo(this);"><i class="material-icons">add</i></a>
+				</div>
+	      </div>
+	    </div>
+	    <div class="modal-footer">
+	      <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat ">Cancel</a><a href="#!" class="modal-action  modal-close waves-effect waves-green btn-flat " onclick="_search_buscar(this.form);">Buscar</a>
+	    </div>
+	    </form>
+	</div>
+</div>
+<div class="botonera-panel z-depth-1 right" style="padding:  0px;margin: 0px 3px 0 3px;line-height: 2px;" >
+
+{% php $maxpage=ceil($count / $limit); $minpage=$page-3; if ($minpage<=0){ $minpage=1; } $lastpage=$minpage+4;if($lastpage>$maxpage){ $lastpage=$maxpage;}  %}
+{% if $items != false %}
+<ul class="pagination" style="line-height: 30px;padding: 0;margin: 18px 3px 22px; " >
+     <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons" {% if !(($count <= 1)or($page==1)) %} onclick="_changePageList('1')" {% /if %} >first_page</i></a></li>
+    <li class="{% if ($count <= 1)or($page==1) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons" {% if !(($count <= 1)or($page==1)) %} onclick="_changePageList('{% echo ($page-1); %}')" {% /if %} >chevron_left</i></a></li>
+				{% foreach $_page in range($minpage, $lastpage) %}
+				<li class="{% if $page == $_page %}active{% /if %} waves-effect" ><a href="#!" onclick="_changePageList('{% echo $_page; %}')" >{% echo $_page; %}</a></li>
+				{% /foreach %}
+     <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons" {% if !(($count <= 1)or($page==$maxpage)) %} onclick="_changePageList('{% echo ($page+1); %}')" {% /if %} >chevron_right</i></a></li>
+    <li class="{% if ($count <= 1)or($page==$maxpage) %} disabled {% /if %}{% else %} waves-effect {% /else %}"><a href="#!"><i class="material-icons" {% if !(($count <= 1)or($page==$maxpage)) %} onclick="_changePageList('{% echo $maxpage; %}')" {% /if %} >last_page</i></a></li>
+    <li class="" >{% php $__selected[$limit]="selected='selected'"; %}
+    <select id="limit" name="limit" class="browser-default" style="width: 90px;" onchange="_changeLimitList(this);">
+	<option value="10" {% echo $__selected['10'] %} >10 / $count</option>
+	<option value="20" {% echo $__selected[20] %} >20 / $count</option>
+	<option value="30" {% echo $__selected[30] %} >30 / $count</option>
+	<option value="40" {% echo $__selected[40] %} >40 / $count</option>
+	<option value="50" {% echo $__selected[50] %} >50 / $count</option>
+	<option value="100" {% echo $__selected[100] %} >100 / $count</option>
+</select>  </li>
+</ul>
+{% /if %}
+{% else %}
+0 Items
+{% /else %}
+</div>
+</div>
+</div>
+<table class="striped bordered highlight tablaLista">
+	<thead class="red">
+		<tr>
+			<th  width="30" class="center noprinter" >
+<input type="checkbox" id="list_check_all" name="list_check_all"  data-type="check" data-on="1" data-off="0" onclick="clicChecked('0');" />
+<label for="list_check_all"></label>
+			</th>
+			<th data-field="pk" width="60" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="fecha" width="120" class="sortable {% if ($order=='fecha') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecha][label] %} </th><th data-field="join_fk_almacenes" width="150" class="sortable {% if ($order=='join_fk_almacenes') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes][label] %} </th><th data-field="join_fk_prod" width="150" class="sortable {% if ($order=='join_fk_prod') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_prod][label] %} </th><th data-field="cant" width="80" class="sortable {% if ($order=='cant') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[cant][label] %} </th><th data-field="costo" width="80" class="sortable {% if ($order=='costo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[costo][label] %} </th><th data-field="join_fk_unidades" width="150" class="sortable {% if ($order=='join_fk_unidades') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_unidades][label] %} </th><th data-field="tipo" width="35" class="sortable {% if ($order=='tipo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipo][label] %} </th><th data-field="tipodoc" width="35" class="sortable {% if ($order=='tipodoc') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipodoc][label] %} </th><th data-field="nfac" width="" class="sortable {% if ($order=='nfac') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nfac][label] %} </th><th data-field="fecven" width="90" class="sortable {% if ($order=='fecven') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecven][label] %} </th><th data-field="serial" width="" class="sortable {% if ($order=='serial') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[serial][label] %} </th><th data-field="join_fk_resp" width="150" class="sortable {% if ($order=='join_fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="status" width="45" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
+			{% if ($anexos['listAction']=='show') %}
+			<th data-field="act" width="290" class=" noprinter">Accion</th>
+			{% /if %}
+		</tr>
+	</thead>
+	<tbody>
+		{% php $nr=0; %}
+		{% foreach $row in $items %}
+		{% php $nr=$nr+1; %}
+		<tr>
+			<td class="center noprinter" >
+				<input type="checkbox" id="list_check_{% echo $row[pk]; %}" name="list_check_{% echo $row[pk]; %}"  class="list_check" onclick="clicChecked('{% echo $row[pk]; %}');" value="{% echo $row[pk] %}" />
+<label for="list_check_{% echo $row[pk]; %}"></label>
+			</td>
+			
+
+<td >
+     {% echo $row[pk]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[fecha]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[join_fk_almacenes];  %}
+</td>
+ 
+
+<td >
+     {% echo $row[join_fk_prod];  %}
+</td>
+ 
+
+<td >
+     {% echo $row[cant]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[costo]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[join_fk_unidades];  %}
+</td>
+ 
+
+<td >
+     {% echo $anexos[tipo]['options'][$row[tipo]]; %}
+</td>
+ 
+
+<td >
+     {% echo $anexos[tipodoc]['options'][$row[tipodoc]]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[nfac]; %}
+</td>
+ 
+
+<td >
+     {% echo \Mk\Tools\Form::dbToDate($row[fecven]); %}
+</td>['text']
+ 
+
+<td >
+     {% echo $row[serial]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[join_fk_resp];  %}
+</td>
+ 
+
+<td >
+     {% if ($row[status]=="1") %}
+          <img src="img/E.png" title="Click para cambiar" data-status='0' data-pk='$row[pk]' id='img_status_$row[pk]' onclick="cambiarStatus(this);" >
+     {% /if %}
+     {% else %}
+          <img src="img/X.png" title="Click para cambiar" data-status='1' data-pk='$row[pk]' id='img_status_$row[pk]' onclick="cambiarStatus(this);" >
+     {% /else %}
+</td>
+			{% if ($anexos['listAction']=='show') %}
+			<td style="overflow: visible;" class="noprinter">
+				<div style="position: relative;">
+					<div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block;top: -18px;">
+						<a class="btn-floating btn-medium red">
+							<i class="large material-icons">menu</i>
+						</a>
+						<ul style="top: -14px;right: 30px;" data-cod='{% echo $row[pk] %}'>
+<li>
+<a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
+</li>
+<li>
+<a class="btn-floating waves-effect waves-light red" title="Elimminar" data-action="del" onclick="clicBotonera(this);"><i class="material-icons">delete</i></a>
+</li>
+<li>
+<a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
+</li>
+						</ul>
+					</div>
+				</div>
+			</td>
+			{% /if %}
+		</tr>
+		{% /foreach %}
+		{% if $nr<$limit %}
+		{% foreach $_i in range($nr+1, $limit) %}
+		<tr class="noprinter">
+			<td class="noprinter" >&nbsp; </td>
+			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
+			{% if ($anexos['listAction']=='show') %}
+			<td class="noprinter" > </td>
+			{% /if %}
+		</tr>
+		{% /foreach %}
+		{% /if %}
+	</tbody>
+</table>
+<!-- onlyajax: -->
+<script type="text/javascript">
+	initListTable();
+</script>
+<!-- :onlyajax -->
+<!-- :ajax -->
+</div>
+	<div id="mk_formulario" class="modal modal-fixed-footer">
+	    <h4 class="modal-tit">
+			Adicionar
+		</h4>
+	    <div class="modal-content">
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
+<div class="row">
+
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+
+[[setvar: openform]]
+	$('input.datafecha').dateDropper();
+[[:setvar]]
+
+
+[[setvar: openform]]
+	 $('.treeg').treegrid();
+	 binderNodeTree();
+[[:setvar]]
+
+
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row      ">
+ 
+
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[tipo][options],$item[tipo],'Seleccione '.$anexos[tipo][labelf],$anexos[tipo][join][grupo]); %}
+		<div class="input-field col s3">
+		 {% if $_action!='ver' %}
+		<select id="tipo" name="tipo" class="select $clasver "  [[var:]]eventos[[:var]] data-defval='{% echo $anexos[tipo][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="tipo" name="tipo" type="text" class="alfa $clasver" width="" value='{% echo $anexos[tipo][options][$item[tipo]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="tipo">{% echo $anexos[tipo][labelf] %}</label>
+    	          <div class="error_input">{$errors[tipo][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_almacenes][options],$item[fk_almacenes],'Seleccione '.$anexos[fk_almacenes][labelf],$anexos[fk_almacenes][join][grupo]); %}
+		<div class="input-field col s6">
+		 {% if $_action!='ver' %}
+		<select id="fk_almacenes" name="fk_almacenes" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_almacenes][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_almacenes" name="fk_almacenes" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_almacenes][options][$item[fk_almacenes]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_almacenes">{% echo $anexos[fk_almacenes][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_almacenes][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_prod][options],$item[fk_prod],'Seleccione '.$anexos[fk_prod][labelf],$anexos[fk_prod][join][grupo]); %}
+		<div class="input-field col s6">
+		 {% if $_action!='ver' %}
+		<select id="fk_prod" name="fk_prod" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  onchange='onChangeProd();'  data-defval='{% echo $anexos[fk_prod][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_prod" name="fk_prod" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_prod][options][$item[fk_prod]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_prod">{% echo $anexos[fk_prod][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_prod][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s4">
+	          <input id="cant" name="cant" type="text" class="float $clasver  required  numeric" data-decimal='2' width="" value='{% echo $item[cant]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defval='{% echo $anexos[cant][defVal] %}' >
+	         <label for="cant">{% echo $anexos[cant][labelf] %}</label>
+	          <div class="error_input">{$errors[cant][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_unidades][options],$item[fk_unidades],'Seleccione '.$anexos[fk_unidades][labelf],$anexos[fk_unidades][join][grupo]); %}
+		<div class="input-field col s2">
+		 {% if $_action!='ver' %}
+		<select id="fk_unidades" name="fk_unidades" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_unidades][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_unidades" name="fk_unidades" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_unidades][options][$item[fk_unidades]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_unidades">{% echo $anexos[fk_unidades][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_unidades][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s4">
+	          <input id="costo" name="costo" type="text" class="float $clasver  required  numeric" data-decimal='2' width="" value='{% echo $item[costo]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defval='{% echo $anexos[costo][defVal] %}' >
+	         <label for="costo">{% echo $anexos[costo][labelf] %}</label>
+	          <div class="error_input">{$errors[costo][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[tipodoc][options],$item[tipodoc],'Seleccione '.$anexos[tipodoc][labelf],$anexos[tipodoc][join][grupo]); %}
+		<div class="input-field col s4">
+		 {% if $_action!='ver' %}
+		<select id="tipodoc" name="tipodoc" class="select $clasver "  [[var:]]eventos[[:var]] data-defval='{% echo $anexos[tipodoc][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="tipodoc" name="tipodoc" type="text" class="alfa $clasver" width="" value='{% echo $anexos[tipodoc][options][$item[tipodoc]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="tipodoc">{% echo $anexos[tipodoc][labelf] %}</label>
+    	          <div class="error_input">{$errors[tipodoc][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s4">
+	          <input id="nfac" name="nfac" type="text" class="alfa $clasver " width="" value='{% echo $item[nfac]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[nfac][defVal] %}'>
+	          <label for="nfac">{% echo $anexos[nfac][labelf] %}</label>
+	          <div class="error_input">{$errors[nfac][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s6">
+	          <input id="serial" name="serial" type="text" class="alfa $clasver " width="" value='{% echo $item[serial]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[serial][defVal] %}'>
+	          <label for="serial">{% echo $anexos[serial][labelf] %}</label>
+	          <div class="error_input">{$errors[serial][0]}</div>
+		</div>
+ 
+
+{% php $valor=\Mk\Tools\Form::dbToDate($item[fecven]); %}
+		<div class="input-field col s6">
+	          <input id="fecven" name="fecven" type="text" class="alfa $clasver datafecha " width="" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true"  data-large-mode="true"  data-default-date="{% echo \Mk\Tools\Form::dbToDate($item[fecven],false,'m-d-Y'); %}" data-defval='{% echo $anexos[fecven][defVal] %}' >
+	          <label for="fecven">{% echo $anexos[fecven][labelf] %}</label>
+	          <div class="error_input">{$errors[fecven][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf],$anexos[fk_resp][join][grupo]); %}
+		<div class="input-field col s12">
+		 {% if $_action!='ver' %}
+		<select id="fk_resp" name="fk_resp" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_resp][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_resp" name="fk_resp" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_resp][options][$item[fk_resp]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_resp">{% echo $anexos[fk_resp][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_resp][0]}</div>
+		</div>
+</div></div>
+</div>
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
+</form>
+<!-- notajax: -->
+{% if ('1'!='1') %}
+<div class="modal-footer" >
+<div class="pag white-text" style="float: left;"></div>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='ver') %}
+				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
+				{% /if %}
+        </div>
+{% /if %}
+<!-- :notajax -->
+	    </div>
+<div class="modal-footer" >
+<div class="pag white-text" style="float: left;"></div>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax " onclick="_sendForm('#frmEdit',1,grabado);" >Grabar</a>
+				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
+        </div>
+	</div>

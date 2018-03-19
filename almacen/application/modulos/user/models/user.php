@@ -67,7 +67,7 @@ protected $_password;
 		*/
 		protected $_deleted;
 
-public function save()
+public function save($notColumns='')
 		{
 			$primary = $this-> getPrimaryColumn();
 			$raw = $primary["raw"];
@@ -76,7 +76,7 @@ public function save()
 				$this-> setDeleted(false);
 				$this-> setLive(true);
 			}
-			parent::save();
+			parent::save($notColumns);
 		}
 
 }

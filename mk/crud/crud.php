@@ -57,6 +57,8 @@ namespace Mk\Crud {
 			$lfunc['datesystem']              = 'FechaServer()';
 			$lfunc['timesystem']              = 'HoraServer()';
 			$lfunc['check']                   = 'Check()';
+			$lfunc['useract']                  = 'UsuarioAct()';
+
 			$lusof['alfa']                    = 'Alfanumerico';
 			$lusof['area']                    = 'TextArea';
 			$lusof['int']                     = 'Numerico';
@@ -69,10 +71,13 @@ namespace Mk\Crud {
 			$lusof['datetime']                = 'Fecha y Hora';
 			$lusof['pass']                    = 'Password';
 			$lusof['selecdb']                 = 'DB Lista';
-			$lusof['tree'] = 'Lista Tree';
+			$lusof['selecdbgrupo']            = 'DB Lista Grupo';
+			$lusof['tree']					  = 'Lista Tree';
 			$lusof['buscardb']                = 'DB Buscar';
 			$lusof['multiple']                = 'Lista Multiple';
 			$lusof['oculto']                  = 'Oculto';
+			
+
 			$lvalid['mail']                   = 'eMail';
 			$lvalid['numerico']               = 'solo Numeros';
 			$lvalid['tel']                    = 'Telefonos';
@@ -213,6 +218,11 @@ namespace Mk\Crud {
 				$pedir['defVal']['val'][$key]   = $field['default'];
 				$posf++;
 				// Valores por defecto segun tipo de datos de la BD
+				
+				if ($field['null']=='NO'){
+					$pedir['required']['val'][$key]   = '1';	
+				}
+
 				if (in_array($field['type'], array(
 					'text',
 					'varchar',
@@ -247,6 +257,7 @@ namespace Mk\Crud {
 						$pedir['funcion']['val'][$key]    = 'check';
 						$pedir['checkvalor']['val'][$key] = '1/0';
 						$pedir['tipolista']['val'][$key]  = 'check';
+						$pedir['required']['val'][$key]   = '0';
 					}
 					if (($field['args'][0] == 8) and (String::stripos_array($campos, array(
 						'date',
@@ -341,9 +352,7 @@ namespace Mk\Crud {
 					}
 				}
 
-				if ($field['null']=='NO'){
-					$pedir['required']['val'][$key]   = '1';	
-				}
+				
 				/// Valores por defecto segun tipo de datos de la BD
 				// Valores por defecto segun Nombre de Campo
 				$Name = strtolower($key);
@@ -460,6 +469,7 @@ namespace Mk\Crud {
 						$pedir['tipolista']['val'][$key] = 'show';
 						$pedir['tamlista']['val'][$key]  = '60';
 						$pedir['label']['val'][$key]     = 'Id';
+						$pedir['required']['val'][$key]   = '0';
 					}
 				}
 			}
@@ -501,6 +511,16 @@ namespace Mk\Crud {
 			if (file_exists($dir . DIRECTORY_SEPARATOR . 'config.crud')){
 				$fileconfig=file_get_contents($dir . DIRECTORY_SEPARATOR . 'config.crud');
 			}
+			$dir = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR . 'controllers';
+			if (file_exists($dir . DIRECTORY_SEPARATOR . $table.'_controller.php')){
+				$filecontroller=file_get_contents($dir . DIRECTORY_SEPARATOR . $table.'_controller.php');
+			}
+			$aux1=stripos($filecontroller,'//* preserve code: *//')+strlen('//* preserve code: *//');
+			$aux2=stripos($filecontroller,'//* :preserve code *//',$aux1);
+			$filecontroller=substr($filecontroller,$aux1,$aux2-$aux1);
+			$aux=json_decode($fileconfig);
+			$aux->codecontroler=$filecontroller;
+			$fileconfig=json_encode($aux);
 			echo $fileconfig;
 			return $fileconfig;
 
@@ -530,6 +550,7 @@ namespace Mk\Crud {
 			$fields    = $this->database->getFields($table);
 			$anexos    = array();
 			$selecdb    = array();
+			$joins=array();
 			$txtCampos = '';
 			$cargaAjaxForm=0;
 			//$selectdb=0;
@@ -619,6 +640,7 @@ namespace Mk\Crud {
 						$aux[1] = '0';
 					}
 					$anexos[] = '$anexos' . "['{$key}']['dataon']='{$aux[0]}';";
+					$anexos[] = '$anexos' . "['{$key}']['dataoff']='{$aux[1]}';";
 					$labelon  = '';
 					$labeloff = '';
 					$aux      = explode('/', $field['checklista'] . '/');
@@ -631,7 +653,22 @@ namespace Mk\Crud {
 					$anexos[] = '$anexos' . "['{$key}']['labelon']='{$aux[0]}';";
 					$anexos[] = '$anexos' . "['{$key}']['labeloff']='{$aux[1]}';";
 				}
-				if ($field['usof'] == 'selec') {
+
+
+				if ($field['tipolista'] == 'join') {
+					$aux = explode('|', $field['campojoin'] . '||||');
+					if (($aux[0]!='')&&($aux[1]!='')){
+						$aux[3]=str_replace('"',"'",$aux[3]);
+						$aux[4]=str_replace('"',"'",$aux[4]);
+						//$prifk='pk';
+						$prifk=$this->database->getPrimaryKeyOf($aux[0]);
+						$joins[] ="\t\t".'$this->setJoins('."'{$aux[0]}','({$table}.{$key}=j_{$aux[0]}.{$prifk[0]})',Array('j_{$aux[0]}.{$aux[1]}' => 'join_{$key}'));"; 
+					}
+				}
+
+
+
+			if ($field['usof'] == 'selec') {
 					echo "<hr>" . $field['listalista'] . '<hr>';
 					$aux = explode('*', $field['listalista'] . '*');
 					foreach ($aux as $key2 => $value2) {
@@ -653,9 +690,7 @@ namespace Mk\Crud {
 					}
 				}
 
-
-
-				if ($field['usof'] == 'selecdb') {
+				if (($field['usof'] == 'selecdb')||($field['usof'] == 'selecdbgrupo')) {
 					echo "<hr> usof selec DB:" . $field['campojoin'] . '<hr>';
 					$aux = explode('|', $field['campojoin'] . '||||');
 					if (($aux[0]!='')&&($aux[1]!='')){
@@ -671,12 +706,22 @@ namespace Mk\Crud {
 						if ($aux[4]!=''){
 							$anexos[] = '$anexos' . "['{$key}']['join']['tag']=".'"'.$aux[4].'";';
 						}
+
+						if ($aux[5]!=''){
+							$anexos[] = '$anexos' . "['{$key}']['join']['join']=".'"'.$aux[5].'";';
+						}
+
+						if ($field['usof'] == 'selecdbgrupo') {
+							$anexos[] = '$anexos' . "['{$key}']['join']['grupo']=1;";
+						}
 					}
-					if ($aux[2]=='1'){
+					if (($aux[2]=='1')||($field['tipolista'] == 'join')){
 						//$cargaAjaxForm++;
-						$selecdb[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
+						//$selecdb[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
+						$anexos[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
 					}
 				}
+
 
 				
 				if ($field['usof'] == 'date') {
@@ -687,6 +732,8 @@ namespace Mk\Crud {
 				//echo "<hr>";
 				unset($lines);
 			}
+
+			$keyseguridad=Inputs::post('seguridad','');
 			$txtCampos .= "public \$_tSingular='" . Inputs::post('singular') . "';\n";
 			$txtCampos .= "public \$_tPlural='" . Inputs::post('plural') . "';\n";
 			$variables['_modSingular_'] = Inputs::post('singular');
@@ -725,6 +772,9 @@ namespace Mk\Crud {
 			$plantilla = str_replace('//<<[CLASS]>>//', ucfirst($table), $plantilla);
 			$plantilla = str_replace('//<<[CLASS_EXTENDS]>>//', 'Mk\Shared\Model', $plantilla);
 			$plantilla = str_replace('//<<[CAMPOS]>>//', $txtCampos, $plantilla);
+			$plantilla = str_replace('//<<[JOINS]>>//', implode($joins, PHP_EOL) . PHP_EOL, $plantilla);
+
+			
 			$dir       = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR;
 			@mkdir($dir . 'models', 0700, true);
 			$gestor = fopen($dir . 'models' . DIRECTORY_SEPARATOR . strtolower($table) . '.php', "w+");
@@ -753,6 +803,20 @@ namespace Mk\Crud {
 			$plantilla = fread($gestor, filesize($file));
 			fclose($gestor);
 			$plantilla = str_replace('//<<[CLASS]>>//', ucfirst($table) . '_controller', $plantilla);
+
+			$aux1='//$_secureKey'."='$table';".PHP_EOL;
+			$aux1='//$$this->_secure();';
+			if (trim($keyseguridad)!=''){
+				$aux1='$_secureKey'."='{$keyseguridad}';".PHP_EOL;
+				$aux1='$this->_secure();';
+			}
+			$plantilla = str_replace('//<<[SECURE]>>//', $aux1, $plantilla);
+
+			$plantilla = str_replace('//<<[PRESERVECODE]>>//', Inputs::post('codecontroler',''), $plantilla);
+
+			
+
+
 			$plantilla = str_replace('//<<[ANEXOS]>>//', $anexos, $plantilla);
 			$dir       = MODULE_PATH . DIRECTORY_SEPARATOR . strtolower($table) . DIRECTORY_SEPARATOR;
 			

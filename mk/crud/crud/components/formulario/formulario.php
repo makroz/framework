@@ -147,7 +147,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                      }
 
                     $options='';
-                    if (($value['usof']=='selec')||($value['usof']=='selecdb')){
+                    if (($value['usof']=='selec')||($value['usof']=='selecdb')||($value['usof']=='selecdbgrupo')){
                         /*if ($value['listalista']!=''){
                             $opt=explode('*',$value['listalista'].'*');
                             $options.="<option value='' disabled {% if \$item[{$key}]=='' %}selected='selected' {% /if %} > Seleccione {$value['label']}...";

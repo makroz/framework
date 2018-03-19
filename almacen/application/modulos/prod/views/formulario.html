@@ -1,0 +1,276 @@
+
+{% append style.files %}
+{% /append %}
+{% append style.inline %}
+
+
+
+.treeg tr td a{
+	display:none;
+}
+.treeg tr:hover td a{
+	display:inline-block;
+	margin-right:5px;
+}
+{% /append %}
+{% append js.onready %}
+
+$(document).ajaxStop(function(){
+    showMensajes();
+});
+	$("select").material_select();
+	showMensajes();
+{% /append %}
+{% append js.inline %}  
+
+    jconfirm.defaults = {
+        title: 'Aviso',
+        boxWidth: '30%',
+        useBootstrap: false
+    };
+
+
+function grabado(msg){
+if (msg=='ok'){
+	$('#mk_formulario').modal('close');
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
+
+
+function binderNodeTree(){
+	$( '.treeg tr td' ).off( "click", "**" );
+	 $('.treeg tr td').on('click','i:contains("add")',function(){addNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("edit")',function(){editNodeTree(this)});
+	 $('.treeg tr td').on('click','i:contains("delete")',function(){delNodeTree(this)});
+}
+var nodedeltree;
+function delNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		nodedeltree=node;
+		var t=node.find('td:eq(0)').text();
+		$.confirm({
+		    title: 'Confirmacion',
+		    content: '¿Esta seguro de querer borrar este Nodo?:'+t,
+		    type:'red',
+		    buttons: {
+		        confirm: function () {
+		        	var pp1='#'+$(nodedeltree).closest('table').prop('id');
+		        	nodedeltree.remove();
+        			$(pp1).treegrid();
+        			$('#'+$(pp1).attr('for')).val(getNodosTree(pp1));
+		        },
+		        cancel: function () {
+		        }
+		    }
+		});
+	}
+}
+function editNodeTree(node){
+	node=$(node).closest('tr');
+	if (($(node).treegrid('isLeaf'))&&($(node).treegrid('getDepth')>0)){
+		var id=node.prop('id')
+		var t=node.find('td:eq(0)').text();
+		var t1 = prompt("Ingrese el Texto para Editar", t);
+		if (t1 != null) {
+			t1=node.find('td:eq(0)').html().replace(t,t1);
+			node.find('td:eq(0)').html(t1);
+		}
+		var pp='#'+$(node).closest('table').prop('id');
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+	}
+}
+function addNodeTree(node){
+	node=$(node).closest('tr');
+	var id=node.prop('id');
+	id=id.replace('node-','');
+	var idp=node.treegrid('getParentNodeId')
+	var t1 = prompt("Ingrese el Texto para Adicionar", '');
+	var n=node.clone();
+	var pp='#'+$(node).closest('table').prop('id');
+	var nid;
+	if (t1 != null) {
+		nid=$(pp).find('tr').length+1;
+		$(pp).treegrid('getAllNodes').each(function(){
+			var oid=$(this).prop('id');
+			oid=oid.replace('node-n','');
+			if (isNaN(oid)==false){
+				if (oid>=nid){
+					nid=oid+1;
+				}
+			}
+		});
+		$(n).removeClass('treegrid-'+id).removeClass('treegrid-expanded').removeClass('treegrid-parent-'+idp).addClass('treegrid-n'+nid).addClass('treegrid-parent-'+id).prop('id','node-n'+nid);
+		n.find('td:eq(0)').html(t1);
+		node.after(n);
+		$(pp).treegrid();
+		binderNodeTree();
+		$('#'+$(pp).attr('for')).val(getNodosTree(pp));
+		//setNodosTree(pp,$('#'+$(pp).attr('for')).val());
+	}
+}
+{% /append %}
+{% append js.openform %}
+{% /append %}
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
+<link type='text/css' rel='stylesheet' href='js/treegrid/treegrid.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
+<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+<script type='text/javascript' src='js/treegrid/treegrid.js'></script>
+{% /append %}
+	    <h4 class="modal-tit">
+			<h1 > Adicionar</h1>
+		</h4>
+<div class="container">
+<!-- ajax: -->
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
+<div class="row">
+
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+
+[[setvar: openform]]
+	$('input.datafecha').dateDropper();
+[[:setvar]]
+
+
+[[setvar: openform]]
+	 $('.treeg').treegrid();
+	 binderNodeTree();
+[[:setvar]]
+
+
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row          ">
+		<div class="input-field col s8">
+	          <input id="nom" name="nom" type="text" class="alfa $clasver  required" width="" value='{% echo $item[nom]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[nom][defVal] %}'>
+	          <label for="nom">{% echo $anexos[nom][labelf] %}</label>
+	          <div class="error_input">{$errors[nom][0]}</div>
+		</div>
+ 
+
+	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_unidades][options],$item[fk_unidades],'Seleccione '.$anexos[fk_unidades][labelf],$anexos[fk_unidades][join][grupo]); %}
+		<div class="input-field col s4">
+		 {% if $_action!='ver' %}
+		<select id="fk_unidades" name="fk_unidades" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_unidades][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_unidades" name="fk_unidades" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_unidades][options][$item[fk_unidades]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_unidades">{% echo $anexos[fk_unidades][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_unidades][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s4">
+	          <input id="cant" name="cant" type="text" class="float $clasver  numeric" data-decimal='2' width="" value='{% echo $item[cant]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defval='{% echo $anexos[cant][defVal] %}' >
+	         <label for="cant">{% echo $anexos[cant][labelf] %}</label>
+	          <div class="error_input">{$errors[cant][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s4">
+	          <input id="costo" name="costo" type="text" class="float $clasver  numeric" data-decimal='2' width="" value='{% echo $item[costo]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defval='{% echo $anexos[costo][defVal] %}' >
+	         <label for="costo">{% echo $anexos[costo][labelf] %}</label>
+	          <div class="error_input">{$errors[costo][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s4">
+	          <input id="precio" name="precio" type="text" class="float $clasver  numeric" data-decimal='2' width="" value='{% echo $item[precio]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defval='{% echo $anexos[precio][defVal] %}' >
+	         <label for="precio">{% echo $anexos[precio][labelf] %}</label>
+	          <div class="error_input">{$errors[precio][0]}</div>
+		</div>
+ 
+
+		<div class="input-field col s12">
+	          <input id="codbarra" name="codbarra" type="text" class="alfa $clasver " width="" value='{% echo $item[codbarra]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[codbarra][defVal] %}'>
+	          <label for="codbarra">{% echo $anexos[codbarra][labelf] %}</label>
+	          <div class="error_input">{$errors[codbarra][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_categorias][options],$item[fk_categorias],'Seleccione '.$anexos[fk_categorias][labelf],$anexos[fk_categorias][join][grupo]); %}
+		<div class="input-field col s12">
+		 {% if $_action!='ver' %}
+		<select id="fk_categorias" name="fk_categorias" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_categorias][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_categorias" name="fk_categorias" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_categorias][options][$item[fk_categorias]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_categorias">{% echo $anexos[fk_categorias][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_categorias][0]}</div>
+		</div>
+ 
+
+	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_proveedores][options],$item[fk_proveedores],'Seleccione '.$anexos[fk_proveedores][labelf],$anexos[fk_proveedores][join][grupo]); %}
+		<div class="input-field col s12">
+		 {% if $_action!='ver' %}
+		<select id="fk_proveedores" name="fk_proveedores" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_proveedores][defVal] %}' width="" >
+      {% echo $options; %}
+    </select>
+     {% /if %}
+     {% else %}
+     <input id="fk_proveedores" name="fk_proveedores" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_proveedores][options][$item[fk_proveedores]][text]; %}'  disabled="disabled"  >
+     {% /else %}
+    	          <label for="fk_proveedores">{% echo $anexos[fk_proveedores][labelf] %}</label>
+    	          <div class="error_input">{$errors[fk_proveedores][0]}</div>
+		</div>
+ 
+
+	<div class="input-field col s6">
+	 {% if $_action!='ver' %}
+      <input type="checkbox" id="tserial" name='tserial' class="check $clasver " value="1" {% if ($item[tserial]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  data-defval='{% echo $anexos[tserial][defVal] %}' />
+  {% /if %}
+     {% else %}
+     <input id="tserial" name="tserial" type="text" class="alfa $clasver " width="" value='{% php if ($item[tserial]=="1"){ $_valor= $anexos[tserial][labelon]; } else { $_valor=$anexos[tserial][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
+     {% /else %}
+    <label for="tserial">{% echo $anexos[tserial][labelf] %}</label>
+     <div class="error_input">{$errors[tserial][0]}</div>
+     </div>
+ 
+
+	<div class="input-field col s6">
+	 {% if $_action!='ver' %}
+      <input type="checkbox" id="tvence" name='tvence' class="check $clasver " value="1" {% if ($item[tvence]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  data-defval='{% echo $anexos[tvence][defVal] %}' />
+  {% /if %}
+     {% else %}
+     <input id="tvence" name="tvence" type="text" class="alfa $clasver " width="" value='{% php if ($item[tvence]=="1"){ $_valor= $anexos[tvence][labelon]; } else { $_valor=$anexos[tvence][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
+     {% /else %}
+    <label for="tvence">{% echo $anexos[tvence][labelf] %}</label>
+     <div class="error_input">{$errors[tvence][0]}</div>
+     </div>
+</div></div>
+ 
+
+</div>
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
+</form>
+<!-- notajax: -->
+{% if ('[[var:]]mostrar[[:var]]'!='1') %}
+<div class="modal-footer" >
+<div class="pag white-text" style="float: left;"></div>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='ver') %}
+				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
+				{% /if %}
+        </div>
+{% /if %}
+<!-- :notajax -->
+<!-- :ajax -->
+</div>

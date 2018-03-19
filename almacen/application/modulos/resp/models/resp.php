@@ -85,18 +85,35 @@ protected $_dir;
 /**
 * @column
 * @readwrite
+* @type varchar
+* @uso A
+* @funcion st
+* @label Password
+* @validate  required
+*/
+protected $_pass;
+/**
+* @column
+* @readwrite
 * @type char
 * @uso G
 * @funcion custom
 * @fcustom 1
 * @label St
 */
-protected $_status;
+protected $_status='1';
 public $_tSingular='Responsable';
 public $_tPlural='Responsables';
 
 
+public function __construct($options = array())
+	{
+		parent::__construct($options);
+
+
+
+	}
 }
 
-
+//version MK.CRUD 1.0 
 ?>

@@ -104,6 +104,8 @@ color:#26a69a;
 <script src="../mk/js/codemirror/addon/edit/closetag.js"></script>
 <script src="../mk/js/codemirror/addon/edit/matchtags.js"></script>
 <script src="../mk/js/codemirror/mode/javascript/javascript.js"></script>
+<script src="../mk/js/codemirror/mode/php/php.js"></script>
+
 <link href='../mk/js/colresize/colResizable.css' rel='stylesheet'>
 <script src='../mk/js/colresize/colResizable.js'></script>
 <link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
@@ -144,6 +146,19 @@ editorjsopenform = CodeMirror.fromTextArea(document.getElementById("codejsopenfo
     autoRefresh: true,
     theme: 'material'
   });
+
+editorcontroler = CodeMirror.fromTextArea(document.getElementById("codecontroler"), {
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    matchTags: {bothTags: true},
+    extraKeys: {"Ctrl-J": "toMatchingTag"},
+    autoCloseTags: true,
+    autoRefresh: true,
+    theme: 'material'
+  });
+
 
 $(".button-collapse").sideNav();
 $('select').material_select();
@@ -200,6 +215,11 @@ $("ul#tabs").tabs({ onShow: function(tab) {
 
   } 
 });
+
+  if (confirm('Desea Cargar la ultima Configuracion?')){
+    cargarConfig();
+  }
+
 
 
 
@@ -346,6 +366,7 @@ if (flagcambios==0){
     $('#field-'+nom+'-i_pos').val('');
     $('#field-'+nom+'-i_pre').val('');
     ult=nom;
+    //alert(nom+':'+i);
     var posi=contenido.indexOf('<div id="form-config-'+nom+'"');
     if (posi>=0){
       var i_pre=contenido.substr(0,posi);
@@ -379,7 +400,9 @@ function showFormulario(){
         }
         col.push([pos,nom]);
     });
+    //alert(col);
     col=sortByCol(col,0);
+    //alert(col);
     //html=html+'<hr>';
     $.each(col,function(i,item){
       let tipo=$('#field-'+item[1]+'-usof').val();
@@ -395,14 +418,17 @@ function showFormulario(){
         label=$('#field-'+item[1]+'-label').val();
       }
 
+      //alert(item[1]+':'+item[0]+':'+i);
       switch(tipo) {
       case 'oculto':
           //inp='<span class="form-config" title="'+item[1]+'" data-campo="'+item[1]+'" data-type="field">[x]</span>';
           break;
       case 'alfa':
       case 'date':
+      case 'datetime':
       case 'float':
       case 'int':
+      case 'pass':
           inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'"" data-type="field">'+
               '<input id="config-'+item[1]+'" type="text" class="alfa" width="'+tam+'" value="" >'+
               '<label for="config-'+item[1]+'">'+label+'</label>'+
@@ -428,6 +454,7 @@ function showFormulario(){
  
       case 'selec':
       case 'selecdb':
+      case 'selecdbgrupo':
           inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'" data-type="field">'+
               '<select id="config-'+item[1]+'" class="select" width="'+tam+'" >'+
               '<option>opcion1</option><option>opcion2</option>'+
@@ -448,6 +475,8 @@ function showFormulario(){
       html=html+inp;
     });
 
+    //alert(i_append);
+
     if (i_append==0){
       html='<div class="row form-config-section componente i_c-section"  id="c-section-0" data-campo="c-section-0" data-type="c-section"> <div class="dropin row" >'+html+'</div></div>';
     }
@@ -459,6 +488,7 @@ function showFormulario(){
 
     Mk_Componentes.initComponentes(cambioCamposform);
     Mk_Componentes.init('.form-content');
+
   
 }
 
@@ -499,6 +529,8 @@ editorjs.getDoc().setValue($('#codejs').val());
 editorjs.refresh();
 editorjsopenform.getDoc().setValue($('#codejsopenform').val());
 editorjsopenform.refresh();
+editorcontroler.getDoc().setValue($('#codecontroler').val());
+editorcontroler.refresh();
 
   $('select').material_select();
    Materialize.updateTextFields();
@@ -506,6 +538,7 @@ editorjsopenform.refresh();
   if (idtabshow=='tabcodigos'){
     editorjs.refresh();
     editorjsopenform.refresh();
+    editorcontroler.refresh();
   } 
 
   if (idtabshow=='formulario'){
@@ -612,6 +645,13 @@ if (valor=='selecdb'){
     valTipoLista();
   }
 
+if (valor=='selecdbgrupo'){
+    $('#funcion').val('st');
+    $('#tipolista').val('join');
+    valFuncion();
+    valTipoLista();
+  }
+
 if (valor=='selec'){
     $('#funcion').val('st');
     $('#tipolista').val('lista');
@@ -699,16 +739,18 @@ function openJoin(id){
   if (dato==''){
     $('#n_table, #n_col').val(-1);
     $('#n_cond').val('');
+    $('#n_join').val('');
     $('#n_tag').val('');
     $('#n_carga').prop('checked',false);
 
   }else{
-    dato=dato+'||||';
+    dato=dato+'|||||';
     var datos=dato.split('|');
     $('#n_table').val(datos[0]);
     getCampos(datos[1]);
 
     $('#n_cond').val(datos[3]);
+    $('#n_join').val(datos[5]);
     $('#n_tag').val(datos[4]);
     if (datos[2]=='1'){
       $('#n_carga').prop('checked',true);
@@ -733,7 +775,7 @@ function getCampos(valTarget){
 
 function closeJoin(){
   var id=$('#modal2').attr('data-key');
-  var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+$('#n_carga').val()+'|'+$('#n_cond').val()+'|'+$('#n_tag').val();
+  var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+$('#n_carga').val()+'|'+$('#n_cond').val()+'|'+$('#n_tag').val()+'|'+$('#n_join').val();
   $('#'+id).val( dato );
 
   Materialize.updateTextFields();
@@ -937,14 +979,20 @@ var idtabshow='';
   </div>
   <div   id="tabcampos" class="col s12">
 
-   <div class="input-field col s6">
+   <div class="input-field col s4">
           <input id="singular" name='singular' type="text" class="validate plantilla " data-type="text" value="{% echo \Mk\Tools\String::singularize(ucfirst($tableName)); %}">
           <label for="singular" data-error="Debe escribir un nombre en singular" data-success="">Nombre del Modulo en Singular</label>
    </div>
-   <div class="input-field col s6">
+   <div class="input-field col s4">
           <input id="plural" name='plural' type="text" class="validate plantilla" data-type="text"  value="{% echo ucfirst($tableName); %}" >
           <label for="plural" data-error="Debe escribir un nombre en plural" data-success="">Nombre del Modulo en plural</label>
    </div>
+   <div class="input-field col s4">
+          <input id="seguridad" name='seguridad' type="text" class="validate plantilla " data-type="text" value="">
+          <label for="seguridad" data-error="Debe escribir una llave de seguridad" data-success="">llave de seguridad debe ser nombre de un Modulo</label>
+   </div>
+   
+
     <input id="listAction" name='listAction' type="hidden" class="validate plantilla "  value="show">
     {% include campos.html %}
   </div>
@@ -953,6 +1001,8 @@ var idtabshow='';
                 <textarea id="codejs" name='codejs'  class="validate plantilla codejs" data-type="text"  ></textarea>
                 <label for="codejsopenform" style="color: black;">Codigo Js al abrir el formulario</label>
                 <textarea id="codejsopenform" name='codejsopenform'  class="validate plantilla codejs" data-type="text"  ></textarea>
+                <label for="codecontroler" style="color: black;">Codigo Preservado Controlador</label>
+                <textarea id="codecontroler" name='codecontroler'  class="validate plantilla codejs" data-type="text"  ></textarea>
                 
   </div>
   <div id="lista" class="col s12">Lista
@@ -969,10 +1019,15 @@ var idtabshow='';
     <div id="panelComponentes"></div>
   </div>
 
+<div class="container col s6"  >
 
-  <div class="form-content container col s6" style="padding-top: 30px;" >
+  <div class="form-content row" style="padding-top: 30px;" >
     
   </div>
+
+  </div>
+
+  
   <div id="f-3" class="col s3">
   <div id='pindiv'>
   <!-- Modal Structure -->
@@ -1140,7 +1195,10 @@ var idtabshow='';
           <input id="n_cond" name='n_cond' type="text" class="validate" value="" >
           <label for="n_cond" >Condicion Extra:</label>
         </div>
-
+        <div class="input-field col {% echo $ctam; %} ">
+          <input id="n_join" name='n_join' type="text" class="validate" value="" >
+          <label for="n_join" >Join Extra:</label>
+        </div>
         <div class="input-field col {% echo $ctam; %} ">
           <input id="n_tag" name='n_tag' type="text" class="validate" value="" >
           <label for="n_tag" >Datos Tag:</label>
