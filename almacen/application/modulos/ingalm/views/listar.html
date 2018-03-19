@@ -651,7 +651,7 @@ function addNodeTree(node){
 <input type="checkbox" id="list_check_all" name="list_check_all"  data-type="check" data-on="1" data-off="0" onclick="clicChecked('0');" />
 <label for="list_check_all"></label>
 			</th>
-			<th data-field="pk" width="60" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="fecha" width="120" class="sortable {% if ($order=='fecha') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecha][label] %} </th><th data-field="join_fk_almacenes" width="150" class="sortable {% if ($order=='join_fk_almacenes') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes][label] %} </th><th data-field="join_fk_prod" width="150" class="sortable {% if ($order=='join_fk_prod') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_prod][label] %} </th><th data-field="cant" width="80" class="sortable {% if ($order=='cant') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[cant][label] %} </th><th data-field="costo" width="80" class="sortable {% if ($order=='costo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[costo][label] %} </th><th data-field="join_fk_unidades" width="150" class="sortable {% if ($order=='join_fk_unidades') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_unidades][label] %} </th><th data-field="tipo" width="35" class="sortable {% if ($order=='tipo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipo][label] %} </th><th data-field="tipodoc" width="35" class="sortable {% if ($order=='tipodoc') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipodoc][label] %} </th><th data-field="nfac" width="" class="sortable {% if ($order=='nfac') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nfac][label] %} </th><th data-field="fecven" width="90" class="sortable {% if ($order=='fecven') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecven][label] %} </th><th data-field="serial" width="" class="sortable {% if ($order=='serial') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[serial][label] %} </th><th data-field="join_fk_resp" width="150" class="sortable {% if ($order=='join_fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="status" width="45" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
+			<th data-field="pk" width="60px" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="fecha" width="120px" class="sortable {% if ($order=='fecha') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecha][label] %} </th><th data-field="join_fk_almacenes" width="217px" class="sortable {% if ($order=='join_fk_almacenes') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes][label] %} </th><th data-field="join_fk_prod" width="" class="sortable {% if ($order=='join_fk_prod') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_prod][label] %} </th><th data-field="cant" width="113px" class="sortable {% if ($order=='cant') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[cant][label] %} </th><th data-field="join_fk_unidades" width="163px" class="sortable {% if ($order=='join_fk_unidades') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_unidades][label] %} </th><th data-field="tipo" width="228px" class="sortable {% if ($order=='tipo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipo][label] %} </th><th data-field="tipodoc" width="108px" class="sortable {% if ($order=='tipodoc') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipodoc][label] %} </th><th data-field="nfac" width="201px" class="sortable {% if ($order=='nfac') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[nfac][label] %} </th><th data-field="join_fk_resp" width="124px" class="sortable {% if ($order=='join_fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th><th data-field="status" width="45px" class="sortable {% if ($order=='status') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[status][label] %} </th>
 			{% if ($anexos['listAction']=='show') %}
 			<th data-field="act" width="290" class=" noprinter">Accion</th>
 			{% /if %}
@@ -694,11 +694,6 @@ function addNodeTree(node){
  
 
 <td >
-     {% echo $row[costo]; %}
-</td>
- 
-
-<td >
      {% echo $row[join_fk_unidades];  %}
 </td>
  
@@ -709,22 +704,12 @@ function addNodeTree(node){
  
 
 <td >
-     {% echo $anexos[tipodoc]['options'][$row[tipodoc]]; %}
+     {% echo $row[tipodoc]; %}
 </td>
  
 
 <td >
      {% echo $row[nfac]; %}
-</td>
- 
-
-<td >
-     {% echo \Mk\Tools\Form::dbToDate($row[fecven]); %}
-</td>['text']
- 
-
-<td >
-     {% echo $row[serial]; %}
 </td>
  
 
@@ -769,7 +754,7 @@ function addNodeTree(node){
 		{% foreach $_i in range($nr+1, $limit) %}
 		<tr class="noprinter">
 			<td class="noprinter" >&nbsp; </td>
-			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
+			<td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td><td > </td>
 			{% if ($anexos['listAction']=='show') %}
 			<td class="noprinter" > </td>
 			{% /if %}
@@ -807,7 +792,7 @@ function addNodeTree(node){
 [[:setvar]]
 
 
-<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row      ">
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row         ">
  
 
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
