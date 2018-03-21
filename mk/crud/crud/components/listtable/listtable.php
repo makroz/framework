@@ -32,11 +32,12 @@ class Listtable
     	}
     	public function filas(){
 
-    		$texto='';
+    		$texto='';\Mk\Debug::msg($this->campos,1);
     		foreach ($this->campos as $key => $value) {
     			/*if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
     				$texto.='<td > {% echo $row['.$key.'] %} </td>';
     			}*/
+
                 $key1="&key={$key}";
     			switch ($value['tipolista']) {
     				case '-1':

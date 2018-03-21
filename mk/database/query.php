@@ -120,8 +120,7 @@ namespace Mk\Database
 					$limit = "LIMIT {$_limit}";
 				}
 			}
-			//echo "<br>".sprintf($template, $fields, $this->from, $join, $where, $order, $limit)."<br>";
-			\Mk\Debug::msg(sprintf($template, $fields, $this->from, $join, $where, $order, $limit),1);
+			//\Mk\Debug::msg(sprintf($template, $fields, $this->from, $join, $where, $order, $limit),1);
 			return sprintf($template, $fields, $this->from, $join, $where, $order, $limit);
 		}
 		protected function _buildInsert($data)

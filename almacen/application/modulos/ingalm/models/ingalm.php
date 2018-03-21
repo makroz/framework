@@ -15,8 +15,8 @@ protected $_pk;
 * @column
 * @readwrite
 * @type datetime
-* @uso A
-* @funcion datetime
+* @uso G
+* @funcion datetimesystem
 * @label Fecha
 * @validate  required
 */
@@ -125,7 +125,7 @@ protected $_serial;
 * @readwrite
 * @type int
 * @uso A
-* @funcion st
+* @funcion useract
 * @label Resp
 * @labelf Responsable
 * @validate  required, numeric

@@ -13,10 +13,7 @@ namespace Mk
 		* @readwrite
 		*/
 		protected $_table;
-		/**
-		* @readwrite
-		*/
-		protected $_joins;
+
 		/**
 		* @readwrite
 		*/
@@ -76,7 +73,9 @@ namespace Mk
 		* @read
 		*/
 		protected $_errors = array();
+		protected $_joins= array();
 		protected $_columns;
+		protected $_colExtras;
 		protected $_primary;
 		public function __construct($options = array())
 		{
@@ -110,6 +109,12 @@ namespace Mk
 				'on'=> $on,
 				'fields'=> $fields
 			);
+			if (is_array($fields)){
+				foreach ($fields as $key => $value) {
+					$this->_colExtras[$value]='';
+				}
+			}
+			
 			return true;
 		}
 
@@ -138,6 +143,11 @@ namespace Mk
 					continue;
 				//}
 			}
+			if (is_array($this->_colExtras)){
+				foreach ($this->_colExtras as $key => $value) {
+					$data[$key]=$value;
+				}
+			}
 			return $data;
 		}
 
@@ -149,23 +159,35 @@ namespace Mk
 			if (!empty($this->$raw))
 			{
 
-
+				$fields = array($this->getTable().".*");
 				$previous = $this->connector
 				->query()
-				->from($this->table)
-				->where("{$name} = ?", $this->$raw)
-				->first();
+				->from($this->table, $fields)
+				->where($this->getTable().".{$name} = ?", $this->$raw);
+
+				$join=$this->getJoins();
+				if (is_array($join)){
+				foreach ($join as $clause => $value)
+				{
+					
+					$previous->join($value['table'],$value['on'],$value['fields']);
+				}
+				}
+				$previous=$previous->first();
 				if ($previous == null)
 				{
 					throw $this->_Exception("Ese valor No Existe");
 				}
+
+				//\Mk\Debug::msg($previous,0);
 				foreach ($previous as $key => $value)
 				{
-					//$prop = "_{$key}";
-					if (!isset($this->$key))
+					$prop = "_{$key}";
+					if (isset($this->$prop))
 					{
-						//echo "$key:$value<hr>";
-						$this->$key = stripslashes($value);
+						$this->$prop = stripslashes($value);
+					}else{
+						$this->_colExtras[$key]=stripslashes($value);
 					}
 				}
 			}
@@ -401,13 +423,14 @@ namespace Mk
 		return $this->_primary;
 		}
 
-		public static function first($where = array(), $fields = array("*"),$order = null, $direction = null)
+		public static function first($where = array(), $fields = array("*"),$order = null, $direction = null, $join = array())
 		{
 			$model = new static();
-			return $model->_first($where, $fields, $order, $direction);
+			return $model->_first($where, $fields, $order, $direction,$join);
 		}
-		protected function _first($where = array(), $fields = array("*"),$order = null, $direction = null)
+		protected function _first($where = array(), $fields = array("*"),$order = null, $direction = null, $join = array())
 		{
+
 			$query = $this
 			->connector
 			->query()
@@ -415,6 +438,13 @@ namespace Mk
 			foreach ($where as $clause => $value)
 			{
 				$query->where($clause, $value);
+			}
+			if (is_array($join)){
+				foreach ($join as $clause => $value)
+				{
+					
+					$query->join($value['table'],$value['on'],$value['fields']);
+				}
 			}
 			if ($order != null)
 			{

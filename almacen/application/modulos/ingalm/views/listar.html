@@ -151,11 +151,15 @@ function initOpenForm(_respond,ejecutar){
 if (ejecutar){
 
 
+	onChangeProd();
 [[printvar:openform]]
 }
 return '001';
 }
 function _openForm(f, idAction,tit){
+		if ($(f).data('ultAction')==undefined){
+			$(f).data('ultAction','ver');
+		}
 		$(f).find('select').each(function(index){
 			var def=$(this).data('defval');
 			if (def==undefined){
@@ -444,9 +448,11 @@ return -1;
 function onChangeProd(){
   var dato=$('#fk_prod option:selected');
   var sel=$(dato).data('tag');
-  sel=sel.split(',');
-  if (sel[0]>0){
-    reaction('campo=fk_unidades&arg[]='+sel[1]+'&sel='+sel[0],'getListFor','','#fk_unidades',actualizarUI);
+    if (sel){
+    sel=sel.split(',');
+    if (sel[0]>0){
+      reaction('campo=fk_unidades&arg[]='+sel[1]+'&sel='+sel[0],'getListFor','','#fk_unidades',actualizarUI);
+    }
   }
 }
 
@@ -704,7 +710,7 @@ function addNodeTree(node){
  
 
 <td >
-     {% echo $row[tipodoc]; %}
+     {% echo $anexos[tipodoc]['options'][$row[tipodoc]]; %}
 </td>
  
 
@@ -792,7 +798,7 @@ function addNodeTree(node){
 [[:setvar]]
 
 
-<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row         ">
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row             ">
  
 
 	          <input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
@@ -806,7 +812,9 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="tipo" name="tipo" type="text" class="alfa $clasver" width="" value='{% echo $anexos[tipo][options][$item[tipo]][text]; %}'  disabled="disabled"  >
+        {% php if (isset($anexos[tipo][options][$item[tipo]][text])){$valor=$anexos[tipo][options][$item[tipo]][text];}else{$valor=$anexos[tipo][options][$item[tipo]];}  %}
+        {% php if (trim($valor)==''){$valor=$item[join_tipo];}  %}
+     <input id="tipo" name="tipo" type="text" class="alfa $clasver" width="" value='{% echo $valor; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="tipo">{% echo $anexos[tipo][labelf] %}</label>
     	          <div class="error_input">{$errors[tipo][0]}</div>
@@ -821,7 +829,9 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="fk_almacenes" name="fk_almacenes" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_almacenes][options][$item[fk_almacenes]][text]; %}'  disabled="disabled"  >
+        {% php if (isset($anexos[fk_almacenes][options][$item[fk_almacenes]][text])){$valor=$anexos[fk_almacenes][options][$item[fk_almacenes]][text];}else{$valor=$anexos[fk_almacenes][options][$item[fk_almacenes]];}  %}
+        {% php if (trim($valor)==''){$valor=$item[join_fk_almacenes];}  %}
+     <input id="fk_almacenes" name="fk_almacenes" type="text" class="alfa $clasver" width="" value='{% echo $valor; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="fk_almacenes">{% echo $anexos[fk_almacenes][labelf] %}</label>
     	          <div class="error_input">{$errors[fk_almacenes][0]}</div>
@@ -836,7 +846,9 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="fk_prod" name="fk_prod" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_prod][options][$item[fk_prod]][text]; %}'  disabled="disabled"  >
+        {% php if (isset($anexos[fk_prod][options][$item[fk_prod]][text])){$valor=$anexos[fk_prod][options][$item[fk_prod]][text];}else{$valor=$anexos[fk_prod][options][$item[fk_prod]];}  %}
+        {% php if (trim($valor)==''){$valor=$item[join_fk_prod];}  %}
+     <input id="fk_prod" name="fk_prod" type="text" class="alfa $clasver" width="" value='{% echo $valor; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="fk_prod">{% echo $anexos[fk_prod][labelf] %}</label>
     	          <div class="error_input">{$errors[fk_prod][0]}</div>
@@ -858,7 +870,9 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="fk_unidades" name="fk_unidades" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_unidades][options][$item[fk_unidades]][text]; %}'  disabled="disabled"  >
+        {% php if (isset($anexos[fk_unidades][options][$item[fk_unidades]][text])){$valor=$anexos[fk_unidades][options][$item[fk_unidades]][text];}else{$valor=$anexos[fk_unidades][options][$item[fk_unidades]];}  %}
+        {% php if (trim($valor)==''){$valor=$item[join_fk_unidades];}  %}
+     <input id="fk_unidades" name="fk_unidades" type="text" class="alfa $clasver" width="" value='{% echo $valor; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="fk_unidades">{% echo $anexos[fk_unidades][labelf] %}</label>
     	          <div class="error_input">{$errors[fk_unidades][0]}</div>
@@ -880,7 +894,9 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="tipodoc" name="tipodoc" type="text" class="alfa $clasver" width="" value='{% echo $anexos[tipodoc][options][$item[tipodoc]][text]; %}'  disabled="disabled"  >
+        {% php if (isset($anexos[tipodoc][options][$item[tipodoc]][text])){$valor=$anexos[tipodoc][options][$item[tipodoc]][text];}else{$valor=$anexos[tipodoc][options][$item[tipodoc]];}  %}
+        {% php if (trim($valor)==''){$valor=$item[join_tipodoc];}  %}
+     <input id="tipodoc" name="tipodoc" type="text" class="alfa $clasver" width="" value='{% echo $valor; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="tipodoc">{% echo $anexos[tipodoc][labelf] %}</label>
     	          <div class="error_input">{$errors[tipodoc][0]}</div>
@@ -903,24 +919,27 @@ function addNodeTree(node){
 
 {% php $valor=\Mk\Tools\Form::dbToDate($item[fecven]); %}
 		<div class="input-field col s6">
-	          <input id="fecven" name="fecven" type="text" class="alfa $clasver datafecha " width="" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true"  data-large-mode="true"  data-default-date="{% echo \Mk\Tools\Form::dbToDate($item[fecven],false,'m-d-Y'); %}" data-defval='{% echo $anexos[fecven][defVal] %}' >
+	          <input id="fecven" name="fecven" type="text" class="alfa $clasver datafecha " width="" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true" data-init-set="false" data-large-mode="true"  data-default-date="{% echo \Mk\Tools\Form::dbToDate($item[fecven],false,'m-d-Y'); %}" data-defval='{% echo $anexos[fecven][defVal] %}' >
 	          <label for="fecven">{% echo $anexos[fecven][labelf] %}</label>
 	          <div class="error_input">{$errors[fecven][0]}</div>
 		</div>
  
 
-	{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_resp][options],$item[fk_resp],'Seleccione '.$anexos[fk_resp][labelf],$anexos[fk_resp][join][grupo]); %}
+{% php
+	$nresp=$item['join_fk_resp'];
+	$idresp= $item[fk_resp];
+	if ($anexos[fk_resp]['funcion']=='useract'){
+		if (($_action=='add')||($_action=='index')){
+			$nresp=$_loged['user']['nombre'];
+			$idresp=$_loged['id'];
+		}
+	}
+php %}
 		<div class="input-field col s12">
-		 {% if $_action!='ver' %}
-		<select id="fk_resp" name="fk_resp" class="select $clasver  required  numeric"   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_resp][defVal] %}' width="" >
-      {% echo $options; %}
-    </select>
-     {% /if %}
-     {% else %}
-     <input id="fk_resp" name="fk_resp" type="text" class="alfa $clasver" width="" value='{% echo $anexos[fk_resp][options][$item[fk_resp]][text]; %}'  disabled="disabled"  >
-     {% /else %}
-    	          <label for="fk_resp">{% echo $anexos[fk_resp][labelf] %}</label>
-    	          <div class="error_input">{$errors[fk_resp][0]}</div>
+			 <input  id="fk_resp" name="fk_resp" type="hidden"  value='{% echo $idresp; %}'   data-defval='{% echo $idresp; %}' >
+	          <input id="join_fk_resp" name="join_fk_resp" type="text" class="alfa $clasver " width="" value='{% echo $nresp; %}' disabled="disabled" data-defVal='{% echo $nresp; %}'>
+	          <label for="join_fk_resp">{% echo $anexos[fk_resp][labelf] %}</label>
+	          <div class="error_input">{$errors[fk_resp][0]}</div>
 		</div>
 </div></div>
 </div>

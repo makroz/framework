@@ -117,12 +117,10 @@ namespace Mk\Shared
 				}
 				if (isset($anexos[$campo]['join'])){
 					$cond='';
-					//print_r($anexos);
 					if (isset($anexos[$campo]['join']['cond'])){
 						$cond=$anexos[$campo]['join']['cond'];
 						$arg = Inputs::request("arg",'');
 						@$cond=call_user_func_array('sprintf', array_merge((array)$cond, $arg)); 
-						\Mk\Debug::msg($cond,1);
 					}
 					echo \Mk\Tools\Form::getOptions( $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$cond,$anexos[$campo]['join']['join']),$sel, $msg,$grupo);
 				}
@@ -427,7 +425,7 @@ namespace Mk\Shared
 
 			$this->_model->loadFromArray($_REQUEST);
 			$notColumns=$this->_verificarDatos(Inputs::request("_save_"));
-
+			\Mk\Debug::msg($_REQUEST,3);
 
 			if ($this->_model-> validate())
 			{
@@ -505,10 +503,8 @@ namespace Mk\Shared
 		$pk =Inputs::request('cod','');
 		$modelo = $this->_model;
 		$modelo->$primary=$pk;
+
 		$modelo->load();
-
-
-
 		$view
 		-> set("item", $this->_model->loadToArray())
 		-> set("anexos", $this->getAnexos($this->_model->getColumns(),1))

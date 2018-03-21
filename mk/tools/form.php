@@ -234,8 +234,7 @@ namespace Mk\Tools
 		$fec1=str_replace($bus,'',$fec);
 		echo "Fecha es: $fec1";
 */		
-
-		if ((trim($fec)=='')or(trim($fec)==0)){
+		if ((trim($fec)=='')or($fec*1==0)){
 			return '';
 		}else{
 

@@ -424,6 +424,7 @@ function showFormulario(){
           //inp='<span class="form-config" title="'+item[1]+'" data-campo="'+item[1]+'" data-type="field">[x]</span>';
           break;
       case 'alfa':
+      case 'join':
       case 'date':
       case 'datetime':
       case 'float':
@@ -775,7 +776,11 @@ function getCampos(valTarget){
 
 function closeJoin(){
   var id=$('#modal2').attr('data-key');
-  var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+$('#n_carga').val()+'|'+$('#n_cond').val()+'|'+$('#n_tag').val()+'|'+$('#n_join').val();
+  var ncarga=0;
+  if ($('#n_carga').prop('checked')){
+    ncarga=1;
+  }
+  var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+ncarga+'|'+$('#n_cond').val()+'|'+$('#n_tag').val()+'|'+$('#n_join').val();
   $('#'+id).val( dato );
 
   Materialize.updateTextFields();

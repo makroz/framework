@@ -30,17 +30,19 @@ public function actionDebug()
 {
 	if ($_REQUEST['DELDEBUG']){
 		$_SESSION['DEBUGMSG']='';
+		header("Location: index.php?url=home/debug");
+		exit();
+	}
+	if ($_REQUEST['DATADEBUG']){
+		if ($_SESSION['DATADEBUG']==1){
+			$_SESSION['DATADEBUG']=0;
+		}else{
+			$_SESSION['DATADEBUG']=1;
+		}
+		header("Location: index.php?url=home/debug");
+		exit();
 	}
 	$this->setRenderView(true);
-	//echo $this->getfilenameAction().'<br>';
-	//echo $this->getfilenameLayout();
-
-/*	echo "proibando";
-	echo "<pre>";
-	echo $_SESION['DEBUGMSG'];
-	echo "<pre>";
-*/	
-
 }
 
 /**

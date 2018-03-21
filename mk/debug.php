@@ -123,7 +123,12 @@ namespace Mk
             if ($title!=''){  
                 $m1[$date]['titulo']=$title;
             }
-            $m1[$date]['origen']=self::quienLlamo();
+            
+            $router = Registry::get("router");
+            $controller = $router->getController();
+            $action = $router->getAction();
+
+            $m1[$date]['origen']="Mod:$controller Action:$action Llamo:".self::quienLlamo();
             $m1[$date]['msg']=$msg;
             $m[]=$m1;
             $_SESSION['DEBUGMSG']=$m;

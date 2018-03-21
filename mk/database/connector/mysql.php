@@ -89,11 +89,13 @@ namespace Mk\Database\Connector
 		// executes the provided SQL statement
 		public function execute($sql)
 		{
+
 			if (!$this->_isValidService())
 			{
 				throw $this->_Exception("Not connected to a valid service");
 			}
 			//$sql=str_replace("'", "`", $sql);
+			\Mk\Debug::msg($sql,2);
 			\Mk\Events::fire("mk.query.sql.after",  array('type'=>$sql));
 			return $this->_service->query($sql);
 		}

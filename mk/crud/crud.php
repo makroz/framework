@@ -72,6 +72,7 @@ namespace Mk\Crud {
 			$lusof['pass']                    = 'Password';
 			$lusof['selecdb']                 = 'DB Lista';
 			$lusof['selecdbgrupo']            = 'DB Lista Grupo';
+			$lusof['join']            			= 'De Otra Tabla';
 			$lusof['tree']					  = 'Lista Tree';
 			$lusof['buscardb']                = 'DB Buscar';
 			$lusof['multiple']                = 'Lista Multiple';
@@ -140,7 +141,7 @@ namespace Mk\Crud {
 			$pedir['checkvalor']['tam']       = 's2';
 			$pedir['tipolista']['text']       = 'Se usara en Listado?';
 			$pedir['tipolista']['type']       = 'sel';
-			$pedir['tipolista']['opt']        = Form::getOptions($ltipolista,'', '');
+			$pedir['tipolista']['opt']        = Form::getOptions($ltipolista,'', 'show');
 			$pedir['tamlista']['text']        = 'Ancho Columna';
 			$pedir['tamlista']['type']        = 'text';
 			$pedir['tamlista']['tam']         = 's3';
@@ -214,6 +215,7 @@ namespace Mk\Crud {
 				$pedir['tam']['val'][$key]      = 's12';
 				$pedir['tamlista']['val'][$key] = '';
 				$pedir['search']['val'][$key]   = '1';
+				$pedir['tipolista']['val'][$key]   = 'show';
 				$pedir['posf']['val'][$key]   = $posf;
 				$pedir['defVal']['val'][$key]   = $field['default'];
 				$posf++;
@@ -546,7 +548,7 @@ namespace Mk\Crud {
 			}
 			$this->addViewData('tableName', $table);
 			$campos    = Inputs::post('field');
-
+			//\Mk\Debug::msg($campos,2);
 			$fields    = $this->database->getFields($table);
 			$anexos    = array();
 			$selecdb    = array();
@@ -715,7 +717,8 @@ namespace Mk\Crud {
 							$anexos[] = '$anexos' . "['{$key}']['join']['grupo']=1;";
 						}
 					}
-					if (($aux[2]=='1')||($field['tipolista'] == 'join')){
+					//if (($aux[2]=='1')||($field['tipolista'] == 'join')){
+					if ($aux[2]=='1'){
 						//$cargaAjaxForm++;
 						//$selecdb[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
 						$anexos[] = '$anexos' . "['{$key}']['cargaAjax']=1;";
@@ -804,11 +807,11 @@ namespace Mk\Crud {
 			fclose($gestor);
 			$plantilla = str_replace('//<<[CLASS]>>//', ucfirst($table) . '_controller', $plantilla);
 
-			$aux1='//$_secureKey'."='$table';".PHP_EOL;
-			$aux1='//$$this->_secure();';
+			$aux1='//$this$_secureKey'."='$table';".PHP_EOL;
+			$aux1.="\t\t".'//$this->_secure();';
 			if (trim($keyseguridad)!=''){
-				$aux1='$_secureKey'."='{$keyseguridad}';".PHP_EOL;
-				$aux1='$this->_secure();';
+				$aux1='$this->_secureKey'."='{$keyseguridad}';".PHP_EOL;
+				$aux1.="\t\t".'$this->_secure();';
 			}
 			$plantilla = str_replace('//<<[SECURE]>>//', $aux1, $plantilla);
 

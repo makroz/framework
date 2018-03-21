@@ -46,6 +46,10 @@ return '001';
 
 
 function _openForm(f, idAction,tit){
+		if ($(f).data('ultAction')==undefined){
+			$(f).data('ultAction','ver');
+		}
+		
 		$(f).find('select').each(function(index){
 			var def=$(this).data('defval');
 			if (def==undefined){

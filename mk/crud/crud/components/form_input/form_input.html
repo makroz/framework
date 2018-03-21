@@ -41,7 +41,28 @@ function isUnique_[[var:]]id[[:var]](){
 		</div>	
 [* /if *]
 
+[* if '[[var:]]tipo[[:var]]'=='join' *]
+ 
+{% php
+	$nresp=$item['join_[[var:]]id[[:var]]'];
+	$idresp= $item[[[var:]]id[[:var]]];
+	if ($anexos[[[var:]]id[[:var]]]['funcion']=='useract'){
+		if (($_action=='add')||($_action=='index')){
+			$nresp=$_loged['user']['nombre'];
+			$idresp=$_loged['id'];
+		}
+	}
+php %}
+		<div class="input-field col [[var:]]clase[[:var]]">
+			 <input  id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="hidden"  value='{% echo $idresp; %}'   data-defval='{% echo $idresp; %}' >
+	          <input id="join_[[var:]]id[[:var]]" name="join_[[var:]]id[[:var]]" type="text" class="alfa $clasver " width="[[var:]]tam[[:var]]" value='{% echo $nresp; %}' disabled="disabled" data-defVal='{% echo $nresp; %}'>
+	          <label for="join_[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
+	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
+		</div>	
+[* /if *]
+
 [* if '[[var:]]tipo[[:var]]'=='pass' *]
+
 		<div class="input-field col [[var:]]clase[[:var]]">
 	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="password" class="alfa $clasver [[var:]]validate[[:var]]" width="[[var:]]tam[[:var]]" value='{% echo $item[[[var:]]id[[:var]]]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} data-defVal='{% echo $anexos[[[var:]]id[[:var]]][defVal] %}'>
 	          <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
@@ -64,7 +85,7 @@ function isUnique_[[var:]]id[[:var]](){
 [[:unique]]
 {% php $valor=\\Mk\\Tools\\Form::dbToDate($item[[[var:]]id[[:var]]]); %}
 		<div class="input-field col [[var:]]clase[[:var]]">
-	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver datafecha [[var:]]validate[[:var]]" width="[[var:]]tam[[:var]]" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true"  data-large-mode="true"  data-default-date="{% echo \\Mk\\Tools\\Form::dbToDate($item[[[var:]]id[[:var]]],false,'m-d-Y'); %}" data-defval='{% echo $anexos[[[var:]]id[[:var]]][defVal] %}' >
+	          <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver datafecha [[var:]]validate[[:var]]" width="[[var:]]tam[[:var]]" value='{% echo $valor; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %}  data-format="{% echo $_param->fecha->formato; %}" data-modal="true" data-init-set="false" data-large-mode="true"  data-default-date="{% echo \\Mk\\Tools\\Form::dbToDate($item[[[var:]]id[[:var]]],false,'m-d-Y'); %}" data-defval='{% echo $anexos[[[var:]]id[[:var]]][defVal] %}' >
 	          <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
 	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
 		</div>	
@@ -240,7 +261,9 @@ function addNodeTree(node){
     </select>
      {% /if %}
      {% else %}
-     <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver" width="[[var:]]tam[[:var]]" value='{% echo $anexos[[[var:]]id[[:var]]][options][$item[[[var:]]id[[:var]]]][text]; %}'  disabled="disabled"  >
+        {% php if (isset($anexos[[[var:]]id[[:var]]][options][$item[[[var:]]id[[:var]]]][text])){$valor=$anexos[[[var:]]id[[:var]]][options][$item[[[var:]]id[[:var]]]][text];}else{$valor=$anexos[[[var:]]id[[:var]]][options][$item[[[var:]]id[[:var]]]];}  %}
+        {% php if (trim($valor)==''){$valor=$item[join_[[var:]]id[[:var]]];}  %}
+     <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa $clasver" width="[[var:]]tam[[:var]]" value='{% echo $valor; %}'  disabled="disabled"  >
      {% /else %}
     	          <label for="[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
     	          <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>

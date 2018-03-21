@@ -331,6 +331,10 @@ namespace Mk
 								
 					}
 
+					if (($_SESSION['DATADEBUG']==1)&&($data1['_action']!='debug')){
+						$_SESSION['DATADEBUGDATA']="MOd:".$this->getName().' Action:'.$data1['_action'].'<hr><pre>'.$debug.'</pre>';
+					}
+
 					$results = \Mk\Tools\String::quitarSaltosDobles($results);
 	
 					$_var_ = \Mk\Tools\String::getCodes($results,'[[setvar:', '[[:setvar]]', '',']]');
