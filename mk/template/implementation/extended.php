@@ -72,8 +72,11 @@ namespace Mk\Template\Implementation
 				));
 
 			$file = trim($tree["raw"]);
-			$path = $this-> getDefaultPath();
-			$content = file_get_contents("{$path}/{$file}");
+			$path = '';
+			if (!file_exists($file)) {
+				$path = $this-> getDefaultPath().DIRECTORY_SEPARATOR;
+			}
+			$content = file_get_contents("{$path}{$file}");
 			$template-> parse($content);
 			//$this-> _index++;
 			$index =substr(basename($file), 0,strpos( basename($file),'.')) .$this-> _index++;
@@ -158,7 +161,7 @@ namespace Mk\Template\Implementation
 
 			//\Mk\Debug::msg(": $value");
 			//$value1=$value;
-			if (StringMethods::indexOf($value, "\$_text") >= 0)
+			if (StringMethods::indexOf($value, "\$_text") == 0)
 			{
 				$first = StringMethods::indexOf($value, "\"");
 				$last = StringMethods::lastIndexOf($value, "\"");
@@ -184,7 +187,10 @@ namespace Mk\Template\Implementation
 				$key = $this->_getKey($key);
 			}
 			$previous = $this->_getValue($key);
-			$this->set($key, $previous.$value);
+			if (StringMethods::indexOf($previous, $value)<0){
+				//\Mk\Debug::msg("($key)".$previous.$value,1);
+				$this->set($key, $previous.$value);
+			}
 		}
 		public function prepend($key, $value)
 		{
@@ -193,14 +199,18 @@ namespace Mk\Template\Implementation
 				$key = $this->_getKey($key);
 			}
 			$previous = $this->_getValue($key);
-			$this->set($key, $value.$previous);
+			if (StringMethods::indexOf($previous, $value)<0){
+				//\Mk\Debug::msg("($key)".$previous.$value,1);
+				$this->set($key, $value.$previous);
+			}
 		}
 		public function yield($tree, $content)
 		{
 
+			
 			$key = trim($tree["raw"]);
 			//echo "<hr>$key<br>".$this-> _getValue($key)."<hr>";
-			if (StringMethods::indexOf($this-> _getValue($key), "\$_text") >= 0)
+			if (StringMethods::indexOf($this-> _getValue($key), "\$_text") == 0)
 			{
 				return $this-> _getValue($key);
 			}
@@ -208,6 +218,7 @@ namespace Mk\Template\Implementation
 			{
 				
 				$value = addslashes($this-> _getValue($key));
+				//\Mk\Debug::msg("Yield ($key)".$value,1);
 				return "\$_text[] = \"{$value}\";";
 
 			}

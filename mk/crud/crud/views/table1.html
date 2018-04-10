@@ -187,8 +187,8 @@ editorjsopenform = CodeMirror.fromTextArea(document.getElementById("codejsopenfo
     theme: 'material'
   });
 
-$(".button-collapse").sideNav();
-$('select').material_select();
+$(".button-collapse").sidenav();
+$('select').formSelect();
 
 $('#funcion').bind( "change", function() {  
   valFuncion(); 
@@ -587,8 +587,8 @@ editorjs.refresh();
 editorjsopenform.getDoc().setValue($('#codejsopenform').val());
 editorjsopenform.refresh();
 
-  $('select').material_select();
-   Materialize.updateTextFields();
+  $('select').formSelect();
+   M.updateTextFields();
   alert('Configuraion Cargada!!');
 }
 
@@ -614,10 +614,10 @@ function openDet(id){
   });
 
 
-  $('select').material_select();
+  $('select').formSelect();
   $('#modal1').modal('open');
   valFunc();
-  Materialize.updateTextFields();
+  M.updateTextFields();
   return false;
 }
 
@@ -696,8 +696,8 @@ if (valor=='selec'){
     $('#funcion').val('bdf');
     valFuncion();
   }
-  $('select').material_select();
-  Materialize.updateTextFields();
+  $('select').formSelect();
+  M.updateTextFields();
 
 }
 
@@ -791,7 +791,7 @@ function openJoin(id){
 
   }
   $('#modal2').modal('open');
-  $('select').material_select();
+  $('select').formSelect();
 
 
 }
@@ -809,7 +809,7 @@ function closeJoin(){
   var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+$('#n_carga').val()+'|'+$('#n_cond').val()+'|'+$('#n_tag').val();
   $('#'+id).val( dato );
 
-  Materialize.updateTextFields();
+  M.updateTextFields();
   $('#modal2').modal('close');
 }
 
@@ -859,7 +859,7 @@ function openLista(objeto){
   $(modal).find('#bAddLista').data('indice',tr.length);
 
   $(modal).modal('open');
-  $('select').material_select();
+  $('select').formSelect();
   $(modal).find("#tablalista tbody").sortable({
     axis:'y',
     containment: "parent",
@@ -950,7 +950,7 @@ $('#tablalista tbody').append('<tr id="trlista'+i+'" data-i="'+i+'">'+
   '<td><input id="codigo'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
   '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="cDel('+i+');" style="cursor: pointer;" >delete</i> <i class="material-icons handle grey-text text-lighten-1 "  style="cursor: move;" >import_export</i> </td>'+
   '</tr>');
-  $('select').material_select();
+  $('select').formSelect();
 }
 
 
@@ -959,7 +959,7 @@ function closeLista(){
   var modal=modalista['modal'];
   //var id=$(modal).attr('data-key');
   cSaveLista();
-  Materialize.updateTextFields();
+  M.updateTextFields();
   $(modal).modal('close');
 }
 
@@ -1077,7 +1077,7 @@ function closeMenuConfig1(){
 
 
 
-<ul id="nav-mobile" class="side-nav" >
+<ul id="nav-mobile" class="sidenav" >
   <li><div class="divider"></div></li>
   <li><a class="subheader">{% echo strtoupper($tableName) %}</a></li>
   <li><div class="divider"></div></li>

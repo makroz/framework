@@ -21,24 +21,40 @@ namespace Mk
 
         }
 
+        public static function debug_to_console($data) {
+    if(is_array($data) || is_object($data))
+    {
+        echo("<script>console.log('PHP: ".json_encode($data)."');</script>");
+    } else {
+        echo("<script>console.log('PHP: ".$data."');</script>");
+    }
+    }
+
         public static function microtime_float()
         {
         list($useg, $seg) = explode(" ", microtime());
         return ((float)$useg + (float)$seg);
         }
 
-        public static function initTime($key='0'){
-           echo "<br>".date('Y/m/d H:i:s')." Inicio initTime($key):"."<br>";
-           self::$times[$key]=self::microtime_float();
+        public static function initTime($key='0',$show=true)
+        {
+            if (($show)&&(\Mk\Tools\App::isAjax()==false)){
+               self::debug_to_console(date('Y/m/d H:i:s')." Inicio initTime($key)");
+            }
+            $tiempo=self::microtime_float();
+           self::$times[$key]=$tiempo;
+           return $tiempo;
         }
 
-        public static function endTime($key='0'){
-           
-           $fin=self::microtime_float();
+        public static function endTime($key='0',$show=true){
+          $fin=self::microtime_float();
             $tiempo=round(($fin - self::$times[$key])*1000,4);
            self::$times[$key]=$fin;
-           echo "<br>".date('Y/m/d H:i:s')." Finalizo initTime($key):".$tiempo."<br>";
-        }
+           if (($show)&&(\Mk\Tools\App::isAjax()==false)){
+           self::debug_to_console(date('Y/m/d H:i:s')." Finalizo initTime($key):".$tiempo);
+           }
+           return $tiempo;
+         }
 
 
         public static function msgfile($msg,$file=''){
@@ -81,21 +97,22 @@ namespace Mk
         }
         return $result;
         }
-        public static function quienLlamo($step=1) {
+        public static function quienLlamo($step=1,$c=1) {
         $who=debug_backtrace(2,4);
         $result="";
         $count = 0;
         $last=count($who);
         $ini=$last-3;
+        $c=$c-1;
         foreach($who as $k=>$v) {
 
             $count++;
             if ($count > 0) 
             {
-                if ( $count==$step+2) {
+                if (( $count>=$step+2)and( $count<=$step+2+$c)) {
                     $result=$who[$k]['class'].".".$who[$k]['function'].$result;
                 }
-                if ($count==$step+1){
+                if (( $count>=$step+1)and( $count<=$step+1+$c)){
                     $result="[".$who[$k]['line']."]".$result;    
                 }
                 
@@ -113,6 +130,11 @@ namespace Mk
             echo self::quienLlamo();
             echo '<hr>';
 */
+            $router = Registry::get("router");
+            $controller = $router->getController();
+            $action = $router->getAction();
+
+            if ($controller=='home'){return false;}
             if (DEBUG>=$nivel)
             {
             $m=$_SESSION['DEBUGMSG'];
@@ -124,9 +146,6 @@ namespace Mk
                 $m1[$date]['titulo']=$title;
             }
             
-            $router = Registry::get("router");
-            $controller = $router->getController();
-            $action = $router->getAction();
 
             $m1[$date]['origen']="Mod:$controller Action:$action Llamo:".self::quienLlamo();
             $m1[$date]['msg']=$msg;

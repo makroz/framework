@@ -123,7 +123,9 @@ $('#pindiv').pushpin({
 
 Mk_Componentes.showAll('#panelComponentes');
 
-editorjs = CodeMirror.fromTextArea(document.getElementById("codejs"), {
+{% foreach $pedir in $_pedir %}
+  {% if ($pedir['type']=='codeeditor') %}
+editor_{% echo $pedir_i; %} = CodeMirror.fromTextArea(document.getElementById("{% echo $pedir_i; %}"), {
     lineNumbers: true,
     styleActiveLine: true,
     matchBrackets: true,
@@ -134,34 +136,12 @@ editorjs = CodeMirror.fromTextArea(document.getElementById("codejs"), {
     autoRefresh: true,
     theme: 'material'
   });
-
-editorjsopenform = CodeMirror.fromTextArea(document.getElementById("codejsopenform"), {
-    lineNumbers: true,
-    styleActiveLine: true,
-    matchBrackets: true,
-    autoCloseBrackets: true,
-    matchTags: {bothTags: true},
-    extraKeys: {"Ctrl-J": "toMatchingTag"},
-    autoCloseTags: true,
-    autoRefresh: true,
-    theme: 'material'
-  });
-
-editorcontroler = CodeMirror.fromTextArea(document.getElementById("codecontroler"), {
-    lineNumbers: true,
-    styleActiveLine: true,
-    matchBrackets: true,
-    autoCloseBrackets: true,
-    matchTags: {bothTags: true},
-    extraKeys: {"Ctrl-J": "toMatchingTag"},
-    autoCloseTags: true,
-    autoRefresh: true,
-    theme: 'material'
-  });
+  {% /if %}
+{% /foreach %}
 
 
-$(".button-collapse").sideNav();
-$('select').material_select();
+$(".button-collapse").sidenav();
+$('select').formSelect();
 
 $('#funcion').bind( "change", function() {  
   valFuncion(); 
@@ -198,17 +178,22 @@ $('.listaeventos > i').click(function() {
 $("#modal1").modal();
 
 
-$("ul#tabs").tabs({ onShow: function(tab) { 
+$("#tabs").tabs({ onShow: function(tab) { 
   idtabshow=$(tab).attr('id');
   if (idtabshow=='tabcodigos'){
-    editorjs.refresh();
-    editorjsopenform.refresh();
+{% foreach $pedir in $_pedir %}
+  {% if ($pedir['type']=='codeeditor') %}
+    editor_{% echo $pedir_i; %}.refresh();
+  {% /if %}
+{% /foreach %}
   } 
+
+  //alert(idtabshow);
   if (idtabshow=='formulario'){
     showFormulario();
   }  
   if (idtabshow=='lista'){
-    showLista();
+   showLista();
   }  
 
 
@@ -232,8 +217,8 @@ function showLista(){
               '<thead class="red">'+
               '<tr >'+
               '<th  data-field="i_check" width="30" class="center noprinter" >'+
-              '<input type="checkbox" id="list_check_all" name="list_check_all"  data-type="check" data-on="1" data-off="0"  />'+
-              '<label for="list_check_all"></label>'+
+              '<label for="list_check_all"><input type="checkbox" id="list_check_all" name="list_check_all"  data-type="check" data-on="1" data-off="0"  />'+
+              '<span></span></label>'+
               '</th>'+
               '';
     var ncampos=0;
@@ -244,12 +229,32 @@ function showLista(){
       let tipo=$('#field-'+nom+'-tipolista').val();
       let tam=$('#field-'+nom+'-tamlista').val();
       let label=$('#field-'+nom+'-label').val();
+      let usof=$('#field-'+nom+'-usof').val();
       let inp='';
-      
+      let filter=$('#field-'+nom+'-listafilter').val();
+      let lfilter='';
+      switch(usof) {
+      case 'selec':
+      case 'selecdb':
+      case 'selecdbgrupo':
+        if (filter==1){
+          filter='<i class="material-icons black-text" data-campo="'+nom+'" onclick="onQuitarFiltro(this,0);">filter_list</i>';
+        }else{
+          filter='<i class="material-icons grey-text" data-campo="'+nom+'" onclick="onQuitarFiltro(this,1);">filter_list</i>';
+        }
+
+        break;
+      default:
+        $('#field-'+nom+'-listafilter').val('0');
+        filter='';
+        break;
+      }
+
+
       switch(tipo) {
       case '-1':
       case 'get':
-          htmluso=htmluso+'<i class="material-icons" data-campo="'+nom+'" onclick="onQuitarLista(this,1);">visibility</i> '+label+'<br> ';
+          htmluso=htmluso+filter+'<i class="material-icons" data-campo="'+nom+'" onclick="onQuitarLista(this,1);">visibility</i> '+label+'<br> ';
           break;
       default:
           let seltamvar='';
@@ -258,9 +263,9 @@ function showLista(){
           inp='<th data-field="'+nom+'" id="th-'+nom+'" width="'+tam+'" class="sortable " >'+label+
               ' <div class="top-r-o">'+showtam+'</div>'+
               ' <span class="top-r-i">'+
-              '<input type="radio" name="listatamvar1" id="listatamvar1'+nom+'" value="'+nom+'" '+seltamvar+' onchange="onListChange(1);"><label for="listatamvar1'+nom+'"></label>'+
+              ' <label for="listatamvar1'+nom+'"><input type="radio" name="listatamvar1" id="listatamvar1'+nom+'" value="'+nom+'" '+seltamvar+' onchange="onListChange(1);"><span></span></label>'+
               '</span>'+
-              ' <span class="bottom-r-i"><i class="material-icons" data-campo="'+nom+'" onclick="onQuitarLista(this,0);">visibility_off</i></span>'+
+              ' <span class="bottom-r-i">'+filter+'<i class="material-icons" data-campo="'+nom+'" onclick="onQuitarLista(this,0);">visibility_off</i></span>'+
               '</th>';
           ncampos++;
           break;
@@ -300,6 +305,15 @@ function showLista(){
     actualizarUI();
 
 
+}
+
+function onQuitarFiltro(campo,tipo){
+  if (!tipo){
+    tipo=0;
+  }
+  var nom=$(campo).data('campo');
+  $('#field-'+nom+'-listafilter').val(tipo);
+  showLista();  
 }
 
 function onQuitarLista(campo,tipo){
@@ -464,7 +478,19 @@ function showFormulario(){
               Mk_Componentes.getTagFin()+
               '</div>';
           break;
-
+      case 'buscardb':
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'"" data-type="field">'+
+              '<div class="col s4">'+
+              '<input id="config-'+item[1]+'" type="text" class="alfa" value="" style="margin-right: 30px;" >'+
+              '<label for="config-'+item[1]+'">'+label+'</label>'+
+              '</div>'+
+              '<div class="col s8">'+
+              '<i class="material-icons prefix">sms</i>'+
+              '<input id="config-'+item[1]+'" type="text" class="alfa" value="" >'+
+              '</div>'+
+              Mk_Componentes.getTagFin()+
+              '</div>';
+          break;
       default:
           //code block
           break;
@@ -507,7 +533,7 @@ function cargarConfig1(plantilla){
 
     var datos=JSON.parse(plantilla);
   
-  $.each(datos, function(i, item) {
+  $.each(datos, function( i, item) {
     if (i=='field'){
       $.each(item, function(i1,item1){
         if (jQuery.type(item1)=='object'){
@@ -520,26 +546,29 @@ function cargarConfig1(plantilla){
       });
     }else{
       if (jQuery.type(item)=='string'){
-        $('#'+i+'.plantilla').val(item);  
+        $('#'+ i +'.plantilla').val(item);  
       }
     }
   });
   
   }
-editorjs.getDoc().setValue($('#codejs').val());
-editorjs.refresh();
-editorjsopenform.getDoc().setValue($('#codejsopenform').val());
-editorjsopenform.refresh();
-editorcontroler.getDoc().setValue($('#codecontroler').val());
-editorcontroler.refresh();
 
-  $('select').material_select();
-   Materialize.updateTextFields();
+{% foreach $pedir in $_pedir %}
+  {% if ($pedir['type']=='codeeditor') %}
+editor_{% echo $pedir_i; %}.getDoc().setValue($('#{% echo $pedir_i; %}').val());
+editor_{% echo $pedir_i; %}.refresh();
+  {% /if %}
+{% /foreach %}
+
+  $('select').formSelect();
+   M.updateTextFields();
 
   if (idtabshow=='tabcodigos'){
-    editorjs.refresh();
-    editorjsopenform.refresh();
-    editorcontroler.refresh();
+{% foreach $pedir in $_pedir %}
+  {% if ($pedir['type']=='codeeditor') %}
+    editor_{% echo $pedir_i; %}.refresh();
+  {% /if %}
+{% /foreach %}
   } 
 
   if (idtabshow=='formulario'){
@@ -575,10 +604,10 @@ function openDet(id){
   });
 
 
-  $('select').material_select();
+  $('select').formSelect();
   $('#modal1').modal('open');
   valFunc();
-  Materialize.updateTextFields();
+  M.updateTextFields();
   return false;
 }
 
@@ -664,8 +693,8 @@ if (valor=='selec'){
     $('#funcion').val('bdf');
     valFuncion();
   }
-  $('select').material_select();
-  Materialize.updateTextFields();
+  $('select').formSelect();
+  M.updateTextFields();
 
 }
 
@@ -761,7 +790,7 @@ function openJoin(id){
 
   }
   $('#modal2').modal('open');
-  $('select').material_select();
+  $('select').formSelect();
 
 
 }
@@ -783,7 +812,7 @@ function closeJoin(){
   var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+ncarga+'|'+$('#n_cond').val()+'|'+$('#n_tag').val()+'|'+$('#n_join').val();
   $('#'+id).val( dato );
 
-  Materialize.updateTextFields();
+  M.updateTextFields();
   $('#modal2').modal('close');
 }
 
@@ -832,7 +861,7 @@ function openLista(objeto){
   $(modal).find('#bAddLista').data('indice',tr.length);
 
   $(modal).modal('open');
-  $('select').material_select();
+  $('select').formSelect();
   $(modal).find("#tablalista tbody").sortable({
     axis:'y',
     containment: "parent",
@@ -923,14 +952,14 @@ $('#tablalista tbody').append('<tr id="trlista'+i+'" data-i="'+i+'">'+
   '<td><input id="codigo'+i+'" type="text" class="validate dato'+i+'" value="'+dato[1]+'"></td>'+
   '<td> <i class="material-icons red-text" data-i="'+i+'" onclick="cDel('+i+');" style="cursor: pointer;" >delete</i> <i class="material-icons handle grey-text text-lighten-1 "  style="cursor: move;" >import_export</i> </td>'+
   '</tr>');
-  $('select').material_select();
+  $('select').formSelect();
 }
 
 function closeLista(){
   var modal=modalista['modal'];
   //var id=$(modal).attr('data-key');
   cSaveLista();
-  Materialize.updateTextFields();
+  M.updateTextFields();
   $(modal).modal('close');
 }
 
@@ -942,35 +971,6 @@ var idtabshow='';
 
 
 <!-- <h2 class="header">   Tabla: <span class="grey-text text-lighten-4">{% echo $database.'.' %}</span>{% echo $tableName %}</h2> -->
-
-
-
-<ul id="nav-mobile" class="side-nav" >
-  <li><div class="divider"></div></li>
-  <li><a class="subheader">{% echo strtoupper($tableName) %}</a></li>
-  <li><div class="divider"></div></li>
-  <li class="no-padding">
-   <ul class="collapsible" data-collapsible="expandable">
-
-    {% foreach $field in $_table %}
-
-    <li >
-      <div class="collapsible-header waves-effect {% if ($field['key']=='PRI')%}red-text{% /if %} "><i class="tiny material-icons ">{% if ($field['key']=='PRI')%}stars{% /if %}{% if ($field['key']=='MUL')%}vpn_key{% /if %}{% if ($field['key']=='')%}adjust{% /if %}</i>{% echo $field_i; %}</div>
-      <div class="collapsible-body">
-        <p>
-          Tipo:{% echo $field['type']; %} {% if ($field['args'][0]) %} ( {% echo $field['args'][0] %} {% if ($field['args'][1]) %} , {% echo $field['args'][1] %} {% /if %} ) {% /if %}
-          {% if ($field['null']=='NO') %} <br>Null: NO  {% /if %}
-          {% if ($field['default']!='') %} <br>Default: {% echo $field['default'] %}   {% /if %}
-          {% if ($field['extra']!='') %} <br>{% echo $field['extra'] %}   {% /if %}
-        </p>
-      </div>
-    </li>
-    {% /foreach %}
-  </ul>        
-
-</li>
-</ul>
-
 
 <form action="index.php?crud=generar" id="form1" name="fom1" method="post">
 <div class="row">
@@ -1002,12 +1002,13 @@ var idtabshow='';
     {% include campos.html %}
   </div>
   <div id="tabcodigos" class="col s12"><h3>Codigos en Formulario</h3>
-                <label for="codejs" style="color: black;">Codigo Js en formulario</label>
-                <textarea id="codejs" name='codejs'  class="validate plantilla codejs" data-type="text"  ></textarea>
-                <label for="codejsopenform" style="color: black;">Codigo Js al abrir el formulario</label>
-                <textarea id="codejsopenform" name='codejsopenform'  class="validate plantilla codejs" data-type="text"  ></textarea>
-                <label for="codecontroler" style="color: black;">Codigo Preservado Controlador</label>
-                <textarea id="codecontroler" name='codecontroler'  class="validate plantilla codejs" data-type="text"  ></textarea>
+
+{% foreach $pedir in $_pedir %}
+  {% if ($pedir['type']=='codeeditor') %}
+                <label for="{% echo $pedir_i; %}" style="color: black;">{% echo $pedir['text']; %}</label>
+                <textarea id="{% echo $pedir_i; %}" name="{% echo $pedir_i; %}" class="validate plantilla codejs" data-type="text"  ></textarea>
+  {% /if %}
+{% /foreach %}
                 
   </div>
   <div id="lista" class="col s12">Lista
@@ -1068,6 +1069,8 @@ var idtabshow='';
   {% foreach $pedir in $_pedir %}
     
     {% php $ctam='s12'; if ($pedir['tam']!=''){$ctam=$pedir['tam'];} %}
+
+
     {% if ($pedir['type']=='text') %}
 
     
@@ -1136,9 +1139,12 @@ var idtabshow='';
     {% if ($pedir['type']=='check') %}
 
  <div class="col {% echo $ctam; %} {% echo $pedir_i; %}">
+
     <p onclick="clicChecked('{% echo $pedir_i; %}')">
+      <label  for="{% echo $pedir_i; %}" >
       <input type="checkbox" id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' class=" _pedir" data-type="{% echo $pedir['type']; %}" data-on="{% echo $pedir['onval']; %}" data-off="{% echo $pedir['offval']; %}" {% echo $pedir['disabled']; %} {% echo $pedir['bind']; %} />
-      <label  for="{% echo $pedir_i; %}" >{% echo $pedir['text']; %}</label>
+      <span>{% echo $pedir['text']; %}</span>
+    </label>
     </p>
   </div>
    

@@ -36,7 +36,7 @@ protected $_fk_unidades='-1';
 * @column
 * @readwrite
 * @type decimal
-* @uso A
+* @uso G
 * @funcion bdf
 * @label Cant
 * @validate  numeric

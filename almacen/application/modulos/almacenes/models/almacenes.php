@@ -14,6 +14,16 @@ protected $_pk;
 /**
 * @column
 * @readwrite
+* @type char
+* @uso A
+* @funcion st
+* @label Tipo
+* @validate  required
+*/
+protected $_tipo;
+/**
+* @column
+* @readwrite
 * @type varchar
 * @uso A
 * @funcion st

@@ -13,6 +13,13 @@ class //<<[CLASS]>>// extends CrudDb
 		//<<[ANEXOS]>>//
 		return $anexos;
 	}
+
+	//<<[BEFOREDELETE]>>//
+	//<<[AFTERDELETE]>>//
+
+	//<<[BEFORESAVE]>>//
+	//<<[AFTERSAVE]>>//
+	
 //* preserve code: *//
 //<<[PRESERVECODE]>>//
 //* :preserve code *//

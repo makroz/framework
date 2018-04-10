@@ -10,7 +10,7 @@ class Proveedores_controller extends CrudDb
 	public function __construct($options = array())
 	{
 		parent::__construct($options);
-		$this->_secure();
+		//$this->_secure();
 		//$this->_model =$this->_getLoged();
 	}
 

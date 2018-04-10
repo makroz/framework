@@ -2,27 +2,25 @@
 use Mk\Shared\CrudDb as CrudDb;
 class Almacenes_controller extends CrudDb
 {
-	/**
-	* @readwrite
-	*/
-	//protected $_secureKey='User';
-		
 	public function __construct($options = array())
 	{
 		parent::__construct($options);
-		//$$this->_secure();
+		//$this$_secureKey='almacenes';
+		//$this->_secure();
 	}
 
 	public function getAnexos($anexos=array(),$join=0){
 		$anexos=parent::getAnexos($anexos);
 		$anexos['listAction']="-1";
+		$anexos['tipo']['options']['P']='Principal';
+		$anexos['tipo']['options']['S']='Secundario';
+		$anexos['tipo']['options']['T']='Temporal';
 		$anexos['estado']['defVal']='1';
 		$anexos['estado']['options']['A']='En Apertura';
 		$anexos['estado']['options']['F']='En Funcionamiento';
 		$anexos['estado']['options']['I']='Inventario en Curso';
 		$anexos['fk_resp']['join']['table']='resp';
 		$anexos['fk_resp']['join']['campo']='nombre';
-		$anexos['fk_resp']['cargaAjax']=1;
 		$anexos['lapso']['options']['1']='Diario';
 		$anexos['lapso']['options']['2']='Semanal';
 		$anexos['lapso']['options']['3']='Quincenal';
@@ -39,6 +37,11 @@ class Almacenes_controller extends CrudDb
 
 		return $anexos;
 	}
+//* preserve code: *//
+
+
+//* :preserve code *//
+
 }
 //version MK.CRUD 1.0 
 ?>

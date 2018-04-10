@@ -9,9 +9,9 @@ $(".list_check:checked").each(function() {
 }
 
 function clicsel(){
-$(".list_check").parent().parent().removeClass('selTR');
+$(".list_check").parent().parent().parent().removeClass('selTR');
 $(".list_check:checked").each(function () {
-      $(this).parent().parent().addClass('selTR');
+      $(this).parent().parent().parent().addClass('selTR');
     });
 if (window.selclic){
 		selclic($('.list_check:checked').length,$('.list_check:checked').val(),$('.list_check:checked').attr("tag"));
@@ -35,6 +35,7 @@ function clicChecked(id){
 	}
 }
 {% /append %}
-
+<label for="list_check_all">
 <input type="checkbox" id="list_check_all" name="list_check_all"  data-type="check" data-on="1" data-off="0" onclick="clicChecked('0');" />
-<label for="list_check_all"></label>
+<span></span>
+</label>

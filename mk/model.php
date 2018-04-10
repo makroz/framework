@@ -126,10 +126,24 @@ namespace Mk
 			return $this->loadToArray();
 		}
 
-		public function loadToArray(){
+		public function loadToArray($col=''){
 			$data=array();
 			foreach ($this->columns as $key => $column)
 			{
+
+
+				if ($col!=''){
+					if (!is_array($col)){
+						$col1=explode(',',$col.',');
+					}else{
+						$col1=$col;
+					}
+					\MK\Debug::msg('Buscando:'.$key.' = '.!in_array($key, $col1),0,$key);	
+					if (!in_array($key, $col1)) {
+						continue;
+					}
+				}
+				//\MK\Debug::msg($col1,0,$key);
 				if (!$column["read"])
 				{
 					$prop = "_{$key}";
@@ -145,13 +159,18 @@ namespace Mk
 			}
 			if (is_array($this->_colExtras)){
 				foreach ($this->_colExtras as $key => $value) {
+					if ($col!=''){
+						if (!in_array($key, $col1, true)) {
+							continue;
+						}
+					}
 					$data[$key]=$value;
 				}
 			}
 			return $data;
 		}
 
-		public function load()
+		public function load($error=false)
 		{
 			$primary = $this->primaryColumn;
 			$raw = $primary["raw"];
@@ -176,7 +195,12 @@ namespace Mk
 				$previous=$previous->first();
 				if ($previous == null)
 				{
-					throw $this->_Exception("Ese valor No Existe");
+					if ($error){
+						$this->$raw='';
+						return false;
+					}else{
+						throw $this->_Exception("Ese valor No Existe");
+					}
 				}
 
 				//\Mk\Debug::msg($previous,0);
@@ -269,14 +293,18 @@ namespace Mk
 			$query = $this->connector
 			->query()
 			->from($this->table);
+
 			if (!empty($onlyColumns[$name]))
 			{
 				$query->where("{$name} = ?", $onlyColumns[$name]);
 			}
 			$data = array();
-			foreach ($onlyColumns as $key => $column)
+			foreach ($this->columns as $key => $column)
 			{
+//			foreach ($onlyColumns as $key => $column)
+				if (!empty($onlyColumns[$key])){
 					$data[$key] = $onlyColumns[$key];
+				}
 			}
 			$result = $query->save($data);
 			if ($result > 0)
@@ -506,17 +534,27 @@ namespace Mk
 			// }
 			// return $rows;
 		}
-		public static function count($where = array())
+		public static function count($where = array(),$join=array())
 		{
 			$model = new static();
-			return $model->_count($where);
+			return $model->_count($where,$join);
 		}
-		protected function _count($where = array())
+		protected function _count($where = array(),$join=array())
 		{
 			$query = $this
 			->connector
 			->query()
 			->from($this->table);
+			$join=$this->getJoins();
+	
+			if (is_array($join)){
+			foreach ($join as $clause => $value)
+			{
+				
+				$query->join($value['table'],$value['on'],$value['fields']);
+			}
+			}
+	
 			foreach ($where as $clause => $value)
 			{
 				$query->where($clause, $value);

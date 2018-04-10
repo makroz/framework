@@ -2,15 +2,11 @@
 use Mk\Shared\CrudDb as CrudDb;
 class Prod_controller extends CrudDb
 {
-	/**
-	* @readwrite
-	*/
-	protected $_secureKey='resp';
-		
 	public function __construct($options = array())
 	{
 		parent::__construct($options);
-		$this->_secure();
+		//$this$_secureKey='prod';
+		//$this->_secure();
 	}
 
 	public function getAnexos($anexos=array(),$join=0){
@@ -19,7 +15,6 @@ class Prod_controller extends CrudDb
 		$anexos['fk_unidades']['defVal']='-1';
 		$anexos['fk_unidades']['join']['table']='unidades';
 		$anexos['fk_unidades']['join']['campo']='nombre';
-		$anexos['fk_unidades']['cargaAjax']=1;
 		$anexos['cant']['defVal']='0.00';
 		$anexos['costo']['defVal']='0.00';
 		$anexos['precio']['defVal']='0.00';
@@ -42,7 +37,6 @@ class Prod_controller extends CrudDb
 		$anexos['fk_proveedores']['defVal']='-1';
 		$anexos['fk_proveedores']['join']['table']='proveedores';
 		$anexos['fk_proveedores']['join']['campo']='nom';
-		$anexos['fk_proveedores']['cargaAjax']=1;
 		$anexos['status']['defVal']='1';
 		if ($join!=0){
 			$anexos['fk_unidades']['options']=$this->actionGetListFor('fk_unidades',$anexos);
@@ -52,6 +46,18 @@ class Prod_controller extends CrudDb
 
 		return $anexos;
 	}
+
+	
+	
+
+	
+	
+	
+//* preserve code: *//
+
+
+//* :preserve code *//
+
 }
 //version MK.CRUD 1.0 
 ?>

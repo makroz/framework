@@ -88,7 +88,7 @@ $(document).ajaxStop(function(){
     showMensajes();
 });
 	$('#mk_formulario').modal();
-	$("select").material_select();
+	$("select").formSelect();
 	showMensajes();
 
 
@@ -138,7 +138,7 @@ if (msg=='error'){
 		}
 		//alert(i+' es :'+$('#'+i).prop("tagName"));
 	});
-	$("select").material_select();
+	$("select").formSelect();
 }
 return -1;
 }
@@ -162,8 +162,8 @@ function _openForm(f, idAction,tit){
 			}
 			$(f).data('ultAction',idAction);
 		}
-		$("select").material_select();
-		Materialize.updateTextFields();
+		$("select").formSelect();
+		M.updateTextFields();
 		$(f).modal('open');
 }
 function verItem(id){
@@ -412,7 +412,7 @@ if (msg=='error'){
 		}
 		//alert(i+' es :'+$('#'+i).prop("tagName"));
 	});
-	$("select").material_select();
+	$("select").formSelect();
 }
 return -1;
 }
@@ -436,8 +436,8 @@ function _openForm(f, idAction,tit){
 			}
 			$(f).data('ultAction',idAction);
 		}
-		$("select").material_select();
-		Materialize.updateTextFields();
+		$("select").formSelect();
+		M.updateTextFields();
 		$(f).modal('open');
 }
 function verItem(id){

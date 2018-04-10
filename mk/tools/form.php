@@ -17,7 +17,7 @@ namespace Mk\Tools
 			$r='';
 
 			if (trim($msg!='')){
-				$r.="<option value='' disabled ";
+				$r.="<option value='' ";
 				if (trim($sel)==''){
 					$r.=" selected='selected' ";
 				}
@@ -242,11 +242,18 @@ namespace Mk\Tools
 			if (stripos($fec,'-')!==false){
 				if ($hora==true){
 					$formhora=' H:i:s';
+				}else{
+					if (stripos($fec,' ')!==false){
+						$fec=substr($fec,0,stripos($fec,' '));
+					}
 				}
+				//\Mk\Debug::msg(array($fec,$hora,'Y-m-d'.$formhora,\Mk\Debug::quienLlamo()));
 				$fecha = date_timestamp_get(date_create_from_format ('Y-m-d'.$formhora , $fec));
 			}else{
 				if ($hora==true){
 					$formhora='His';
+				}else{
+					$fec=substr($fec,0,8);
 				}
 				$fecha = date_timestamp_get(date_create_from_format ('Ymd'.$formhora, $fec));
 			}

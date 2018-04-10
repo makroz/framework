@@ -42,7 +42,7 @@ function getCookie(cname) {
         $(idtarget).val(valtarget);
       }
       $(id).attr('oldvalue',dato);
-      $('select').material_select();
+      $('select').formSelect();
     }
     });
     }
@@ -50,18 +50,20 @@ function getCookie(cname) {
     if (dato=='-1'){
       $(id).attr('oldvalue',dato);
       $(idtarget).html('<option value="-1" selected="selected">...</option>>');
-      $('select').material_select();
+      $('select').formSelect();
     }
     return dato;
     
   }
 
+  //var initTime = Date.now();
   function getAjax(link,method='GET',data={},div='',success=null)
   {
+    var initTime = Date.now();
     if (div!=''){
       $(div).LoadingOverlay("show");
     }
-   
+    
     $.ajax({
     method: method,
     url: link,
@@ -73,7 +75,7 @@ function getCookie(cname) {
         }
         
         if (success){
-          var r=success(msg);
+          var r=success(msg,true);
           if (r<0){
             div='';
           }
@@ -82,12 +84,14 @@ function getCookie(cname) {
         if (div!=''){
           $(div).html(msg);
           if (r=='001'){
-            success(msg,true);
+            success(msg);
           }
         }
 
-          $("select").material_select();
-           Materialize.updateTextFields();
+          $("select").formSelect();
+           M.updateTextFields();
+           var endTime = Date.now();
+           console.log('JS: Ajax Ejecutado ('+link+') en :'+(endTime-initTime)+' msegs.');
 
        }
     });
@@ -361,6 +365,27 @@ function alertfocus(msg,inp,color,def,){
     }
   }
 
+  var _lTask=[];
+  function _setTask(tarea,ejecutor){
+    var tareas=_lTask[ejecutor];
+    if (!tareas){
+      tareas=[];
+    }
+    tareas.push(tarea);
+    _lTask[ejecutor]=tareas;
+    return true;
+  }
+
+  function _execTask(ejecutor){
+  var tareas= _lTask[ejecutor];
+  for (var tarea in tareas)
+  {
+    if (isFunction(tareas[tarea])){
+      tareas[tarea]();
+    }
+  }
+    return true;
+  }
 
   function _sendForm(f,isAjax, success){
     //var action=$(f).data('_action');
@@ -396,14 +421,14 @@ function alertfocus(msg,inp,color,def,){
     }else{
       $(target).prop('disabled',false).val($(target).attr('old_check_value'));
     }
-    Materialize.updateTextFields();
+    M.updateTextFields();
   }
 
 function actualizarUI(){
-  $("select").material_select();
-    Materialize.updateTextFields();
+  $("select").formSelect();
+    M.updateTextFields();
   if ($('ul.tabs').length>0){
-      $('ul.tabs').tabs();
+      //$('ul.tabs').tabs();
   }
 }
 

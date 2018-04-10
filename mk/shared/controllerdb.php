@@ -145,7 +145,7 @@ namespace Mk\Shared
 		{
 			$session = Registry::get("session");
 			$secureKey = $this->getKey($key);
-
+			\Mk\Debug::debug_to_console($user);
 			if (($id)and($id!='')and($user))
 			{
 				$dato['id']=$id;

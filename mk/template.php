@@ -274,6 +274,7 @@ namespace Mk
 			}
 
 				$_code_ = \Mk\Tools\String::getCodes($template,'{% append', '{% /append %}', 'compile',' %}');
+				//\Mk\Debug::msg(htmlentities(print_r($_code_,true)),1);
 				foreach ($_code_ as $key2 => $html) {
 					//echo "<hr>Append: $key2 <br> $html<hr>";
 					$vcompile = new Template(array(
@@ -281,7 +282,16 @@ namespace Mk
 					));
 					$vcompile->parse($html,$_data,$msg+1);
 					//echo "<hr>Append: $key2 <br> "$html"<hr>";print_r($_data);
-					$template = str_replace("[[code:compile:{$key2}]]",stripslashes($vcompile->process($_data)),$template);
+					$html1=stripslashes($vcompile->process($_data));
+
+					if (trim($html1)==''){
+						$html1=$html;
+					}
+					//$html1='{% append '.$key2.' %}'.$html1. '{% /append %}';
+					//\Mk\Debug::msg(htmlentities(print_r($html,true)),1);
+					
+					//$template = str_replace("[[code:compile:{$key2}]]",$html,$template);
+					$template = str_replace("[[code:compile:{$key2}]]",$html1,$template);
 				}
 
 			$array = $this->_array($template);
@@ -289,12 +299,15 @@ namespace Mk
 			$this->_code = $this->header.$this->_script($tree).$this->footer;
 			try
 			{	
+				//\Mk\Debug::msg(htmlentities($this->code));
+				//	echo "<hr>tenplate:<br> <pre>".htmlentities(print_r($this->code,true)).'</pre>';
 				$this->_function = create_function("\$_data", $this->code);
 			}
 			catch(\Exception $e)
 			{
-				echo "<hr>Error en tenplate:<br> ";print_r($this->code);
+				echo "<hr>error tenplate:<br> ";print_r($this->code);
 				throw $this->_Exception($e);
+				die();
 			}
 
 			

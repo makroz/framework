@@ -1,4 +1,7 @@
 <h1 > Login</h1>
+{% if ($_loged['pk']>0) %}
+{% /if %}
+{% else %}
 <form method = "post">
 	<ol>
 		<li>
@@ -27,6 +30,4 @@
 		</li>
 	</ol>
 </form>
-{% php
-print_r($_data); 
-php %}
+{% /else %}

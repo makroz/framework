@@ -70,6 +70,16 @@ namespace Mk\Database
 			}
 			return $this->connector->escape($value);
 		}
+
+		protected function _getJoin(){
+			$join='';
+			$_join = $this->join;
+			if (!empty($_join))
+			{
+				$join = join(" ", $_join);
+			}
+			return $join;
+		}
 		protected function _buildSelect()
 		{
 			$fields = array();
@@ -144,7 +154,12 @@ namespace Mk\Database
 			$template = "UPDATE %s SET %s %s %s";
 			foreach ($data as $field =>$value)
 			{
-				$parts[] = "{$field} = ".$this->_quote($value);
+				if (strpos($value, $field)!==false){
+					$parts[] = "{$field} = ".$value;
+				}else{
+					$parts[] = "{$field} = ".$this->_quote($value);	
+				}
+				
 			}
 			$parts = join(", ", $parts);
 			$_where = $this->where;
@@ -295,12 +310,14 @@ namespace Mk\Database
 			$this->_where[] = call_user_func_array("sprintf", $arguments);
 			return $this;
 		}
-		public function first()
+		public function first($sql='')
 		{
+			if ($sql==''){
 			$limit = $this->_limit;
 			$offset = $this->_offset;
 			$this->limit(1);
-			$all = $this->all();
+			}
+			$all = $this->all($sql);
 			$first = ArrayMethods::first($all);
 			if ($limit)
 			{

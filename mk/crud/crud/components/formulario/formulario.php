@@ -41,6 +41,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                 $onclick='';
                 $numeric=0;
 
+
                 if ($value['listaeventos']!=''){
 
                       $aux=explode('*',$value['listaeventos'].'*');
@@ -85,7 +86,12 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                     $onblur.="isUnique_{$key}();";
                 }
 
-    			if ($value['usof']!='-1'){
+                $readonly='';
+                if ($value['readonly']=='1'){
+                    $readonly='&readonly=readonly="readonly"';
+                }
+
+    			if (($value['usof']!='-1')&&(trim($value['usof'])!='')){
     				$this->ncol++;
                     if ($value['tam']==''){
                         $class='s12';
@@ -124,14 +130,17 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
 
                     }
 
+                    if($value['usof']=='buscardb'){
+                        $onblur.=" _buscarDb(this);";
+                    }
+
+
                     if($value['usof']=='int'){
                         if ($numeric==0){
                             $onkeypress.=" return soloInt(event,this);";
                             $numeric++;
                         }
                         $onblur.=" _refreshFloat(this);";
-
-
                     }
 
                      if($value['validar']=='mail'){
@@ -140,9 +149,11 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
 
                      if(($value['validar']=='numerico')&&($numeric==0)){
                         $numeric++;
-                       $onkeypress=" return soloNum(event,this);";
+                       
                         if($value['usof']=='int'){
-                            $onkeypress=" return soloInt(event);";
+                            $onkeypress.=" return soloInt(event);";
+                        }else{
+                            $onkeypress.=" return soloNum(event,this);";
                         }
                      }
 
@@ -161,7 +172,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
 
                                         $options.="<option value='{$opt1[0]}' {% if \$item[{$key}]=='{$opt1[0]}' %}selected='selected' {% /if %} ";
                                         if ($opt1[2]!=''){
-                                            $options.=" data-tag='{$opt1[2]}' ";
+                                            $options.=" data-tag='{$opt1[2]}' ";.
                                         }
                                         $options.=">{$opt1[1]}</option>";
                                     }
@@ -173,7 +184,12 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                     }
 
 
-                    $validate=str_replace(',',' ',$value['validate']);
+
+                    $validate=str_replace(',',' ',$value['validar']);
+
+                    if ($value['required']==1){
+                    $validate.=' required ';    
+                    }
 
 /*                    if ($value['validate']!=''){
 
@@ -202,52 +218,19 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                         $eventos.=" onfocus='{$onfocus}' ";
                     }
 
-
-
                     if ($eventos!=''){
                         $eventos="&eventos={$eventos}";
                     }
-    				$texto.="[[component:]]form_input::id={$key}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$unico}{$dataon}{$dec}{$options}{$validate}{$eventos}[[:component]] ";
+
+                    $eventos=addslashes($eventos);
+
+    				$texto.="[[component:]]form_input::id={$key}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$unico}{$dataon}{$dec}{$options}{$validate}{$eventos}{$readonly}[[:component]] ";
     			}
     		}
 			//return '{% php print_r($_data); %}'.$texto;
 			return $texto;
     	}
-    	public function filas(){
-    		$texto='';
-    		foreach ($this->campos as $key => $value) {
-    			/*if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
-    				$texto.='<td > {% echo $row['.$key.'] %} </td>';
-    			}*/
-    			switch ($value['tipolista']) {
-    				case '-1':
-    					//nada
-    					break;
-    				case 'get':
-    					//nada
-    					break;
-    				case 'status':
-    					//print_r($value);
-    					$texto.='<td >[[component:]]listtable_status::status='.$value['fcustom'].'[[:component]]</td>';	
-    					break;
-    				
-    				default:
-    					$texto.='<td > {% echo $row['.$key.'] %} </td>';
-    					break;
-    			}
-
-    		}
-			return $texto;
-    	}
-    	public function filasvacias(){
-    		$texto='';
-    		foreach ($this->campos as $key => $value) {
-    			if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
-    				$texto.='<td > </td>';
-    			}
-    		}
-			return $texto;
-    	}
+    	
    	}
  }
 ?>

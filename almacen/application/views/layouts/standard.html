@@ -3,7 +3,7 @@
   <html>
     <head>
 		<meta charset="utf-8">
-		<meta title="{% echo $_appTit; %}">
+		<meta title="{% echo $_appTit; %}asdad">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		{% yield meta.inline %}
 
@@ -15,14 +15,15 @@
 			<link type="text/css" rel="stylesheet" href="../mk/js/mk.css"/>
 			<link type="text/css" rel="stylesheet" href="../mk/js/mkprint.css" media="print" />
 			<script type="text/javascript" src="../mk/js/mk.js"></script>
+			<link type="text/css" rel="stylesheet" href="css/css.css" />
 		{% /set %}
 
 		{% set style.files %}
 		{% /set %}
 
+
 		{% yield vip.files %}
 		{% yield style.files %}
-		{% yield meta.inline %}
 
 		<style>
 			{% yield style.inline %}
@@ -31,23 +32,34 @@
 	</head>
 
 	<body>
+	<div id="loader-wrapper">
+      <div id="loader"></div>
+      <div class="loader-section section-left"></div>
+      <div class="loader-section section-right"></div>
+    </div>
+    {% if \Mk\Tools\App::isBuscar()==false %}
 		<header class="noprinter">
 			{% include navigation.html %}
 		</header>
-
+	{% /if %}
 		<main>
 			{% echo $template %}
 		</main>
 
 		<footer>
 		</footer>
-
+		{% yield div.modales %}
 		{% yield js.files %}
 
 		<script>
+		$(window).on('load', function() {
+		    setTimeout(function() {
+		      $('body').addClass('loaded');
+		    }, 200);
+		  });
 			$(document).ready(function(){
-				$('#debug').modal();
 				{% yield js.onready %}
+				$('.dropdown-trigger').dropdown();
 			});
 			{% yield js.inline %}
 		</script>

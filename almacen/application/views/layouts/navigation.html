@@ -1,6 +1,5 @@
 <div class="navbar-fixed">
-
-	<ul id="dropdown1" class="dropdown-content">
+	<ul id="submodulos" class="dropdown-content">
  			{% php
 
 					$path = APP_PATH . "/application/modulos";
@@ -26,7 +25,7 @@
 
 	        <ul class="right hide-on-med-and-down">
 				<li><a href="/" > home</a></li>
-				<li><a class="dropdown-button" href="#!" data-activates="dropdown1">Modulos<i class="material-icons right">arrow_drop_down</i></a></li>
+				<li><a class="dropdown-trigger" href="#!" data-target="submodulos" >Modulos<i class="material-icons right">arrow_drop_down</i></a></li>
 				<li><a href = "index.php?url=resp/logout" >logout</a></li>
 				<li><a href = "index.php?url=resp/login" > login</a></li>
 				{% /else %}
@@ -34,5 +33,4 @@
 		</div>
 	</nav>
 </div>
-	        
 

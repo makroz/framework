@@ -9,6 +9,6 @@ function iDisabledCheck(check,target,val){
     }else{
       $(target).prop('disabled',false).val($(target).attr('old_check_value'));
     }
-    Materialize.updateTextFields();
+    M.updateTextFields();
   }
 [[:js]]

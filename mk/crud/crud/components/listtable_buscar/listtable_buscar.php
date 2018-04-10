@@ -16,7 +16,11 @@ class Listtable_buscar
     		foreach ($this->campos as $key => $value) {
     			//
     			if ($value['search']=='1'){
-                    $texto.='<option value="'.$key.'" class="'.\Mk\Tools\Bd::getTypes($value['type']).'">'.$value['label'].'</option>'; 
+                    $tipo=$value['type'];
+                     if ($value['tipolista']=='join'){
+                        $tipo='varchar';
+                     }
+                    $texto.='<option value="'.$key.'" class="'.\Mk\Tools\Bd::getTypes($tipo).'">'.$value['label'].'</option>'; 
                     $this->ncol++;
 
     			}

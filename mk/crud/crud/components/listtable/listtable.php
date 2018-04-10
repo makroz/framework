@@ -14,30 +14,36 @@ class Listtable
 
     	public function encabezados(){
 
-    		$texto='';
+    		$texto1='';
     		foreach ($this->campos as $key => $value) {
-    			//
+    			$texto='';
     			if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
     				$this->ncol++;
                     $ordkey='';
                     if ($value['tipolista']=='join'){
                         $ordkey='join_';
                     }
+
     				$texto.='<th data-field="'.$ordkey.$key.'" width="'.$value['tamlista'].'" class="sortable {% if ($order==\''.$ordkey.$key.'\') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos['.$key.'][label] %} </th>';
+                    if ($value['listafilter']==1){
+                        $texto='{% if ($_filter['.$key.']=="") %}'.$texto.'{% /if %}';
+                    }
+
     			}
+                $texto1.=$texto;
     		}
 
 			//return '{% php print_r($_data); %}'.$texto;
-			return $texto;
+			return $texto1;
     	}
     	public function filas(){
 
-    		$texto='';\Mk\Debug::msg($this->campos,1);
+    		$texto1='';
     		foreach ($this->campos as $key => $value) {
     			/*if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
     				$texto.='<td > {% echo $row['.$key.'] %} </td>';
     			}*/
-
+                $texto='';
                 $key1="&key={$key}";
     			switch ($value['tipolista']) {
     				case '-1':
@@ -63,22 +69,45 @@ class Listtable
                             $tipo='date';
 
                         }
-                        $texto.="[[component:]]listtable_col::tipo={$tipo}{$key1}[[:component]]";  
+                        $texto.="[[component:]]listtable_col::tipo={$tipo}{$key1}&tipolista={$value['tipolista']}[[:component]]";  
     					
     					break;
     			}
 
-    		}
-			return $texto;
+                switch ($value['tipolista']) {
+                    case '-1':
+                        //nada
+                        break;
+                    case 'get':
+                        //nada
+                        break;
+                    
+                    default:
+                        if ($value['listafilter']==1){
+                            $texto='{% if ($_filter['.$key.']=="") %}'.$texto.'{% /if %}';
+                        }
+                        break;
+                }
+
+             $texto1.=$texto;
+      		}
+			return $texto1;
     	}
+
     	public function filasvacias(){
-    		$texto='';
+    		$texto1='';
     		foreach ($this->campos as $key => $value) {
+                $texto='';
     			if (($value['tipolista']!='-1')&&($value['tipolista']!='get')){
     				$texto.='<td > </td>';
+                    if ($value['listafilter']==1){
+                        $texto='{% if ($_filter['.$key.']=="") %}'.$texto.'{% /if %}';
+                    }
+
     			}
+                $texto1.=$texto;
     		}
-			return $texto;
+			return $texto1;
     	}
    	}
  }

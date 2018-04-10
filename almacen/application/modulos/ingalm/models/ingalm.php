@@ -14,9 +14,9 @@ protected $_pk;
 /**
 * @column
 * @readwrite
-* @type datetime
-* @uso G
-* @funcion datetimesystem
+* @type date
+* @uso A
+* @funcion date
 * @label Fecha
 * @validate  required
 */
@@ -131,6 +131,24 @@ protected $_serial;
 * @validate  required, numeric
 */
 protected $_fk_resp;
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso G
+* @funcion datetimesystem
+* @label Created_
+*/
+protected $_created_;
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso A
+* @funcion datetimesystem
+* @label Modified_
+*/
+protected $_modified_;
 /**
 * @column
 * @readwrite

@@ -172,11 +172,11 @@ namespace Mk\Crud {
 			$pedir['required']['onval']       = '1';
 			$pedir['required']['offval']      = '0';
 			$pedir['required']['tam']         = 's6 m3';
-			$pedir['ver']['text']             = 'Solo Lectura?';
-			$pedir['ver']['type']             = 'check';
-			$pedir['ver']['onval']            = '1';
-			$pedir['ver']['offval']           = '0';
-			$pedir['ver']['tam']              = 's6 m3';
+			$pedir['readonly']['text']             = 'Solo Lectura?';
+			$pedir['readonly']['type']             = 'check';
+			$pedir['readonly']['onval']            = '1';
+			$pedir['readonly']['offval']           = '0';
+			$pedir['readonly']['tam']              = 's6 m3';
 			$pedir['unico']['text']             = 'Valor Unico?';
 			$pedir['unico']['type']             = 'check';
 			$pedir['unico']['onval']            = '1';
@@ -200,7 +200,32 @@ namespace Mk\Crud {
 			$pedir['defVal']['text']           = 'valor por Defecto';
 			$pedir['defVal']['type']           = 'text';
 			$pedir['defVal']['tam']           = 's12';
+
+			$pedir['codejs']['text']           = 'Codigo JS en Formulario';
+			$pedir['codejs']['type']           = 'codeeditor';
+			$pedir['codejsopenform']['text']           = 'Codigo JS al abrir en Formulario';
+			$pedir['codejsopenform']['type']           = 'codeeditor';
+			$pedir['codecontroler']['text']           = 'Codigo PHP Controlador Preservado';
+			$pedir['codecontroler']['type']           = 'codeeditor';
+
+			$pedir['codeaftersave']['text']           = 'Codigo PHP afterSave <br> <strong style="color:red">function afterSave($action){</strong><br>';
+			$pedir['codeaftersave']['type']           = 'codeeditor';
+			$pedir['codeaftersave']['unique']	= 1;
+
+			$pedir['codebeforesave']['text']           = 'Codigo PHP beforeSave <br> <strong style="color:red">function beforeSave($action){</strong><br>';
+			$pedir['codebeforesave']['type']           = 'codeeditor';
+			$pedir['codebeforesave']['unique']	= 1;
+
+			$pedir['codeafterdelete']['text']           = 'Codigo PHP afterDelete <br> <strong style="color:red">function afterDelete($id,$i,$t){</strong><br>';
+			$pedir['codeafterdelete']['type']           = 'codeeditor';
+			$pedir['codeafterdelete']['unique']	= 1;
+
+			$pedir['codebeforedelete']['text']           = 'Codigo PHP beforeDelete <br> <strong style="color:red">function beforeDelete($id){</strong><br>';
+			$pedir['codebeforedelete']['type']           = 'codeeditor';
+			$pedir['codebeforedelete']['unique']	= 1;
 			
+			$pedir['listafilter']['text']           = 'filter';
+			$pedir['listafilter']['type']           = 'hidden';
 
 
 
@@ -387,6 +412,11 @@ namespace Mk\Crud {
 						if ($pos !== false) {
 							$tablajoin[0] = substr($tablas, $pos, strlen($tablajoin[0]));
 							$campos       = $this->database->getColsOf($tablajoin[0]);
+							if ($campos===false){
+								$tablajoin[0]=\Mk\Tools\String::pluralize($tablajoin[0]);
+								$campos       = $this->database->getColsOf($tablajoin[0]);
+							}
+							\Mk\Debug::msg($campos);
 							$campos       = implode(',', $campos);
 							$pos          = String::stripos_array($campos, array(
 								'nom',
@@ -434,14 +464,14 @@ namespace Mk\Crud {
 					$pedir['usof']['val'][$key]      = 'selecdb';
 					$pedir['funcion']['val'][$key]   = '-1';
 				}
-				if ($Name == 'created') {
+				if ($Name == 'created_') {
 					$pedir['tipolista']['val'][$key] = '-1';
 					$pedir['usof']['val'][$key]      = '-1';
 					$pedir['uso']['val'][$key]       = 'G';
 					$pedir['funcion']['val'][$key]   = 'datetimesystem';
 					$pedir['required']['val'][$key]   = '0';
 				}
-				if ($Name == 'modified') {
+				if ($Name == 'modified_') {
 					$pedir['tipolista']['val'][$key] = '-1';
 					$pedir['usof']['val'][$key]      = '-1';
 					$pedir['uso']['val'][$key]       = 'A';
@@ -465,7 +495,7 @@ namespace Mk\Crud {
 					$pedir['funcion']['val'][$key]   = 'st';
 					$pedir['usof']['val'][$key]      = 'oculto';
 					$pedir['uso']['val'][$key]       = '-1';
-					//$pedir['ver']['val'][$key]='1';
+					//$pedir['onlyread']['val'][$key]='1';
 					//$var='cod';
 					if ($Name == 'pk') {
 						$pedir['tipolista']['val'][$key] = 'show';
@@ -517,9 +547,16 @@ namespace Mk\Crud {
 			if (file_exists($dir . DIRECTORY_SEPARATOR . $table.'_controller.php')){
 				$filecontroller=file_get_contents($dir . DIRECTORY_SEPARATOR . $table.'_controller.php');
 			}
-			$aux1=stripos($filecontroller,'//* preserve code: *//')+strlen('//* preserve code: *//');
-			$aux2=stripos($filecontroller,'//* :preserve code *//',$aux1);
-			$filecontroller=substr($filecontroller,$aux1,$aux2-$aux1);
+
+			if (stripos($filecontroller,'//* preserve code: *//')!==false){
+				$aux1=stripos($filecontroller,'//* preserve code: *//')+strlen('//* preserve code: *//');
+				$aux2=stripos($filecontroller,'//* :preserve code *//',$aux1);
+				$filecontroller=substr($filecontroller,$aux1,$aux2-$aux1);
+				$filecontroller=\Mk\Tools\String::quitarSaltosDobles($filecontroller);
+			}else{
+				$filecontroller='';
+			}
+
 			$aux=json_decode($fileconfig);
 			$aux->codecontroler=$filecontroller;
 			$fileconfig=json_encode($aux);
@@ -552,6 +589,8 @@ namespace Mk\Crud {
 			$fields    = $this->database->getFields($table);
 			$anexos    = array();
 			$selecdb    = array();
+			$selecdbelse    = array();
+
 			$joins=array();
 			$txtCampos = '';
 			$cargaAjaxForm=0;
@@ -692,14 +731,20 @@ namespace Mk\Crud {
 					}
 				}
 
-				if (($field['usof'] == 'selecdb')||($field['usof'] == 'selecdbgrupo')) {
+				if (($field['usof'] == 'selecdb')||($field['usof'] == 'selecdbgrupo')||($field['usof'] == 'buscardb')) {
 					echo "<hr> usof selec DB:" . $field['campojoin'] . '<hr>';
 					$aux = explode('|', $field['campojoin'] . '||||');
 					if (($aux[0]!='')&&($aux[1]!='')){
 						$aux[3]=str_replace('"',"'",$aux[3]);
 						$aux[4]=str_replace('"',"'",$aux[4]);
 						//$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."getArrayFromTable('{$aux[0]}', '{$aux[1]}',".'"'.$aux[4].'","'.$aux[3].'");';
-						$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."actionGetListFor('{$key}',".'$anexos);';
+						if ($field['usof'] != 'buscardb') {
+							if ($field['listafilter']==1){
+							$selecdbelse[] = '$anexos' . "['{$key}']['options']=".'$this->'."actionGetListFor('{$key}',".'$anexos);';
+							}else{
+							$selecdb[] = '$anexos' . "['{$key}']['options']=".'$this->'."actionGetListFor('{$key}',".'$anexos);';
+							}
+						}
 						$anexos[] = '$anexos' . "['{$key}']['join']['table']='{$aux[0]}';";
 						$anexos[] = '$anexos' . "['{$key}']['join']['campo']='{$aux[1]}';";
 						if ($aux[3]!=''){
@@ -800,6 +845,9 @@ namespace Mk\Crud {
 				$anexos    .="\t\t".'}'.PHP_EOL;
 			}
 
+			if (count($selecdbelse)>0){
+				$anexos    .= "\t\t".implode($selecdbelse, PHP_EOL . "\t\t") . PHP_EOL;
+			}
 
 			$file      = strtolower($this->getFilenameLayout('controller.php', 'plantillas'));
 			$gestor    = fopen($file, "r");
@@ -817,7 +865,44 @@ namespace Mk\Crud {
 
 			$plantilla = str_replace('//<<[PRESERVECODE]>>//', Inputs::post('codecontroler',''), $plantilla);
 
-			
+			$afterSave= trim(\Mk\Tools\String::quitarSaltosDobles(Inputs::post('codeaftersave','')));
+			if ($afterSave!=''){
+				$afterSave = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$afterSave);
+				$afterSave='public function afterSave($action){'.PHP_EOL.
+					$afterSave.PHP_EOL.
+					"\t\t".'return true;'.PHP_EOL.
+					"\t".'}';
+			}
+			$plantilla = str_replace('//<<[AFTERSAVE]>>//', $afterSave, $plantilla);					
+			$beforeSave= trim(\Mk\Tools\String::quitarSaltosDobles(Inputs::post('codebeforesave','')));
+			if ($beforeSave!=''){
+				$beforeSave = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$beforeSave);
+				$beforeSave='public function beforeSave($action){'.PHP_EOL.
+					$beforeSave.PHP_EOL.
+					"\t\t".'return true;'.PHP_EOL.
+					"\t".'}';
+			}
+			$plantilla = str_replace('//<<[BEFORESAVE]>>//', $beforeSave, $plantilla);
+
+
+			$afterDelete= trim(\Mk\Tools\String::quitarSaltosDobles(Inputs::post('codeafterdelete','')));
+			if ($afterDelete!=''){
+				$afterDelete = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$afterDelete);
+				$afterDelete='public function afterDelete($id,$i,$t){'.PHP_EOL.
+					$afterDelete.PHP_EOL.
+					"\t\t".'return true;'.PHP_EOL.
+					"\t".'}';
+			}
+			$plantilla = str_replace('//<<[AFTERDELETE]>>//', $afterDelete, $plantilla);					
+			$beforeDelete= trim(\Mk\Tools\String::quitarSaltosDobles(Inputs::post('codebeforedelete','')));
+			if ($beforeDelete!=''){
+				$beforeDelete = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$beforeDelete);
+				$beforeDelete='public function beforeDelete($id){'.PHP_EOL.
+					$beforeDelete.PHP_EOL.
+					"\t\t".'return true;'.PHP_EOL.
+					"\t".'}';
+			}
+			$plantilla = str_replace('//<<[BEFOREDELETE]>>//', $beforeDelete, $plantilla);
 
 
 			$plantilla = str_replace('//<<[ANEXOS]>>//', $anexos, $plantilla);
@@ -834,7 +919,9 @@ namespace Mk\Crud {
 			//$view->set('campos', $campos);
 			//generar vista listar
 			$file = strtolower($this->getFilenameLayout('view_listar.html', 'plantillas'));
-			$this->procesaPlantillaView($file, $campos, $table);
+			if ($this->procesaPlantillaView($file, $campos, $table)!==true){
+				die("Error al procesar la vista $file");
+			}
 
 
 /*			$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'mk' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'jslibrary';
@@ -845,27 +932,44 @@ namespace Mk\Crud {
 			echo "<hr>Library Js Fin <hr>";
 */
 			$file = strtolower($this->getFilenameLayout('view_formulario.html', 'plantillas'));
-			$this->procesaPlantillaView($file, $campos, $table);
+			if ($this->procesaPlantillaView($file, $campos, $table)!==true){
+				die("Error al procesar la vista $file");
+			}
+
 		}
 		private function procesaPlantillaView($filePl, $campos, $table)
 		{
 			global $variables;
+			$crep=0;
 			echo "<h1>Inicia proceso de Vista:</h1><h2>" . basename($filePl) . "</h2>";
 			$gestor    = fopen($filePl, "r");
 			$plantilla = fread($gestor, filesize($filePl));
 			fclose($gestor);
 			$componentes                        = \Mk\Tools\String::getEtiquetas($plantilla, '[[component:]]', '[[:component]]', '1');
+
+			echo '<hr>nuevos componentes primera vez<hr><pre>'.print_r($componentes,true).'</pre>'; 
+				\MK\Debug::msg($componentes,4,'primera');
 /*			$codeUnique['jsinline']['index']    = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.inline %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['jsonready']['index']   = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.onready %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['jsfiles']['index']     = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.files %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['styleinline']['index'] = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.inline %}', '{% /append %}', 2, 'index', ' ');
 			$codeUnique['stylefiles']['index']  = \Mk\Tools\String::getEtiquetas($plantilla, '{% append style.files %}', '{% /append %}', 2, 'index', ' ');
-*/			while (sizeof($componentes) > 0) {
+*/			
+			$ult_parametros=array();
+			while (sizeof($componentes) > 0) {
 				foreach ($componentes as $component => $parametros) {
-					$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'mk' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . $component . DIRECTORY_SEPARATOR;
+					$raiz='';
+					$f=explode('.',$component.'.');
+					if ($f[1]!=''){
+						$raiz=$f[0]. DIRECTORY_SEPARATOR;
+						$component=$f[1];
+					}
+					\Mk\Debug::msg($f);
+					$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'mk' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR .$raiz. $component . DIRECTORY_SEPARATOR;
 					$file = $dir . $component . '.html';
 					if (!file_exists($file)) {
-						return exit;
+						echo "<h1>NO se encontro el archivo de componente: $component ($file)</h1>";
+						return false;
 					}
 					$gestor = fopen($file, "r");
 					$html   = fread($gestor, filesize($file));
@@ -903,6 +1007,14 @@ namespace Mk\Crud {
 					foreach ($parametros as $key => $param) {
 						$html = $html1;
 						$tag  = $component;
+						if ($raiz!=''){
+							$tag=str_replace(DIRECTORY_SEPARATOR,'.', $raiz).$component;
+						}
+						
+
+
+
+
 						if ($param != '') {
 							$tag      = $tag . '::' . $param;
 							$paramvar = explode('&', $param . '&');
@@ -910,8 +1022,9 @@ namespace Mk\Crud {
 								if ($var1 != '') {
 									$var1 = explode('=', $var1 . '=');
 									if ($var1[0] != '') {
-										$html                               = str_replace('[[var:]]' . $var1[0] . '[[:var]]', rtrim(implode(array_slice($var1, 1), '='), '='), $html);
+										$html  = str_replace('[[var:]]' . $var1[0] . '[[:var]]', rtrim(implode(array_slice($var1, 1), '='), '='), $html);
 										$codeUnique['jsinline'][$component] = str_replace('[[var:]]' . $var1[0] . '[[:var]]', rtrim(implode(array_slice($var1, 1), '='), '='), $codeUnique['jsinline'][$component]);
+										$tag  = str_replace('[[var:]]' . $var1[0] . '[[:var]]', rtrim(implode(array_slice($var1, 1), '='), '='), $tag);
 									}
 									//$html = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$html);
 								}
@@ -920,6 +1033,9 @@ namespace Mk\Crud {
 						} else {
 							$html = $this->procesaPhpHtml($html, $funcionphp);
 						}
+
+
+
 
 						$compile = \Mk\Tools\String::getEtiquetas($html, '[[compile:]]', '[[:compile]]', 3, $component, '[[compilando]] ');
 						//$compile=$compile[0];
@@ -937,6 +1053,8 @@ namespace Mk\Crud {
 							$compile  = str_replace('[* ', '{% ', $compile);
 							$compile  = str_replace(' *]', ' %}', $compile);
 
+							//$compile  = str_replace('[[component:]]', '[[component1:]]', $compile);
+
 							$vcompile = new \Mk\View();
 							$vcompile->set('campos', $campos);
 							$vcompile->set('variables', $variables);
@@ -947,6 +1065,9 @@ namespace Mk\Crud {
 							$compile  = str_replace('[% ', '{% ', $compile);
 							$compile  = str_replace(' %]', ' %}', $compile);
 							$compile  = str_replace('[[]]', '$', $compile);
+
+							//$compile  = str_replace('[[c:]]', '[[component:]]', $compile);
+							//$compile  = str_replace('[[:c]]', '[[:component]]', $compile);
 							//$compile = str_replace('[[**]]','\\',$compile);
 							echo "<br><span style='color:red;'><code>$compile</code> Compilado </span>";
 							$html = str_replace('[[compilando]]', stripslashes($compile), $html);
@@ -959,14 +1080,53 @@ namespace Mk\Crud {
 */
 
 						}
+
+
+
+						if ($param != '') {
+							//$tag      = $tag . '::' . $param;
+							$paramvar = explode('&', $param . '&');
+							foreach ($paramvar as $key1 => $var1) {
+								if ($var1 != '') {
+									$var1 = explode('=', $var1 . '=');
+									if ($var1[0] != '') {
+										$html  = str_replace('[[var:]]' . $var1[0] . '[[:var]]', rtrim(implode(array_slice($var1, 1), '='), '='), $html);
+										$codeUnique['jsinline'][$component] = str_replace('[[var:]]' . $var1[0] . '[[:var]]', rtrim(implode(array_slice($var1, 1), '='), '='), $codeUnique['jsinline'][$component]);
+									}
+									//$html = str_replace('[[var:]]'.$var1[0].'[[:var]]',rtrim(implode(array_slice($var1,1),'='),'='),$html);
+								}
+								$html = $this->procesaPhpHtml($html, $funcionphp);
+							}
+						} else {
+							$html = $this->procesaPhpHtml($html, $funcionphp);
+						}
+
+
+$crep++;
+
 						echo "<br>---Renderizado Componente: $tag";
-						$plantilla = str_replace('[[component:]]' . $tag . '[[:component]]', $html, $plantilla);
-					}
+						$cc=0;
+						$plantilla = str_replace('[[component:]]' . $tag . '[[:component]]', $html, $plantilla,$cc);
+/*						$ct=103;
+						$ct1=substr('[[component:]]' . $tag . '[[:component]]',0,$ct);
+						$ccc=strpos($plantilla, $ct1);
+						$tt='';
+						if ($ccc!==false){
+							$tt=substr($plantilla,$ccc,$ct);
+						}
+						echo "<hr>$crep:NUevo Html333:($ccc:$tt:$ct:".strlen('[[component:]]' . $tag . '[[:component]]')."::$ct1)".$cc.'::('.'[[component:]]' . $tag . '[[:component]]'.')<br>'.$html."<hr>***<br>".$plantilla."<hr>";
+
+						if ($crep>20){
+							//die('Error mas de 60');
+						}
+*/					}
 					if ($funcionphp) {
 						unset($funcionphp);
 					}
 				}
 				$componentes = \Mk\Tools\String::getEtiquetas($plantilla, '[[component:]]', '[[:component]]', '1');
+				echo '<hr>nuevos componentes<hr><pre>'.print_r($componentes,true).'</pre>'; 
+				\MK\Debug::msg($componentes,4);
 			} //while
 
 			$codeUnique['jsinline']['index']    = \Mk\Tools\String::getEtiquetas($plantilla, '{% append js.inline %}', '{% /append %}', 2, 'index', ' ');
@@ -1018,6 +1178,7 @@ namespace Mk\Crud {
 			$gestor = fopen($dir . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $filePl, "w+");
 			fwrite($gestor, $plantilla, strlen($plantilla));
 			fclose($gestor);
+			return true;
 		}
 		private function procesaPhpHtml($html, $funcionphp)
 		{

@@ -11,6 +11,15 @@ namespace Mk\Tools
 		{
 		}
 
+		public static function isBuscar(){
+			if (\Mk\Inputs::request("_buscar_")) {
+    			return \Mk\Inputs::request("_buscar_");
+			}else{
+				return false;
+			}
+
+		}
+
 		public static function isAjax(){
 			if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
     			return true;
@@ -19,7 +28,6 @@ namespace Mk\Tools
 			}
 
 		}
-
 	/**
 	 * Returns whether this is an Adobe Flash or Adobe Flex request.
 	 * @return boolean whether this is an Adobe Flash or Adobe Flex request.
@@ -42,6 +50,24 @@ namespace Mk\Tools
 				}
 			return $parsed;
 		}
+
+	public static function getDirComponent($name,$dir=''){
+
+		$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . $component . DIRECTORY_SEPARATOR;
+		
+		$file = $dir . $component . '.html';
+		if (!file_exists($file)) {
+			return $file;
+		}
+
+		$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'mk' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . $component . DIRECTORY_SEPARATOR;
+		
+		$file = $dir . $component . '.html';
+		if (!file_exists($file)) {
+			return $file;
+		}
+
+	}
 
 
 

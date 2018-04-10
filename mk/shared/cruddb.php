@@ -11,6 +11,8 @@ namespace Mk\Shared
 	{
 
 		protected $_searchMsg='';
+
+		protected $dataAnt;
 		
 		public $defaultAction='listar';
 
@@ -104,23 +106,51 @@ namespace Mk\Shared
 				$primary = $this->getPrimary();
 				$campo = $this->_model->escape(Inputs::request("campo",''));
 				$sel = $this->_model->escape(Inputs::request("sel",''));
+
 				$anexos=$this->getAnexos($this->_model->getColumns());
 				$msg = $this->_model->escape(Inputs::request("msg",'Seleccione '.$anexos[$campo]['labelf']));
 				
+				$table=$anexos[$campo]['join']['table'];
 				$grupo=false;
 				if (isset($anexos[$campo]['join']['grupo'])){
+		
+				$anexos=$this->getAnexos($this->_model->getColumns());
 					$grupo=true;
 				}
 				if (isset($anexos[$campo]['options'])){
 
 					echo \Mk\Tools\Form::getOptions($anexos[$campo]['options'],$sel, $msg,$grupo);	
 				}
+				\Mk\Debug::msg($anexos[$campo],2);
 				if (isset($anexos[$campo]['join'])){
 					$cond='';
+
 					if (isset($anexos[$campo]['join']['cond'])){
 						$cond=$anexos[$campo]['join']['cond'];
 						$arg = Inputs::request("arg",'');
+						$arg1=Inputs::request("arg1",'');
+						//\Mk\Debug::msg($arg1,3,'Arg1:');
+						if ($arg1!=''){
+							$database=\Mk\Registry::get('database');
+							$pk = ($database->getPrimaryKeyOf($table));
+							$pk=$pk[0];
+							$sql="select $table.$arg1 as dato from $table where $pk='$sel'";
+							//\Mk\Debug::msg($sql,3,'Sql1:');
+								$result=$database->execute($sql);
+								//\Mk\Debug::msg($result,3,'Sql1:');
+								if ($result !== false)
+								{
+									while ($row=$result->fetch_row())
+									{
+										$arg[]=$row[0];
+									}
+								}
+
+						}
+						//\Mk\Debug::msg($arg,3,'Sql1:');
+						
 						@$cond=call_user_func_array('sprintf', array_merge((array)$cond, $arg)); 
+						//\Mk\Debug::msg($cond,3,'cond:');
 					}
 					echo \Mk\Tools\Form::getOptions( $this->getArrayFromTable($anexos[$campo]['join']['table'], $anexos[$campo]['join']['campo'],$anexos[$campo]['join']['tag'],$cond,$anexos[$campo]['join']['join']),$sel, $msg,$grupo);
 				}
@@ -167,11 +197,16 @@ namespace Mk\Shared
 		$this->setRenderView(false);
 		$primary = $this->getPrimary();
 		$pk =Inputs::request('cod','');
-		$modelo = $this->_model;
+		$campos =Inputs::request('campos','');
+		$campos =Inputs::request('campos','');
+		$join =Inputs::request('join','');
+
+		$campos = $primary.','.$campos; 
+		$modelo = new $this->_model;
 		$modelo->$primary=$pk;
-		$modelo->load();
+		$modelo->load(true,$join);
 		//echo "<pre>";print_r($modelo);echo "</pre>";
-		$data=$modelo->loadToArray();
+		$data=$modelo->loadToArray($campos);
 
 		if (\Mk\Tools\App::isAjax()==true){
 			echo json_encode($data);
@@ -333,7 +368,7 @@ namespace Mk\Shared
 		}
 
 		$campos = Inputs::get("search_campo",array());
-
+		//echo "capos es:";print_r($campos);
 		if (sizeof($campos)>0){
 			$cond = Inputs::get("search_cond",array());
 			$search['_sc4'] = Inputs::get("search_search_date",array());
@@ -342,18 +377,30 @@ namespace Mk\Shared
 			$join = Inputs::get("search_join",array());
 			$isjoin = Inputs::get("search_isjoin",array());
 
-			$columns=$this->_model->getColumns();
+			//$columns=$this->_model->getColumns();
+			$columns=$this->getAnexos($this->_model->getColumns());
+			//echo "columns es:<pre>".print_r($columns,true).'</pre>';
 			$joiner='';
 			$where='';
 			$this->_searchMsg='';
 
 			foreach ($campos as $key => $value){
+				//echo "Value es: $value";
 				$dd=\Mk\Tools\Bd::getTypes($columns[$value]['type']);
+				if ($dd==''){
+					$dd='_sc1';
+				}
 
 				$dato=$this->_model->escape($search[$dd][$key]);
-				if (stripos($value, '.')===false){
+
+				
+				if ((stripos($value, '.')===false)&&($columns[$value]['join']['table']=='')){
 					$value=$this->_model->getTable().'.'.$value;
 
+				}
+
+				if ($columns[$value]['join']['table']!=''){	
+					$value=	'j_'.$columns[$value]['join']['table'].'.'.$columns[$value]['join']['campo'];
 				}
 
 				if (($cond[$key]<3)||($cond[$key]>8)){ $dato=strtoupper($dato);}
@@ -363,7 +410,7 @@ namespace Mk\Shared
 					$texto= str_replace("[2]", $dato, $texto);
 
 					$msg=$this->_cond_search_msg[$cond[$key]];
-					$msg= str_replace("[1]", $columns[$value]['label'], $msg);
+					$msg= str_replace("[1]", $columns[$campos[$key]]['label'], $msg);
 					$msg= str_replace("[2]", $dato, $msg);
 					
 
@@ -390,6 +437,13 @@ namespace Mk\Shared
 			}
 
 		}
+
+		$filter = $this->getParam("_filter",array());
+		foreach ($filter as $key => $value) {
+			if ($value!='')
+			$where.="and(".$this->_model->getTable().".{$key}='{$value}')";
+		}
+
 		return $where;
 	}
 
@@ -397,45 +451,93 @@ namespace Mk\Shared
 		return $anexos;
 	}
 
-		public function delete($id){
-		if ($id==''){
-			return 0;
-		}
-		$primary = $this->getPrimary();	
-		$where="$primary in ($id)";
-		$where = array(
-		'?'=>$where
-		);
-		return $this->_model->deleteAll($where);
-		}
-
-	public function beforeSave(){
-
+	public function beforeDelete($id){
 		return true;
 	}
 
-	public function afterSave(){
+	public function afterDelete($id,$i,$t){
 		return true;
 	}
 
-	public function actionSave(){
-		if (Inputs::request("_save_"))
+	public function delete($id){
+
+	$ids=explode(',',$id.',');
+	$id=array();
+	foreach ($$ids as $key => $value) {
+		if (trim($value)!=''){
+			if (beforeDelete($value)){
+				$id[]=$value;
+			}
+		}
+	}
+	$id=implode(',', $id);
+
+	if (trim($id)==''){
+		return 0;
+	}
+
+	$primary = $this->getPrimary();	
+	$where="$primary in ($id)";
+	$where = array(
+	'?'=>$where
+	);
+	$r=$this->_model->deleteAll($where);
+
+	$ids=explode(',',$id.',');
+	$id=array();
+	foreach ($$ids as $key => $value) {
+		if (trim($value)!=''){
+			afterDelete($value,$key,$r);
+		}
+	}
+
+	return $r;
+	}
+
+	public function beforeSave($action){
+		return true;
+	}
+
+	public function afterSave($action){
+		return true;
+	}
+
+	public function actionSave($action='',$data=array()){
+		$incode=false;
+		if (($action=='')||(empty($data))){
+			$action=Inputs::request("_save_",'');
+			$data=$_REQUEST;
+		}else{
+			$incode=true;
+		}
+		if ($action!='')
 		{
 			$view = $this-> getActionView();
 
-			$this->_model->loadFromArray($_REQUEST);
-			$notColumns=$this->_verificarDatos(Inputs::request("_save_"));
-			\Mk\Debug::msg($_REQUEST,3);
+			$this->_model->loadFromArray($data);
+			$notColumns=$this->_verificarDatos($action);
+			//\Mk\Debug::msg($_REQUEST,3);
 
 			if ($this->_model-> validate())
 			{
-				$this->beforeSave();
+				$this->beforeSave($action);
 				//print_r($notColumns);
 				$this->_model->save($notColumns);
-				$this->afterSave();
+				$this->afterSave($action);
 				$view->set("success", true);
 			}
 			$view->set("errors", $this->_model->getErrors());
+
+			if ($incode==true){
+				if ($view->get('success')==true){
+					$this->setRenderView(false);
+					return "ok";
+				}else{
+					$this->setRenderView(false);
+					return json_encode($this->_model->getErrors());
+				}
+
+			}
 
 			if (\Mk\Tools\App::isAjax()==true){
 				if ($view->get('success')==true){
@@ -555,6 +657,9 @@ namespace Mk\Shared
 		$direction = $this->getParam("direction",'desc');
 		$page = $this->getParam("page",'1');
 		$limit = $this->getParam("limit",'10');
+		$filter = $this->getParam("_filter",array());
+		\Mk\Debug::msg($filter,3,'Filtros');
+		$_sele_ =\Mk\Tools\App::isBuscar();
 
 		// if (stripos($order, 'join_')===false){
 		// 			$order=$this->_model->getTable().'.'.$order;
@@ -562,6 +667,7 @@ namespace Mk\Shared
 		// }
 		
 		$where=$this->getSearchWhere();
+		//echo $where;
 		
 		if ((Inputs::get("_del",'')=='del')&&(Inputs::get("cod",'')!='')){
 			$delete=$this->delete(Inputs::get("cod",''));
@@ -581,7 +687,7 @@ namespace Mk\Shared
 
 		$join=$this->_model->getJoins();
 
-		$count = $this->_model->count($where);
+		$count = $this->_model->count($where, $join);
 		if ($page>($count/$limit)){
 			$page=1;
 		}
@@ -597,6 +703,7 @@ namespace Mk\Shared
 		-> set("page", $page)
 		-> set("limit", $limit)
 		-> set("count", $count)
+		-> set("_filter", $filter)
 		-> set("searchMsg", $this->_searchMsg)
 		-> set("modTitulo", "Listado de ".$this->_model->_tPlural)
 		-> set("modSingular",$this->_model->_tSingular)

@@ -1,8 +1,7 @@
-	{% append js.files %}
+{% append js.files %}
 	<link href='js/datedropper/datedropper.css' rel='stylesheet'>
 	<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
-	{% /append %}
-
+{% /append %}
 	{% append js.inline %}
 	function _search_campo_change(elem){
 		var valor=$(elem).val();
@@ -14,10 +13,12 @@
 		$(cond).find('option').hide();
 		$(cond).find('.'+tipo).show().first().prop("selected","selected").change();;
 		//$(cond).find('.'+tipo).
-		
 		$(fila).find('._sc').hide();
 		$(fila).find('.'+tipo).show();
-
+		if (tipo=='_sc4'){
+			$('input.datafecha').dateDropper();
+		}
+		actualizarUI();
 	}
 
 	function _search_addcampo(elem){
@@ -82,8 +83,6 @@
 	{% append js.onready %}
 	 $('input.datafecha').dateDropper();
 	 _search_campo_change($('#search_campo'));
-
-
 	{% /append %}
 
 

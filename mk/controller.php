@@ -80,7 +80,6 @@ namespace Mk
 		if ($valor!=$n){
 			$session->set($llave,$valor);	
 		}
-		
 		return $valor;
 	}
 
@@ -317,7 +316,7 @@ namespace Mk
 						$x=\Mk\Tools\String::getEtiquetas($results,'<!-- onlyajax: -->','<!-- :onlyajax -->',2,'root',' ');
 					}
 
-					if ($this->getParam("_debug",'')=='1'){
+/*					if ($this->getParam("_debug",'')=='1'){
 						 //$data1=$view->_getData();
 						unset($data1["template"]);
 						$debug=print_r($data1,true);
@@ -330,8 +329,9 @@ namespace Mk
 						}
 								
 					}
-
+*/
 					if (($_SESSION['DATADEBUG']==1)&&($data1['_action']!='debug')){
+						$debug=print_r($data1,true);
 						$_SESSION['DATADEBUGDATA']="MOd:".$this->getName().' Action:'.$data1['_action'].'<hr><pre>'.$debug.'</pre>';
 					}
 
@@ -341,10 +341,16 @@ namespace Mk
 					$_var_ = \Mk\Tools\String::getCodes($results,'<!--setvar:', '<!--:setvar-->', false,'-->','a',$_var_);
 					$_var_ = \Mk\Tools\String::getCodes($results,'<!--prevar:', '<!--:prevar-->', false,'-->','p',$_var_);
 					$_var_ = \Mk\Tools\String::getCodes($results,'[[prevar:', '[[:prevar]]', '',']]','p',$_var_);
+					
 					foreach ($_var_ as $key2 => $html) {
 						$results = str_replace("[[printvar:{$key2}]]",stripslashes($html),$results);
 					}
-	
+					
+					$_var_ = \Mk\Tools\String::getCodes($results,'[[printvar:', ']]', '','');
+					//$_var_ =\Mk\Tools\String::getEtiquetas($results, '[[var:]]', '[[:var]]', 2, 'index', ' ');
+					//$_var_1 = \Mk\Tools\String::getCodes($results,'[[var:', '[[:var]]', '',']','p',$_var_);
+					//\Mk\Debug::msg($_var_);
+
 					echo $results;
 					if ($runScript!=''){
 							echo "<script type='text/javascript'> $runScript </script>";

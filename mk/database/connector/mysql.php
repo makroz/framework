@@ -359,12 +359,14 @@ public   function getTableInformationOf($table) {
 
 
  public   function getColsOf($table) {
- 	   	$information = array();
+ 		$information = false;   	
     	$result = $this->execute("DESC `$table`");
-    	
-    	while ( $field = $result->fetch_assoc() ) {
-    		$name=$field['Field'];
-    		$information[$name] = $name;
+    	if ($result){
+	    	$information = array();
+	    	while ( $field = @$result->fetch_assoc() ) {
+	    		$name=$field['Field'];
+	    		$information[$name] = $name;
+	    	}
     	}
 
     	return $information;

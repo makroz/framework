@@ -1,6 +1,6 @@
 <?php
 error_reporting( E_ALL ^ E_NOTICE);
-define("DEBUG", 2);
+define("DEBUG", 4);
 define("APP_PATH", dirname(__FILE__));
 define("CORE_PATH", dirname(__FILE__).'\..');
 ini_set( 'date.timezone', 'America/La_Paz' );
@@ -8,6 +8,7 @@ try
 {
 require(CORE_PATH."/mk/core.php");
 Mk\Core::initialize();
+\MK\Debug::initTime($_GET["url"]);
 $path = APP_PATH . "/application/plugins";
 $iterator = new DirectoryIterator($path);
 foreach ($iterator as $item)
@@ -31,13 +32,18 @@ $router = new Mk\Router(array(
 	"extension" => isset($_GET["html"]) ? $_GET["html"] : "html"
 	));
 Mk\Registry::set("router", $router);
+
+
+
 $router->dispatch();
+
 
 unset($configuration);
 unset($database);
 unset($cache);
 unset($session);	
 unset($router);
+\MK\Debug::endTime($_GET["url"]);
 }
 catch(\Exception $e)
 {
