@@ -17,7 +17,7 @@ almIngreso
 pk, fecha, fk_almProd, fk_almacen, costo, cant, fk_unidad, tipo(C=compra,I=InvInicial,T=traspaso,D=Devolucion,A=ajuste), iddoc, nfactura,seriales,fecVence,fk_resp, status
 
 almEgreso
-pk, fecha, fk_almProd, fk_almacen, precio, cant, fk_unidad, tipo(V=venta,T=traspaso,D=Devolucion,A=ajuste,X=Danado,C=Vencido), iddoc, nfactura,seriales,fk_resp, status
+pk, fecha, fk_almProd, fk_almacen, precio, cant, fk_unidad, tipo(V=venta,T=traspaso,D=Devolucion,A=ajuste,X=Danado,C=Vencido), seriales,fk_resp, status
 
 
 me falta modificar el sendform para que no envie si es que un ajax o unique no es correcto.

@@ -12,14 +12,22 @@ class Ingalm_controller extends CrudDb
 	public function getAnexos($anexos=array(),$join=0){
 		$anexos=parent::getAnexos($anexos);
 		$anexos['listAction']="-1";
+		$anexos['fecha']['defVal']='hoy';
 		$anexos['fk_almacenes']['join']['table']='almacenes';
 		$anexos['fk_almacenes']['join']['campo']='nombre';
+		$anexos['fk_almacenes']['join']['alias']='j_almacenes';
+		$anexos['fk_almacenes_2']['join']['table']='almacenes';
+		$anexos['fk_almacenes_2']['join']['campo']='nombre';
+		$anexos['fk_almacenes_2']['join']['alias']='j_almacenes_1';
 		$anexos['fk_prod']['join']['table']='prod';
 		$anexos['fk_prod']['join']['campo']='nom';
+		$anexos['fk_prod']['join']['alias']='j_prod';
 		$anexos['fk_prod']['join']['tag']="fk_unidades";
 		$anexos['fk_prod']['join']['join']="left join unidades on (fk_unidades=unidades.pk)";
+		$anexos['fk_prod']['join']['cb']="prod.codbarra:1:e,prod.nom:1:like";
 		$anexos['fk_unidades']['join']['table']='unidades';
 		$anexos['fk_unidades']['join']['campo']='nombre';
+		$anexos['fk_unidades']['join']['alias']='j_unidades';
 		$anexos['fk_unidades']['join']['cond']="(tipo='%s')";
 		$anexos['fk_unidades']['join']['tag']="tipo";
 		$anexos['tipo']['defVal']='C';
@@ -37,14 +45,20 @@ class Ingalm_controller extends CrudDb
 			$anexos['fk_unidades']['options']=$this->actionGetListFor('fk_unidades',$anexos);
 		}
 		$anexos['fk_almacenes']['options']=$this->actionGetListFor('fk_almacenes',$anexos);
+		$anexos['fk_almacenes_2']['options']=$this->actionGetListFor('fk_almacenes_2',$anexos);
 
 		return $anexos;
 	}
 
-	
+	public function beforeDelete($id){
+		$this->dataAnt=$this->getDatosDb($id,'pk,cant,fk_prod,fk_almacenes,fk_unidades');
+		return true;
+	}
 	public function afterDelete($id,$i,$t){
 		$database = \Mk\Registry::get("database");
-		$datos=$database->query()->first("select pk,cant,fk_prod,fk_almacenes from ingalm where (pk={$id}) limit 1");
+		$datos=$this->dataAnt;
+		$unidad=$database->query()->first("select prod.pk, fk_unidades, unidades.relbase, uni2.relbase as relbase2 from prod left join unidades on (unidades.pk=fk_unidades) left join unidades as uni2 on (uni2.pk={$datos['fk_unidades']}) where (prod.pk={$datos['fk_prod']}) limit 1");
+		$datos['cant']=($datos['cant']*$unidad['relbase2'])/$unidad['relbase'];
 		$database->execute("update prodalm set cant=cant-{$datos['cant']} where (fk_prod={$datos['fk_prod']})and(fk_almacenes={$datos['fk_almacenes']})");
 		$database->execute("update prod set cant=cant-{$datos['cant']} where (pk={$datos['fk_prod']})");
 		return true;
@@ -52,19 +66,20 @@ class Ingalm_controller extends CrudDb
 
 	public function beforeSave($action){
 		if ($action=='edit'){
-		  $database = \Mk\Registry::get("database");
-		  $this->dataAnt=$database->query()->first("select pk, cant, fk_prod, fk_almacenes from ingalm where (pk={$this->_model->pk}) limit 1");
+		  $this->dataAnt=$this->getDatosDb($this->_model->pk,'pk, cant, fk_prod, fk_almacenes');
 		}
 		return true;
 	}
 	public function afterSave($action){
 		$datos=$this->_model->loadToArray();
 		$database = \Mk\Registry::get("database");
+		$unidad=$database->query()->first("select prod.pk, fk_unidades, unidades.relbase, uni2.relbase as relbase2 from prod left join unidades on (unidades.pk=fk_unidades) left join unidades as uni2 on (uni2.pk={$datos['fk_unidades']}) where (prod.pk={$datos['fk_prod']}) limit 1");
+		$datos['cant']=($datos['cant']*$unidad['relbase2'])/$unidad['relbase'];
 		$idProdAlm=$database->query()->first("select pk, cant from prodalm where (fk_prod={$datos['fk_prod']})and(fk_almacenes={$datos['fk_almacenes']}) limit 1");
 		$data['pk']=$idProdAlm['pk'];
 		$data['cant']=$idProdAlm['cant']+$datos['cant'];
 		if ($action=='add'){
-			$datap['cant']='cant+'.$datos['cant'];
+		  $datap['cant']='cant+'.$datos['cant'];
 		}
 		if ($action=='edit'){
 		  if (($datos['fk_prod']!=$this->dataAnt['fk_prod'])||($datos['fk_almacenes']!=$this->dataAnt['fk_almacenes'])){
@@ -75,8 +90,8 @@ class Ingalm_controller extends CrudDb
 		  $datap['cant']='cant+'.($datos['cant']-$this->dataAnt['cant']);
 		}
 		if (!($idProdAlm['pk']>0)){
-			$data=$datos;
-			$data['pk']='';
+		  $data=$datos;
+		  $data['pk']='';
 		}
 		$prodAlm=new ProdAlm();
 		$prodAlm->saveFromArray($data);

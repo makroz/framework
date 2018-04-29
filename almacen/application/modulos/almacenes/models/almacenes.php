@@ -100,6 +100,24 @@ protected $_t_ubicaciones='{"R":{"t":"Recepcion"},"A":{"t":"Almacen"},"C":{"t":"
 * @label St
 */
 protected $_status='1';
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso G
+* @funcion datetimesystem
+* @label Created_
+*/
+protected $_created_;
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso A
+* @funcion datetimesystem
+* @label Modified_
+*/
+protected $_modified_;
 public $_tSingular='Almacen';
 public $_tPlural='Almacenes';
 
@@ -108,7 +126,7 @@ public function __construct($options = array())
 	{
 		parent::__construct($options);
 
-		$this->setJoins('resp','(almacenes.fk_resp=j_resp.pk)',Array('j_resp.nombre' => 'join_fk_resp'));
+		$this->setJoins('resp','(almacenes.fk_resp=j_resp.pk)',Array('j_resp.nombre' => 'join_fk_resp'),j_resp);
 
 	}
 }

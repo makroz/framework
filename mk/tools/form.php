@@ -103,13 +103,14 @@ namespace Mk\Tools
 
 
 		public static function tbd($valor=''){
+			$database=\Mk\Registry::get('database');
 			$valor=trim($valor);
 			
 			if (get_magic_quotes_gpc()){
 				$valor=stripslashes($valor);
 			}
 
-			$valor=mysql_real_escape_string($valor);
+			$valor=$database->escape($valor);
 			return $valor;
 		}
 
@@ -120,7 +121,8 @@ namespace Mk\Tools
 		}
 
 		public static function dateToDbDate($fec='',$hora=false, $formato=''){
-		if (trim($fec)==''){
+			$fec=trim($fec);
+		if ($fec==''){
 			return '';
 		}else{
 
@@ -142,7 +144,6 @@ namespace Mk\Tools
 			}
 
 			}
-			
 			$fecha = date_timestamp_get(date_create_from_format ($formato , $fec));
 			//echo "Fechas: $fec | $formato |";print_r($fecha);
 
@@ -174,7 +175,9 @@ namespace Mk\Tools
 		}//function
 
 		public static function dateToDb($fec='',$hora=false, $formato=''){
-		if (trim($fec)==''){
+		
+		$fec=trim($fec);
+		if ($fec==''){
 			return '';
 		}else{
 
@@ -234,7 +237,8 @@ namespace Mk\Tools
 		$fec1=str_replace($bus,'',$fec);
 		echo "Fecha es: $fec1";
 */		
-		if ((trim($fec)=='')or($fec*1==0)){
+		$fec=trim($fec);
+		if (($fec=='')or($fec*1==0)){
 			return '';
 		}else{
 
@@ -274,7 +278,7 @@ namespace Mk\Tools
 					$formato.=' '.$formatoh;
 				}
 			}
-			return date($formato,$fecha);
+			return trim(date($formato,$fecha));
 		}
 		}//function
 
@@ -294,7 +298,8 @@ namespace Mk\Tools
 		}//function
 
 		public static function dbDateToDate($fec='',$hora=false,  $formato=''){
-		if ((trim($fec)=='')or(parseInt($fec)==0)){return '';
+		$fec=trim($fec);
+		if (($fec=='')or(parseInt($fec)==0)){return '';
 		}else{
 			if ($formato==''){
 					$formato='Ymd';
@@ -325,6 +330,7 @@ namespace Mk\Tools
 
 
 		public static function ISOToDate($fec){
+			$fec=trim($fec);
 			$fec=dbtoDate($fec,true,true,'Y-m-d H:i:s');
 			$date = new DateTime($fec);
 			return  $date;

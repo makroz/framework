@@ -2,15 +2,11 @@
 use Mk\Shared\CrudDb as CrudDb;
 class Resp_controller extends CrudDb
 {
-	/**
-	* @readwrite
-	*/
-	//protected $_secureKey='User';
-		
 	public function __construct($options = array())
 	{
 		parent::__construct($options);
-		//$$this->_secure();
+		//$this$_secureKey='resp';
+		//$this->_secure();
 	}
 
 	public function getAnexos($anexos=array(),$join=0){
@@ -21,11 +17,17 @@ class Resp_controller extends CrudDb
 		return $anexos;
 	}
 
+	
+	
+
+	
+	
+	
 //* preserve code: *//
 
 	public function actionLogin()
 	{
-
+		$this->setWillRenderLayoutView(false);
 		if (\Mk\Inputs::post("login"))
 		{
 			$email = \Mk\Inputs::post("doc");
@@ -42,7 +44,6 @@ class Resp_controller extends CrudDb
 				$view-> set("pass_error", "Debe indicar Password");
 				$error = true;
 			}
-
 			if (!$error)
 			{
 				$session = \Mk\Registry::get("session");
@@ -52,7 +53,6 @@ class Resp_controller extends CrudDb
 					"pass = ?" => $password,
 					"status = ?" => 1
 					));
-
 				//echo '<hr>Modelo '.$this->_modelName.' User:';print_r($user);
 				if (!empty($user))
 				{
@@ -72,8 +72,8 @@ class Resp_controller extends CrudDb
 		}
 	}
 
-
 //* :preserve code *//
+
 }
 //version MK.CRUD 1.0 
 ?>

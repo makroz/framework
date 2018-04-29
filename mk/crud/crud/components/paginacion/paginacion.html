@@ -1,4 +1,4 @@
-[[unique:]]{% php $maxpage=ceil($count / $limit); $minpage=$page-3; if ($minpage<=0){ $minpage=1; } $lastpage=$minpage+4;if($lastpage>$maxpage){ $lastpage=$maxpage;}  %}[[:unique]]
+[[unique:]]{% php $maxpage=ceil($count / $limit); $minpage=$page-1; if ($minpage<=0){ $minpage=1; } $lastpage=$minpage+2;if($lastpage>$maxpage){ $lastpage=$maxpage;}  %}[[:unique]]
 
 {% if $items != false %}
 <ul class="pagination" style="padding: 0.8em;margin:0;" >

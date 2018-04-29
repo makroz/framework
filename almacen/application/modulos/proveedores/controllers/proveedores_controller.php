@@ -2,16 +2,11 @@
 use Mk\Shared\CrudDb as CrudDb;
 class Proveedores_controller extends CrudDb
 {
-	/**
-	* @readwrite
-	*/
-	//protected $_secureKey='User';
-		
 	public function __construct($options = array())
 	{
 		parent::__construct($options);
-		//$this->_secure();
-		//$this->_model =$this->_getLoged();
+		$this->_secureKey='resp';
+		$this->_secure();
 	}
 
 	public function getAnexos($anexos=array(),$join=0){
@@ -21,5 +16,18 @@ class Proveedores_controller extends CrudDb
 
 		return $anexos;
 	}
+
+	
+	
+
+	
+	
+	
+//* preserve code: *//
+
+
+//* :preserve code *//
+
 }
+//version MK.CRUD 1.0 
 ?>

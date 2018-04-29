@@ -79,7 +79,7 @@ protected $_codbarra;
 * @uso A
 * @funcion st
 * @label Categoria
-* @validate  required, numeric
+* @validate  numeric
 */
 protected $_fk_categorias='-1';
 /**
@@ -109,7 +109,7 @@ protected $_tvence='0';
 * @uso A
 * @funcion st
 * @label Proveedor
-* @validate  required, numeric
+* @validate  numeric
 */
 protected $_fk_proveedores='-1';
 /**
@@ -122,6 +122,24 @@ protected $_fk_proveedores='-1';
 * @label St
 */
 protected $_status='1';
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso G
+* @funcion datetimesystem
+* @label Created_
+*/
+protected $_created_;
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso A
+* @funcion datetimesystem
+* @label Modified_
+*/
+protected $_modified_;
 public $_tSingular='Producto';
 public $_tPlural='Productos';
 
@@ -130,9 +148,9 @@ public function __construct($options = array())
 	{
 		parent::__construct($options);
 
-		$this->setJoins('unidades','(prod.fk_unidades=j_unidades.pk)',Array('j_unidades.nombre' => 'join_fk_unidades'));
-		$this->setJoins('categorias','(prod.fk_categorias=j_categorias.pk)',Array('j_categorias.nombre' => 'join_fk_categorias'));
-		$this->setJoins('proveedores','(prod.fk_proveedores=j_proveedores.pk)',Array('j_proveedores.nom' => 'join_fk_proveedores'));
+		$this->setJoins('unidades','(prod.fk_unidades=j_unidades.pk)',Array('j_unidades.nombre' => 'join_fk_unidades'),j_unidades);
+		$this->setJoins('categorias','(prod.fk_categorias=j_categorias.pk)',Array('j_categorias.nombre' => 'join_fk_categorias'),j_categorias);
+		$this->setJoins('proveedores','(prod.fk_proveedores=j_proveedores.pk)',Array('j_proveedores.nom' => 'join_fk_proveedores'),j_proveedores);
 
 	}
 }

@@ -79,6 +79,24 @@ protected $_cel;
 * @label St
 */
 protected $_status='1';
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso G
+* @funcion datetimesystem
+* @label Created_
+*/
+protected $_created_;
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso A
+* @funcion datetimesystem
+* @label Modified_
+*/
+protected $_modified_;
 public $_tSingular='Proveedor';
 public $_tPlural='Proveedores';
 
@@ -92,5 +110,5 @@ public function __construct($options = array())
 	}
 }
 
-
+//version MK.CRUD 1.0 
 ?>

@@ -198,13 +198,58 @@ namespace Mk\Shared
 		$primary = $this->getPrimary();
 		$pk =Inputs::request('cod','');
 		$campos =Inputs::request('campos','');
-		$campos =Inputs::request('campos','');
 		$join =Inputs::request('join','');
+		$cb =Inputs::request('cbuscar','');
+		$where=array();
+		if ($cb!=''){
+			$c=explode(',', $cb.',');
+			foreach ($c as $key => $value) {
+				if ($value!=''){
+					$c1=explode(':',$value.'::');
+
+					if ($c1[0]!=''){
+/*						if ($c1[1]=='1'){
+							$where.="OR";
+						}else{
+							$where.="AND";
+						}
+*/
+						switch ($c1[2]) {
+							case 'like':
+								$where[]="({$c1[0]} LIKE  ('%{$pk}%'))";
+								break;
+							
+							default:
+								$where[]="({$c1[0]}='{$pk}')";
+								break;
+						}
+					}
+				}
+			}
+		}
 
 		$campos = $primary.','.$campos; 
 		$modelo = new $this->_model;
 		$modelo->$primary=$pk;
-		$modelo->load(true,$join);
+		$modelo->load(true);
+		//echo "<pre>";print_r($where);echo "</pre>";
+		if ($modelo->$primary==''){
+			foreach ($where as $key => $wer) {
+				$modelo->$primary='X';
+				$modelo->load(true,$wer);
+				if ($modelo->$primary!=''){
+					$data=$modelo->loadToArray($campos);
+					if (\Mk\Tools\App::isAjax()==true){
+						echo json_encode($data);
+						return $pk;	
+					}else{
+						echo "<pre>";print_r($data);echo "</pre>";
+						exit;
+					}
+
+				}
+			}
+		}
 		//echo "<pre>";print_r($modelo);echo "</pre>";
 		$data=$modelo->loadToArray($campos);
 
@@ -252,7 +297,7 @@ namespace Mk\Shared
 				$prop = $campo["name"];
 
 				if (($campo['uso']=='A')||($campo['uso']==$action)){
-
+					//\Mk\Debug::msg($campo['funcion'] . ':' . $model->$prop,1);
 					switch ($campo['funcion']) {
 						case 'st':
 							$model->$prop=\Mk\Tools\Form::tbd($model->$prop);
@@ -271,6 +316,7 @@ namespace Mk\Shared
 							if ($campo['type']=='char'){
 								$model->$prop=\Mk\Tools\Form::dateToDb($model->$prop);
 							}else{
+
 								$model->$prop=\Mk\Tools\Form::dateToDbDate($model->$prop);
 							}
 							break;
@@ -349,7 +395,6 @@ namespace Mk\Shared
 
 				}
 			}
-
 	$this->_model=$model;
 	return $notColumns;
 	}
@@ -394,13 +439,13 @@ namespace Mk\Shared
 				$dato=$this->_model->escape($search[$dd][$key]);
 
 				
-				if ((stripos($value, '.')===false)&&($columns[$value]['join']['table']=='')){
+				if ((stripos($value, '.')===false)&&($columns[$value]['join']['alias']=='')){
 					$value=$this->_model->getTable().'.'.$value;
 
 				}
 
-				if ($columns[$value]['join']['table']!=''){	
-					$value=	'j_'.$columns[$value]['join']['table'].'.'.$columns[$value]['join']['campo'];
+				if ($columns[$value]['join']['alias']!=''){	
+					$value=	$columns[$value]['join']['alias'].'.'.$columns[$value]['join']['campo'];
 				}
 
 				if (($cond[$key]<3)||($cond[$key]>8)){ $dato=strtoupper($dato);}
@@ -459,39 +504,41 @@ namespace Mk\Shared
 		return true;
 	}
 
-	public function delete($id){
 
-	$ids=explode(',',$id.',');
-	$id=array();
-	foreach ($$ids as $key => $value) {
-		if (trim($value)!=''){
-			if (beforeDelete($value)){
-				$id[]=$value;
+	public  function getDatosDb($id,$campos='*', $table=''){
+		$id=$this->_model->escape($id);
+		$primary = $this->getPrimary();	
+		$database = \Mk\Registry::get("database");
+		if ($table==''){
+			$table=$this->_model->getTable();	
+		}
+		
+		return $database->query()->first("select {$campos} from {$table} where ({$primary}={$id}) limit 1");
+	}
+
+	public function delete($id){
+		$database = \Mk\Registry::get("database");
+		$table=$this->_model->getTable();
+		$primary = $this->getPrimary();	
+		$ids=explode(',',$id.',');
+		$id=array();
+		$r=0;
+		foreach ($ids as $key => $value) {
+			if (trim($value)!=''){
+				$value=$this->_model->escape($value);
+				if ($this->beforeDelete($value)){
+					$database->execute("delete from $table where ($primary='$value')");
+					$r1=$database->affectedRows;
+					if ($r1>0){
+						$r=$r+$r1;
+						$this->afterDelete($value,$key,$r);	
+					}
+					
+
+				}
 			}
 		}
-	}
-	$id=implode(',', $id);
-
-	if (trim($id)==''){
-		return 0;
-	}
-
-	$primary = $this->getPrimary();	
-	$where="$primary in ($id)";
-	$where = array(
-	'?'=>$where
-	);
-	$r=$this->_model->deleteAll($where);
-
-	$ids=explode(',',$id.',');
-	$id=array();
-	foreach ($$ids as $key => $value) {
-		if (trim($value)!=''){
-			afterDelete($value,$key,$r);
-		}
-	}
-
-	return $r;
+		return $r;
 	}
 
 	public function beforeSave($action){
@@ -514,10 +561,14 @@ namespace Mk\Shared
 		{
 			$view = $this-> getActionView();
 
+			//echo "<hr>this1:<hr>";print_r($this->_model);echo "<hr>";
 			$this->_model->loadFromArray($data);
+			//echo "<hr>this2:<hr>";print_r($this->_model->loadToArray());echo "<hr>";
 			$notColumns=$this->_verificarDatos($action);
+			//echo "<hr>this3:<hr>";print_r($this->_model->loadToArray());echo "<hr>";
 			//\Mk\Debug::msg($_REQUEST,3);
-
+			//echo "<hr>this2:<hr>";print_r($this->_model);echo "<hr>";
+			//echo "<hr>Notcolumn:<hr>";print_r($notColumns);echo "<hr>";
 			if ($this->_model-> validate())
 			{
 				$this->beforeSave($action);
@@ -658,7 +709,7 @@ namespace Mk\Shared
 		$page = $this->getParam("page",'1');
 		$limit = $this->getParam("limit",'10');
 		$filter = $this->getParam("_filter",array());
-		\Mk\Debug::msg($filter,3,'Filtros');
+		//\Mk\Debug::msg($filter,3,'Filtros');
 		$_sele_ =\Mk\Tools\App::isBuscar();
 
 		// if (stripos($order, 'join_')===false){
@@ -688,7 +739,7 @@ namespace Mk\Shared
 		$join=$this->_model->getJoins();
 
 		$count = $this->_model->count($where, $join);
-		if ($page>($count/$limit)){
+		if ($page>ceil($count/$limit)){
 			$page=1;
 		}
 

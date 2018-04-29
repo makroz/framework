@@ -2,14 +2,19 @@
 error_reporting( E_ALL ^ E_NOTICE);
 define("DEBUG", 4);
 define("APP_PATH", dirname(__FILE__));
-define("CORE_PATH", dirname(__FILE__).'\..');
+define("CORE_PATH", dirname(__FILE__).'/..');
 ini_set( 'date.timezone', 'America/La_Paz' );
-try
-{
-require(CORE_PATH."/mk/core.php");
+//echo "2";
+
+//echo CORE_PATH."/mk/core.php";
+include(CORE_PATH."/mk/core.php");
+//echo "b";
 Mk\Core::initialize();
+//echo "c";
 \MK\Debug::initTime($_GET["url"]);
+//echo "d";
 $path = APP_PATH . "/application/plugins";
+//echo "3";
 $iterator = new DirectoryIterator($path);
 foreach ($iterator as $item)
 {
@@ -18,22 +23,23 @@ foreach ($iterator as $item)
 		include($path . "/" . $item->getFilename() . "/initialize.php");
 	}
 }
+//echo "4";
+$configuration = new \Mk\Configuration(array("type" => "ini"));
+//echo "5";
 
-$configuration = new Mk\Configuration(array("type" => "ini"));
 Mk\Registry::set("configuration", $configuration-> initialize());
 $database = new Mk\Database();
 Mk\Registry::set("database", $database->initialize());
 $cache = new Mk\Cache();
 Mk\Registry::set("cache", $cache->initialize());
 $session = new Mk\Session();
+//echo "5";
 Mk\Registry::set("session", $session->initialize());
 $router = new Mk\Router(array(
 	"url" => isset($_GET["url"]) ? $_GET["url"] : "Home/Index",
 	"extension" => isset($_GET["html"]) ? $_GET["html"] : "html"
 	));
 Mk\Registry::set("router", $router);
-
-
 
 $router->dispatch();
 
@@ -44,22 +50,4 @@ unset($cache);
 unset($session);	
 unset($router);
 \MK\Debug::endTime($_GET["url"]);
-}
-catch(\Exception $e)
-{
-
-	ini_set('xdebug.var_display_max_depth', 8);
-	//echo "<h3>Error ({$e->getCode()}): </h3><code>".str_replace("\n",'<br>',Mk\Debug::jdebug($e))."</code>";
-	echo "<h3>Error ({$e->getCode()}): </h3>";
-	echo "<table>";
-	echo $e->xdebug_message;
-	echo "</table>";
-	if (DEBUG>2){
-		\Mk\Debug::debug($e,true);
-	}
-	if (DEBUG>3){
-		var_dump($e);
-	}
-	
-}
 ?>

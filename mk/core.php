@@ -45,28 +45,29 @@ public static function autoload($class)
 
 	$flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE;
 	$file = strtolower(str_replace("\\", DIRECTORY_SEPARATOR, trim($class, "\\"))).".php";
-	//echo "$file<br>(".strpos("mk\\",$file).')';
+	//echo "<br>$file<br>(".strpos("mk\\",$file).')';
 	
-	if ((strpos($file,"mk\\")===false)and(strpos($file,"Mk\Shared\\")===false))
+	if ((strpos($file,"mk/")===false)and(strpos($file,"mk/shared/")===false))
 	{	
+	//echo "entro<hr>";
 		if (strpos($file,'_controller')>0)
 		{
 			$classFile=basename($file,'_controller.php');
-			//	\Mk\Debug::smsg("$classFile",'_controlller');
+				//echo "classfile; $classFile";
 			$combined=MODULE_PATH.DIRECTORY_SEPARATOR.$classFile.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.$file;
-			//\Mk\Debug::msg("1Se Busco  $combined ($class)");	
+			//echo "1Se Busco  $combined ($class)";	
 			if (file_exists($combined))
 			{
 				include($combined);
-				//\Mk\Debug::smsg("Se encontro la clase $combined",'',3);	
+				//echo "<br>Se encontro la clase $combined";	
 				return;
 			}
 		}
 
 		$classFile=basename($file,'.php');
-		//\Mk\Debug::smsg("$classFile",'models');
+		//echo "$classFile";
 		$combined=MODULE_PATH.DIRECTORY_SEPARATOR.$classFile.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$file;
-		//\Mk\Debug::msg("2Se Busco  $combined ($class)",'',3);	
+		//echo "2Se Busco  $combined ($class)";	
 		if (file_exists($combined))
 		{
 			include($combined);
@@ -74,14 +75,14 @@ public static function autoload($class)
 			return;
 		}
 
-		$session = Registry::get("session");
-		$classFile=$session-> get("cur_model_path");
+		//$session = \Mk\Registry::get("session");
+		//$classFile=$session-> get("cur_model_path");
 		if ($classFile!='')
 		{
 			
 			//\Mk\Debug::smsg("$classFile",'cur_model_path');
 			$combined=MODULE_PATH.DIRECTORY_SEPARATOR.$classFile.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$file;
-			//\Mk\Debug::smsg("3Se Busco  $combined ($class)",'',3);	
+			//echo "<br>3Se Busco  $combined ($class)";	
 			if (file_exists($combined))
 			{
 				include($combined);
@@ -95,16 +96,18 @@ public static function autoload($class)
 
 	foreach ($paths as $path)
 	{
-		$combined = $path.DIRECTORY_SEPARATOR.$file;
-		
+		$combined = str_replace("\\", DIRECTORY_SEPARATOR, $path.DIRECTORY_SEPARATOR.$file);
+		//echo "<br>**$combined";
 		if (file_exists($combined))
 		{
+			//echo "<br>(4)Se encontro la clase $combined";	
 			include($combined);
-			//\Mk\Debug::smsg("Se encontro la clase $combined",'',4);	
+			
 			return;
 		}
-		//\Mk\Debug::smsg("Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")",'',4);	
+		//echo "<hr>Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")";	
     }
+            echo "<hr><span style='color:red'>Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")</span>";	
             $deb=debug_backtrace();
             foreach ($deb as $k => $v) {
                 \Mk\Debug::msg($v,3,3);

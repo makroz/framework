@@ -42,7 +42,7 @@ namespace Mk
 		protected $_validators = array(
 		"required" => array(
 		"handler" => "_validateRequired",
-		"message" => "The {0} field is required"
+		"message" => "El campo {0} es obligatorio"
 		),
 		"alpha" => array(
 		"handler" => "_validateAlpha",
@@ -93,21 +93,28 @@ namespace Mk
 				{
 					
 					$prop = "_{$key}";
+					//echo "<br>procesando $key:<br>";
 					if (!empty($previous[$key]) && property_exists($this, $prop))
 					{
+						//echo "si existe<br>";
 						$this->$prop = stripslashes($previous[$key]);
 					}
 
 
 				}
+			//echo "<hr>this:<hr>";print_r($this->loadToArray());echo "<hr>";
 			return true;
 		}
 
-		public function setJoins($table,$on,$fields= array()){
+		public function setJoins($table,$on,$fields= array(),$alias=''){
+			if (trim($alias)==''){
+				$alias='j_'.$table;
+			}
 			$this->_joins[] = array(
 				'table'=>$table,
 				'on'=> $on,
-				'fields'=> $fields
+				'fields'=> $fields,
+				'alias' => $alias
 			);
 			if (is_array($fields)){
 				foreach ($fields as $key => $value) {
@@ -170,7 +177,7 @@ namespace Mk
 			return $data;
 		}
 
-		public function load($error=false)
+		public function load($error=false,$where='')
 		{
 			$primary = $this->primaryColumn;
 			$raw = $primary["raw"];
@@ -178,18 +185,29 @@ namespace Mk
 			if (!empty($this->$raw))
 			{
 
+				$ispk='';
+				if (is_numeric($this->$raw)){
+					$where='('.$this->getTable().".{$name} = '".$this->$raw."')".$where;
+				}else{
+					if ($where==''){
+						$this->$raw='';
+						return false;
+					}
+					$where=substr($where, strpos($where, '('));
+				}
+
 				$fields = array($this->getTable().".*");
 				$previous = $this->connector
 				->query()
 				->from($this->table, $fields)
-				->where($this->getTable().".{$name} = ?", $this->$raw);
+				->where('?',$where);
 
 				$join=$this->getJoins();
 				if (is_array($join)){
 				foreach ($join as $clause => $value)
 				{
 					
-					$previous->join($value['table'],$value['on'],$value['fields']);
+					$previous->join($value['table'],$value['on'],$value['fields'],$value['alias']);
 				}
 				}
 				$previous=$previous->first();
@@ -471,7 +489,7 @@ namespace Mk
 				foreach ($join as $clause => $value)
 				{
 					
-					$query->join($value['table'],$value['on'],$value['fields']);
+					$query->join($value['table'],$value['on'],$value['fields'],$value['alias']);
 				}
 			}
 			if ($order != null)
@@ -508,7 +526,7 @@ namespace Mk
 				foreach ($join as $clause => $value)
 				{
 					
-					$query->join($value['table'],$value['on'],$value['fields']);
+					$query->join($value['table'],$value['on'],$value['fields'],$value['alias']);
 				}
 			}
 			if ($order != null)
@@ -551,7 +569,7 @@ namespace Mk
 			foreach ($join as $clause => $value)
 			{
 				
-				$query->join($value['table'],$value['on'],$value['fields']);
+				$query->join($value['table'],$value['on'],$value['fields'],$value['alias']);
 			}
 			}
 	
@@ -564,14 +582,17 @@ namespace Mk
 
 		protected function _validateRequired($value)
 		{
+			//echo "Valorando required: $value ( ".!empty($value).")";
 			return !empty($value);
 		}
 		protected function _validateAlpha($value)
 		{
+			//echo "Valorando alfa: $value ( ".StringMethods::match($value, "#^([a-zA-Z]+)$#").')';
 			return StringMethods::match($value, "#^([a-zA-Z]+)$#");
 		}
 		protected function _validateNumeric($value)
 		{
+			//echo "Valorando numeric: $value (".print_r(StringMethods::match($value, "^(\d|-)?(\d|,)*\.?\d*$"),true).')';
 			return StringMethods::match($value, "^(\d|-)?(\d|,)*\.?\d*$");
 		}
 
@@ -601,6 +622,7 @@ namespace Mk
 		{
 			$this->_errors = array();
 			$columns = $this-> getColumns();
+			//print_r($this);
 			foreach ($columns as $column)
 			{
 				if ($column["validate"])
@@ -638,6 +660,7 @@ namespace Mk
 						$template = $defined[$function];
 						if (!call_user_func_array(array($this, $template["handler"]), $arguments))
 						{
+							//echo "<br>Fallo: $label : $raw :".$this->$raw;
 							$replacements = array_merge(array(
 								$label ? $label : $raw
 								), $arguments);

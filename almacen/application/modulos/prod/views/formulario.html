@@ -23,7 +23,12 @@ $(document).ajaxStop(function(){
 
 function grabado(msg){
 if (msg=='ok'){
-	$('#mk_formulario').modal('close');
+	if (GrabarSeguir==true){
+		cleanForm('#frmEdit','.grabarSeguir');
+		GrabarSeguir=false;
+	}else{
+		$('#mk_formulario').modal('close');
+	}
 	reaction('','','','.listTable');
 }else{
 	var error=JSON.parse(msg);
@@ -45,26 +50,26 @@ return -1;
 <div class="container">
 <!-- ajax: -->
 <div class="errorList"></div>
-<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
+<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action"  >
 <div class="row">
 
 {% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
 
-<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row            ">
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row              ">
 <div class="input-field col s8">
-      <input id="nom" name="nom" type="text" class="alfa {% echo $clasver; %}  required " width="" value='{% echo $item[nom]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[nom][defVal] %}'>
+      <input id="nom" name="nom" type="text" class="alfa {% echo $clasver; %}  required  grabarSeguir" width="" value='{% echo $item[nom]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[nom][defVal] %}'>
       <label for="nom">{% echo $anexos[nom][labelf] %}</label>
       <div class="error_input">{$errors[nom][0]}</div>
 </div>
  
 
-<input  id="pk" name="pk" type="hidden" value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
+<input  id="pk" name="pk" type="hidden" class=" " value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
  
 
 {% php $options=\Mk\Tools\Form::getOptions($anexos[fk_unidades][options],$item[fk_unidades],'Seleccione '.$anexos[fk_unidades][labelf],$anexos[fk_unidades][join][grupo]); %}
 	<div class="input-field col s4">
 	 {% if $_action!='ver' %}
-	<select id="fk_unidades" name="fk_unidades" class="select {% echo $clasver; %} numerico required "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_unidades][defVal] %}' width="" >
+	<select id="fk_unidades" name="fk_unidades" class="select {% echo $clasver; %} numerico required  "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_unidades][defVal] %}' width="" >
   {% echo $options; %}
 </select>
  {% /if %}
@@ -79,28 +84,28 @@ return -1;
  
 
 <div class="input-field col s4">
-      <input id="cant" name="cant" type="text" class="float {% echo $clasver; %} numerico" data-decimal='2' width="" value='{% echo $item[cant]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} readonly="readonly" data-defval='{% echo $anexos[cant][defVal] %}' >
+      <input id="cant" name="cant" type="text" class="float {% echo $clasver; %} numerico " data-decimal='2' width="" value='{% echo $item[cant]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} readonly="readonly" data-defval='{% echo $anexos[cant][defVal] %}' >
      <label for="cant">{% echo $anexos[cant][labelf] %}</label>
       <div class="error_input">{$errors[cant][0]}</div>
 </div>
  
 
 <div class="input-field col s4">
-      <input id="costo" name="costo" type="text" class="float {% echo $clasver; %} numerico" data-decimal='2' width="" value='{% echo $item[costo]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[costo][defVal] %}' >
+      <input id="costo" name="costo" type="text" class="float {% echo $clasver; %} numerico grabarSeguir" data-decimal='2' width="" value='{% echo $item[costo]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[costo][defVal] %}' >
      <label for="costo">{% echo $anexos[costo][labelf] %}</label>
       <div class="error_input">{$errors[costo][0]}</div>
 </div>
  
 
 <div class="input-field col s4">
-      <input id="precio" name="precio" type="text" class="float {% echo $clasver; %} numerico" data-decimal='2' width="" value='{% echo $item[precio]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[precio][defVal] %}' >
+      <input id="precio" name="precio" type="text" class="float {% echo $clasver; %} numerico " data-decimal='2' width="" value='{% echo $item[precio]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[precio][defVal] %}' >
      <label for="precio">{% echo $anexos[precio][labelf] %}</label>
       <div class="error_input">{$errors[precio][0]}</div>
 </div>
  
 
 <div class="input-field col s12">
-      <input id="codbarra" name="codbarra" type="text" class="alfa {% echo $clasver; %} " width="" value='{% echo $item[codbarra]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[codbarra][defVal] %}'>
+      <input id="codbarra" name="codbarra" type="text" class="alfa {% echo $clasver; %}  grabarSeguir" width="" value='{% echo $item[codbarra]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[codbarra][defVal] %}'>
       <label for="codbarra">{% echo $anexos[codbarra][labelf] %}</label>
       <div class="error_input">{$errors[codbarra][0]}</div>
 </div>
@@ -109,7 +114,7 @@ return -1;
 {% php $options=\Mk\Tools\Form::getOptions($anexos[fk_categorias][options],$item[fk_categorias],'Seleccione '.$anexos[fk_categorias][labelf],$anexos[fk_categorias][join][grupo]); %}
 	<div class="input-field col s12">
 	 {% if $_action!='ver' %}
-	<select id="fk_categorias" name="fk_categorias" class="select {% echo $clasver; %} numerico required "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_categorias][defVal] %}' width="" >
+	<select id="fk_categorias" name="fk_categorias" class="select {% echo $clasver; %} numerico "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_categorias][defVal] %}' width="" >
   {% echo $options; %}
 </select>
  {% /if %}
@@ -126,7 +131,7 @@ return -1;
 {% php $options=\Mk\Tools\Form::getOptions($anexos[fk_proveedores][options],$item[fk_proveedores],'Seleccione '.$anexos[fk_proveedores][labelf],$anexos[fk_proveedores][join][grupo]); %}
 	<div class="input-field col s12">
 	 {% if $_action!='ver' %}
-	<select id="fk_proveedores" name="fk_proveedores" class="select {% echo $clasver; %} numerico required "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_proveedores][defVal] %}' width="" >
+	<select id="fk_proveedores" name="fk_proveedores" class="select {% echo $clasver; %} numerico "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_proveedores][defVal] %}' width="" >
   {% echo $options; %}
 </select>
  {% /if %}
@@ -141,31 +146,35 @@ return -1;
  
 
 <div class="input-field col s6">
+<label for="tserial">
 {% if $_action!='ver' %}
-  <input type="checkbox" id="tserial" name='tserial' class="check $clasver " value="1" {% if ($item[tserial]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  data-defval='{% echo $anexos[tserial][defVal] %}' />
+  <input type="checkbox" id="tserial" name='tserial' class="check $clasver  grabarSeguir" value="1" {% if ($item[tserial]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  data-defval='{% echo $anexos[tserial][defVal] %}' />
 {% /if %}
 {% else %}
   <input id="tserial" name="tserial" type="text" class="alfa {% echo $clasver; %} " width="" value='{% php if ($item[tserial]=="1"){ $_valor= $anexos[tserial][labelon]; } else { $_valor=$anexos[tserial][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
 {% /else %}
-<label for="tserial">{% echo $anexos[tserial][labelf] %}</label>
+<span>{% echo $anexos[tserial][labelf] %}</span>
+</label>
 <div class="error_input">{$errors[tserial][0]}</div>
 </div>
  
 
 <div class="input-field col s6">
+<label for="tvence">
 {% if $_action!='ver' %}
-  <input type="checkbox" id="tvence" name='tvence' class="check $clasver " value="1" {% if ($item[tvence]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  data-defval='{% echo $anexos[tvence][defVal] %}' />
+  <input type="checkbox" id="tvence" name='tvence' class="check $clasver  grabarSeguir" value="1" {% if ($item[tvence]=="1") %} checked="checked" {% /if %} [[var:]]eventos[[:var]]  data-defval='{% echo $anexos[tvence][defVal] %}' />
 {% /if %}
 {% else %}
   <input id="tvence" name="tvence" type="text" class="alfa {% echo $clasver; %} " width="" value='{% php if ($item[tvence]=="1"){ $_valor= $anexos[tvence][labelon]; } else { $_valor=$anexos[tvence][labeloff];} %} {% echo $_valor; %}'  disabled="disabled"  >
 {% /else %}
-<label for="tvence">{% echo $anexos[tvence][labelf] %}</label>
+<span>{% echo $anexos[tvence][labelf] %}</span>
+</label>
 <div class="error_input">{$errors[tvence][0]}</div>
 </div>
 </div></div>
  
 
-<input  id="status" name="status" type="hidden" value='{% echo $item[status]; %}' data-defval='{% echo $anexos[status][defVal] %}' >
+<input  id="status" name="status" type="hidden" class=" " value='{% echo $item[status]; %}' data-defval='{% echo $anexos[status][defVal] %}' >
 </div>
 <input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
 </form>
@@ -175,6 +184,9 @@ return -1;
 <div class="pag white-text" style="float: left;"></div>
 				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
 				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='add') %}
+				<a href="#!" id="btnSaveNext" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado,true);" >Grabar y Seguir</a>
+				{% /if %}
 				{% if ($_action=='ver') %}
 				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
 				{% /if %}

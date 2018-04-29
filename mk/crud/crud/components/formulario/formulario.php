@@ -33,6 +33,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
 
     		foreach ($this->campos as $key => $value) {
     			$class='';
+                $classForm='';
                 $tam='';
                 $onkeypress='';
                 $onfocus='';
@@ -91,6 +92,10 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                     $readonly='&readonly=readonly="readonly"';
                 }
 
+//                if ($value['classForm']!=''){
+                    $classForm='&classForm='.$value['classForm'];
+//                }
+
     			if (($value['usof']!='-1')&&(trim($value['usof'])!='')){
     				$this->ncol++;
                     if ($value['tam']==''){
@@ -147,7 +152,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                         $onblur.=" _valEmail(this);";
                      }
 
-                     if(($value['validar']=='numerico')&&($numeric==0)){
+                     if(($value['validar']=='numerico')&&($numeric==0)&&($value['usof']!='buscardb')){
                         $numeric++;
                        
                         if($value['usof']=='int'){
@@ -224,7 +229,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
 
                     $eventos=addslashes($eventos);
 
-    				$texto.="[[component:]]form_input::id={$key}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$unico}{$dataon}{$dec}{$options}{$validate}{$eventos}{$readonly}[[:component]] ";
+    				$texto.="[[component:]]form_input::id={$key}&tipo={$value['usof']}&tam={$tam}&clase={$class}{$unico}{$dataon}{$dec}{$options}{$validate}{$eventos}{$readonly}{$classForm}[[:component]] ";
     			}
     		}
 			//return '{% php print_r($_data); %}'.$texto;

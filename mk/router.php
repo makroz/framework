@@ -133,6 +133,7 @@ namespace Mk
 		}
 		public function dispatch()
 		{
+
 			if ($_GET['crud'])
 			{
 				$controller = 'Mk\Crud\Crud';

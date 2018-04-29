@@ -1,33 +1,81 @@
-<h1 > Login</h1>
+<link type="text/css" rel="stylesheet" href="js/materialize/materializeicon.css"/>
+<link type='text/css' rel='stylesheet' href='js/materialize/materialize.min.css'/>
+<script type='text/javascript' src='js/materialize/materialize.min.js'></script>
+<style type="text/css">
+	  /* label color */
+   .input-field label {
+     color: #000;
+   }
+   /* label focus color */
+   .input-field input[type=text]:focus + label {
+     color: #666;
+   }
+   /* label underline focus color */
+   .input-field input[t666ype=text]:focus {
+     border-bottom: 1px solid #000;
+     box-shadow: 0 1px 0 0 #000;
+   }
+   /* valid color */
+   .input-field input[type=text].valid {
+     border-bottom: 1px solid #000;
+     box-shadow: 0 1px 0 0 #000;
+   }
+   /* invalid color */
+   .input-field input[type=text].invalid {
+     border-bottom: 1px solid #000;
+     box-shadow: 0 1px 0 0 #000;
+   }
+   /* icon prefix focus color */
+   .input-field .prefix.active {
+     color: #000;
+   }
+   input[type="text"]:not(.browser-default):focus:not([readonly]) + label,
+   input[type="password"]:not(.browser-default):focus:not([readonly]) + label,
+   input[type="text"]:not(.browser-default):not([readonly]) + label,
+   input[type="password"]:not(.browser-default):not([readonly]) + label
+   {
+   	color: black;
+   	font-weight: 800;
+   	font-size: 1.3rem;
+   }
+</style>
 {% if ($_loged['pk']>0) %}
 {% /if %}
 {% else %}
-<form method = "post">
-	<ol>
-		<li>
-			<label>
-				Email:
-				<input type = "text" name = "doc" />
-				{% if isset($doc_error) %}
+<div class="valign-wrapper" style="height: 100%;width: 100%;background-color:#690310;">
+<div style="height: 500px;position: relative;top: 0;" class="row">
+<img src="application/modulos/resp/views/img/fondo5.jpg" style="height: 500px;">
+
+<form method = "post" style="height: 500px;position: absolute;top: 0;padding: 200px 50px 0 50px;">
+	<div class="input-field col s12 black-text  white" style="opacity: .5;padding: 0 10px 0 10px;">
+		<i class="material-icons prefix">credit_card</i>
+      <input id="doc" name="doc" type="text" class="login "  value=''  >
+     <label for="doc">Doc. Identidad</label>
+      <div class="error_input">				
+      			{% if isset($doc_error) %}
 				{% echo $doc_error %}
 				{% /if %}
-			</label>
-		</li>
-		<li>
-			<label>
-				Password:
-				<input type = "password" name = "pass" />
+	</div>
+	</div>
+
+	<div class="input-field col s12 black-text  white" style="opacity: .5;padding: 0 10px 0 10px;">
+		<i class="material-icons prefix">lock</i>
+      <input id="pass" name="pass" type="password" class="login"  value='' >
+     <label for="pass">Password</label>
+      <div class="error_input">
 				{% if isset($password_error) %}
 				{% echo $password_error %}
 				{% /if %}
-			</label>
-		</li>
-		<li>
-			
-			 <button class="btn waves-effect waves-light" type="submit" name="login" value="1">login
+	  	</div>
+	</div>
+ 	<button class="btn-floating btn-large waves-effect waves-light pink pulse" type="submit" name="login" value="1">login
     <i class="material-icons right">send</i>
   </button>
 		</li>
 	</ol>
 </form>
+	
+</div>
+</div>
+
 {% /else %}

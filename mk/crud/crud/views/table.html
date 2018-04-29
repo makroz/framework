@@ -155,17 +155,6 @@ $('#usof').bind( "change", function() {
   valUsof(); 
 });
 
-$('.campojoin > i').click(function() {
-  openJoin('campojoin');
-});
-
-$('.listalista > i').click(function() {
-  openLista(modalistalista);
-});
-
-$('.listaeventos > i').click(function() {
-  openLista(modalistaeventos);
-});
 
  $("#campos").sortable({
    containment: "#campos",
@@ -175,7 +164,7 @@ $('.listaeventos > i').click(function() {
     opacity: 0.5,
 });
 
-$("#modal1").modal();
+//$("#modal1").modal();
 
 
 $("#tabs").tabs({ onShow: function(tab) { 
@@ -205,7 +194,7 @@ $("#tabs").tabs({ onShow: function(tab) {
     cargarConfig();
   }
 
-
+valFunc();
 
 
 {% /append %}
@@ -585,7 +574,7 @@ editor_{% echo $pedir_i; %}.refresh();
 
 function openDet(id){
   $('#modal1').attr('data-key',id);
-  $('#modal-tit').html("Detalles del Campo: <span class='red-text'>"+id);
+  $('#modal1 > h4').html("Detalles del Campo: <span class='red-text'>"+id+"</span>");
   $('._pedir').each(function() {
 
     if ( ($(this).attr('data-type')=='text')||($(this).attr('data-type')=='sel')||($(this).attr('data-type')=='range') ){
@@ -603,11 +592,27 @@ function openDet(id){
     }
   });
 
-
-  $('select').formSelect();
-  $('#modal1').modal('open');
   valFunc();
-  M.updateTextFields();
+
+ //$('select').formSelect();
+ // actualizarUI();
+M.updateTextFields();
+  //$('#modal1').modal('open');
+  new Custombox.modal({
+  content: {
+    effect: 'fadein',
+    target: '#modal1',
+    onComplete: function(){
+      actualizarUI();
+    }
+  }
+  }).open();
+
+
+
+
+//  M.updateTextFields();
+
   return false;
 }
 
@@ -641,7 +646,8 @@ function closeDet(){
   });
 
 
-  $('#modal1').modal('close');
+  //$('#modal1').modal('close');
+  Custombox.modal.close();
 }
 
 
@@ -763,25 +769,28 @@ function clicChecked(id){
 
 
 function openJoin(id){
-  $('#modal2').modal();
+  //$('#modal2').modal();
+
   $('#modal2').attr('data-key',id);
   var dato=$('#campojoin').val();
   if (dato==''){
     $('#n_table, #n_col').val(-1);
     $('#n_cond').val('');
-    $('#n_join').val('');
     $('#n_tag').val('');
+    $('#n_join').val('');
+    $('#n_cb').val('');
     $('#n_carga').prop('checked',false);
 
   }else{
-    dato=dato+'|||||';
+    dato=dato+'||||||';
     var datos=dato.split('|');
     $('#n_table').val(datos[0]);
     getCampos(datos[1]);
 
     $('#n_cond').val(datos[3]);
-    $('#n_join').val(datos[5]);
     $('#n_tag').val(datos[4]);
+    $('#n_join').val(datos[5]);
+    $('#n_cb').val(datos[6]);
     if (datos[2]=='1'){
       $('#n_carga').prop('checked',true);
     }else{
@@ -789,8 +798,17 @@ function openJoin(id){
     }
 
   }
-  $('#modal2').modal('open');
-  $('select').formSelect();
+  //$('#modal2').modal('open');
+  new Custombox.modal({
+    content: {
+    effect: 'fadein',
+    target: '#modal2',
+    onComplete: function(){
+      actualizarUI();
+    }
+    }
+    }).open();
+  //$('select').formSelect();
 
 
 }
@@ -809,11 +827,13 @@ function closeJoin(){
   if ($('#n_carga').prop('checked')){
     ncarga=1;
   }
-  var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+ncarga+'|'+$('#n_cond').val()+'|'+$('#n_tag').val()+'|'+$('#n_join').val();
+  var dato=$('#n_table').val()+'|'+$('#n_col').val()+'|'+ncarga+'|'+$('#n_cond').val()+'|'+$('#n_tag').val()+'|'+$('#n_join').val()+'|'+$('#n_cb').val();
   $('#'+id).val( dato );
 
   M.updateTextFields();
-  $('#modal2').modal('close');
+  //$('#modal2').modal('close');
+  Custombox.modal.close();
+
 }
 
 var modalista=[];
@@ -834,7 +854,7 @@ modalistaeventos['campo']='#listaeventos';
 modalistaeventos['addTr']='addTrListaeventos';
 modalistaeventos['tit']='Lista de Eventos';
 modalistaeventos['head']='<tr><th data-field="evento">EVENTO</th><th data-field="codigo">CODIGO</th><th data-field="action">Accion</th></tr>';
-
+//$('#modalLista').modal();
 function openLista(objeto){
   if (!objeto){
     objeto=modalistalista;
@@ -845,7 +865,7 @@ function openLista(objeto){
   $(modal).find('h4').html(modalista['tit']);
   $(modal+' thead').html(modalista['head']);
 
-  $(modal).modal();
+  //$(modal).modal();
   //$(modal).attr('data-key',id);
 
   var datos=$(campo).val()+'*';
@@ -860,8 +880,21 @@ function openLista(objeto){
 
   $(modal).find('#bAddLista').data('indice',tr.length);
 
-  $(modal).modal('open');
-  $('select').formSelect();
+//alert(modal);
+  new Custombox.modal({
+    content: {
+    effect: 'fadein',
+    target: modal,
+    onComplete: function(){
+      actualizarUI();
+    }
+    }
+    }).open();
+
+  //$(modal).modal('open');
+
+  //$('select').formSelect();
+ // actualizarUI();
   $(modal).find("#tablalista tbody").sortable({
     axis:'y',
     containment: "parent",
@@ -960,7 +993,8 @@ function closeLista(){
   //var id=$(modal).attr('data-key');
   cSaveLista();
   M.updateTextFields();
-  $(modal).modal('close');
+  //$(modal).modal('close');
+  Custombox.modal.close();
 }
 
 var idtabshow='';
@@ -1077,7 +1111,7 @@ var idtabshow='';
 
         <div class="input-field col {% echo $ctam; %} {% echo $pedir_i; %}">
         {% if ($pedir['icon']!='') %}        
-        <i class="material-icons {% echo $pedir['icon-type'];%}" >{% echo $pedir['icon'];%}</i>
+        <i class="material-icons {% echo $pedir['icon-type'];%}" onclick="{% echo $pedir['icon-click'];%}" >{% echo $pedir['icon'];%}</i>
         {% /if %}
           <input id="{% echo $pedir_i; %}" name='{% echo $pedir_i; %}' type="text" class="validate _pedir" data-type="{% echo $pedir['type']; %}" {% echo $pedir['disabled']; %} {% echo $pedir['bind']; %} >
           <label for="{% echo $pedir_i; %}" data-error="{% echo $pedir['error']; %}" data-success="{% echo $pedir['ok']; %}">{% echo $pedir['text']; %}</label>
@@ -1213,6 +1247,10 @@ var idtabshow='';
         <div class="input-field col {% echo $ctam; %} ">
           <input id="n_tag" name='n_tag' type="text" class="validate" value="" >
           <label for="n_tag" >Datos Tag:</label>
+        </div>
+        <div class="input-field col {% echo $ctam; %} ">
+          <input id="n_cb" name='n_tag' type="text" class="validate" value="" >
+          <label for="n_cb" >Campos Extra Busqueda:</label>
         </div>
 
 

@@ -2,7 +2,13 @@
 
 function grabado(msg){
 if (msg=='ok'){
-	$('#mk_formulario').modal('close');
+	if (GrabarSeguir==true){
+		cleanForm('#frmEdit','.grabarSeguir');
+		GrabarSeguir=false;
+	}else{
+		$('#mk_formulario').modal('close');
+
+	}
 	reaction('','','','.listTable');	
 }else{
 	var error=JSON.parse(msg);
@@ -17,7 +23,7 @@ return -1;
 
 {% /append %}
 <div class="errorList"></div>
-<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action" >
+<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action"  >
 <div class="row">
 [[php:]]inputs[[:php]]
 </div>
@@ -29,9 +35,13 @@ return -1;
 <div class="pag white-text" style="float: left;"></div>
 				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
 				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='add') %}
+				<a href="#!" id="btnSaveNext" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado,true);" >Grabar y Seguir</a>
+				{% /if %}
 				{% if ($_action=='ver') %}
 				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
 				{% /if %}
+
         </div>
 {% /if %}        
 <!-- :notajax -->

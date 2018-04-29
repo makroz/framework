@@ -102,6 +102,24 @@ protected $_pass;
 * @label St
 */
 protected $_status='1';
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso G
+* @funcion datetimesystem
+* @label Created_
+*/
+protected $_created_;
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso A
+* @funcion datetimesystem
+* @label Modified_
+*/
+protected $_modified_;
 public $_tSingular='Responsable';
 public $_tPlural='Responsables';
 

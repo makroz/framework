@@ -239,8 +239,11 @@ namespace Mk\Database
 			}
 			return $this;
 		}
-		public function join($join, $on, $fields = array())
+		public function join($join, $on, $fields = array(),$alias='')
 		{
+			if (trim($alias)==''){
+				$alias='j_'.$join;
+			}
 			if (empty($join))
 			{
 				throw $this->_Exception("Invalid argument (join)");
@@ -249,8 +252,8 @@ namespace Mk\Database
 			{
 				throw $this->_Exception("Invalid argument (on)");
 			}
-			$this->_fields += array('j_'.$join =>$fields);
-			$this->_join[] = "LEFT JOIN {$join} as j_{$join} ON {$on}";
+			$this->_fields += array($alias =>$fields);
+			$this->_join[] = "LEFT JOIN {$join} as {$alias} ON {$on}";
 			return $this;
 		}
 		public function limit($limit, $page = 1)

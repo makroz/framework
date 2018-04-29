@@ -100,6 +100,7 @@ namespace Mk\Shared
 			if (!$user)
 			{
 				$session-> set('Secure_page_'.$secureKey,$_SERVER['QUERY_STRING']);
+				$secureKey=strtolower($secureKey);
 				header("Location: index.php?url={$secureKey}/login");
 				exit();
 			}
@@ -135,7 +136,7 @@ namespace Mk\Shared
 		public function actionLogout($key)
 		{
 			$this->_setLoged('',null,$key,true);
-			$secureKey = $this->getKey($key);
+			$secureKey = strtolower($this->getKey($key));
 			header("Location: index.php?url={$secureKey}/login");
 			exit();
 

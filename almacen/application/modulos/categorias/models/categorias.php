@@ -61,6 +61,24 @@ protected $_descrip;
 * @label St
 */
 protected $_status='1';
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso G
+* @funcion datetimesystem
+* @label Created_
+*/
+protected $_created_;
+/**
+* @column
+* @readwrite
+* @type datetime
+* @uso A
+* @funcion datetimesystem
+* @label Modified_
+*/
+protected $_modified_;
 public $_tSingular='Categoria';
 public $_tPlural='Categorias';
 
@@ -69,10 +87,10 @@ public function __construct($options = array())
 	{
 		parent::__construct($options);
 
-		$this->setJoins('categorias','(categorias.sk_padre=j_categorias.pk)',Array('j_categorias.nombre' => 'join_sk_padre'));
+		$this->setJoins('categorias','(categorias.sk_padre=j_categorias.pk)',Array('j_categorias.nombre' => 'join_sk_padre'),j_categorias);
 
 	}
 }
 
-
+//version MK.CRUD 1.0 
 ?>

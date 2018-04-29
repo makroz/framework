@@ -25,16 +25,6 @@ protected $_nombre;
 * @readwrite
 * @type char
 * @uso A
-* @funcion check
-* @label Base
-* @labelf Es Unidad Base?
-*/
-protected $_base='0';
-/**
-* @column
-* @readwrite
-* @type char
-* @uso A
 * @funcion st
 * @label Tipo
 * @validate  required
@@ -43,14 +33,23 @@ protected $_tipo='X';
 /**
 * @column
 * @readwrite
+* @type char
+* @uso A
+* @funcion check
+* @label Base
+* @labelf Es Unidad Base?
+*/
+protected $_base='0';
+/**
+* @column
+* @readwrite
 * @type float
 * @uso A
 * @funcion bdf
-* @label RelBase
-* @labelf Relacion con la Base
-* @validate  numeric
+* @label Relbase
+* @validate  required, numeric
 */
-protected $_relBase='0.00';
+protected $_relbase='0.00';
 /**
 * @column
 * @readwrite
@@ -67,23 +66,30 @@ protected $_status='1';
 * @type datetime
 * @uso G
 * @funcion datetimesystem
-* @label Created
+* @label Created_
 */
-protected $_created;
+protected $_created_;
 /**
 * @column
 * @readwrite
 * @type datetime
 * @uso A
 * @funcion datetimesystem
-* @label Modified
+* @label Modified_
 */
-protected $_modified;
+protected $_modified_;
 public $_tSingular='Unidad';
 public $_tPlural='Unidades';
 
 
+public function __construct($options = array())
+	{
+		parent::__construct($options);
+
+
+
+	}
 }
 
-
+//version MK.CRUD 1.0 
 ?>

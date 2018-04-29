@@ -20,7 +20,7 @@ protected $_pk;
 * @label Fecha
 * @validate  required
 */
-protected $_fecha;
+protected $_fecha='hoy';
 /**
 * @column
 * @readwrite
@@ -31,6 +31,17 @@ protected $_fecha;
 * @validate  required, numeric
 */
 protected $_fk_almacenes;
+/**
+* @column
+* @readwrite
+* @type int
+* @uso A
+* @funcion st
+* @label Alm Origen
+* @labelf Almacen Origen
+* @validate  numeric
+*/
+protected $_fk_almacenes_2;
 /**
 * @column
 * @readwrite
@@ -54,16 +65,6 @@ protected $_cant;
 /**
 * @column
 * @readwrite
-* @type decimal
-* @uso A
-* @funcion bdf
-* @label Costo
-* @validate  required, numeric
-*/
-protected $_costo;
-/**
-* @column
-* @readwrite
 * @type int
 * @uso A
 * @funcion st
@@ -74,11 +75,22 @@ protected $_fk_unidades;
 /**
 * @column
 * @readwrite
+* @type decimal
+* @uso A
+* @funcion bdf
+* @label Costo
+* @validate  required, numeric
+*/
+protected $_costo;
+/**
+* @column
+* @readwrite
 * @type char
 * @uso A
 * @funcion st
 * @label Tipo
 * @labelf Tipo de Ingreso
+* @validate  required
 */
 protected $_tipo='C';
 /**
@@ -167,10 +179,11 @@ public function __construct($options = array())
 	{
 		parent::__construct($options);
 
-		$this->setJoins('almacenes','(ingalm.fk_almacenes=j_almacenes.pk)',Array('j_almacenes.nombre' => 'join_fk_almacenes'));
-		$this->setJoins('prod','(ingalm.fk_prod=j_prod.pk)',Array('j_prod.nom' => 'join_fk_prod'));
-		$this->setJoins('unidades','(ingalm.fk_unidades=j_unidades.pk)',Array('j_unidades.nombre' => 'join_fk_unidades'));
-		$this->setJoins('resp','(ingalm.fk_resp=j_resp.pk)',Array('j_resp.nombre' => 'join_fk_resp'));
+		$this->setJoins('almacenes','(ingalm.fk_almacenes=j_almacenes.pk)',Array('j_almacenes.nombre' => 'join_fk_almacenes'),j_almacenes);
+		$this->setJoins('almacenes','(ingalm.fk_almacenes_2=j_almacenes_1.pk)',Array('j_almacenes_1.nombre' => 'join_fk_almacenes_2'),j_almacenes_1);
+		$this->setJoins('prod','(ingalm.fk_prod=j_prod.pk)',Array('j_prod.nom' => 'join_fk_prod'),j_prod);
+		$this->setJoins('unidades','(ingalm.fk_unidades=j_unidades.pk)',Array('j_unidades.nombre' => 'join_fk_unidades'),j_unidades);
+		$this->setJoins('resp','(ingalm.fk_resp=j_resp.pk)',Array('j_resp.nombre' => 'join_fk_resp'),j_resp);
 
 	}
 }

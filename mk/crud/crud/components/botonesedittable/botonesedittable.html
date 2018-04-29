@@ -49,9 +49,13 @@ if ($('#_save_').val()=='add'){
 return '001';
 }
 
-function cleanForm(f){
+function cleanForm(f,seguir){
 	var idAction=$(f).find('#_save_').val();
-	$(f).find('select').each(function(index){
+	if (!seguir){
+		seguir='';
+	}
+
+	$(f).find('select'+seguir).each(function(index){
 		var def=$(this).data('defval');
 		if (def==undefined){
 			def='';
@@ -63,18 +67,23 @@ function cleanForm(f){
 		}
 		$(this).data('oldvalue','');
 	});
-	$(f).find('input').each(function(index){
+	$(f).find('input'+seguir).each(function(index){
+	//console.log($(this).hasClass('check'),this);
+		if (!$(this).hasClass('check')){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			$(this).val(def);
+			$(this).data('oldvalue','');
+		}
+	});
+	$(f).find('.check'+seguir).each(function(index){
 		var def=$(this).data('defval');
 		if (def==undefined){
 			def='';
 		}
-		$(this).val(def);
-		$(this).data('oldvalue','');
-
-	});
-	$(f).find('.check').each(function(index){
-		var def=$(this).data('defval');
-		if (def==undefined){
+		if (def==0){
 			def='';
 		}
 		if (def==''){
@@ -100,12 +109,12 @@ function _openForm(f, idAction,tit){
 		$(f).find('h4.modal-tit').html(tit);
 
 		if (idAction=='ver'){
-			$('#btnSave').hide();
+			$('#btnSave, #btnSaveNext').hide();
 			$('#btnPrint').show();
 			$(f).data('ultAction',idAction);
 		}else{
 			$('#btnPrint').hide();
-			$('#btnSave').show();
+			$('#btnSave, #btnSaveNext').show();
 			$('#mk_formulario  .modal-footer').find('.pag').html('');
 			if (((idAction=='add')&&($(f).data('ultAction')=='ver'))||('{% echo $anexos[cargaAjaxForm] %}'=='1')){
 				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
@@ -115,9 +124,9 @@ function _openForm(f, idAction,tit){
 				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
 				{% /if %}
 				{% /foreach %}
-				if (idAction=='add'){
-					initOpenForm();
-				}
+				//if (idAction=='add'){
+				//	initOpenForm();
+				//}
 				
 			}
 			$(f).data('ultAction',idAction);
@@ -137,9 +146,13 @@ function verItem(id){
 
 
 
-function clicBotonera(boton){
+function clicBotonera(boton,action){
 var idSel = $(boton).parent().parent().data('cod');
+if (!action){
 var idAction = $(boton).data('action');
+}else{
+var idAction = action;	
+}
 var selCount = 1;
 var div=''
 

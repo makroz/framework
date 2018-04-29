@@ -152,12 +152,15 @@ namespace Mk\Crud {
 			$pedir['listalista']['type']      = 'text';
 			$pedir['listalista']['icon']      = 'view_list';
 			$pedir['listalista']['icon-type'] = 'postfix';
+			$pedir['listalista']['icon-click'] = 'openLista(modalistalista);';
+
 			$pedir['listalista']['disabled']  = 'disabled';
 			$pedir['listalista']['tam']       = 's3';
 			$pedir['campojoin']['text']       = 'Tabla y Campo';
 			$pedir['campojoin']['type']       = 'text';
 			$pedir['campojoin']['icon']       = 'search';
 			$pedir['campojoin']['icon-type']  = 'postfix';
+			$pedir['campojoin']['icon-click'] = "openJoin('campojoin');";
 			$pedir['campojoin']['disabled']   = 'disabled';
 			$pedir['campojoin']['tam']        = 's3';
 			$pedir['f1']['type']              = 'raw';
@@ -190,6 +193,7 @@ namespace Mk\Crud {
 			$pedir['listaeventos']['type']      = 'text';
 			$pedir['listaeventos']['icon']      = 'view_list';
 			$pedir['listaeventos']['icon-type'] = 'postfix';
+			$pedir['listaeventos']['icon-click'] = 'openLista(modalistaeventos);';
 			$pedir['listaeventos']['tam']       = 's4';
 			$pedir['listaeventos']['disabled']  = 'disabled';
 
@@ -200,6 +204,14 @@ namespace Mk\Crud {
 			$pedir['defVal']['text']           = 'valor por Defecto';
 			$pedir['defVal']['type']           = 'text';
 			$pedir['defVal']['tam']           = 's12';
+
+			$pedir['classForm']['text']           = 'Clase en Formulario';
+			$pedir['classForm']['type']           = 'text';
+			$pedir['classForm']['tam']           = 's6';
+
+			$pedir['classLista']['text']           = 'Clase en Listado';
+			$pedir['classLista']['type']           = 'text';
+			$pedir['classLista']['tam']           = 's6';
 
 			$pedir['codejs']['text']           = 'Codigo JS en Formulario';
 			$pedir['codejs']['type']           = 'codeeditor';
@@ -601,7 +613,7 @@ namespace Mk\Crud {
 
 			$anexos[] = '$anexos' . "['listAction']=".'"'. Inputs::post('listAction').'";';
 
-
+			$lalias=array();
 			foreach ($campos as $key => $field) {
 				$key     = str_replace("'", "", $key);
 				//echo "<br> $key: <br>";print_r($field);echo "<hr>";
@@ -703,7 +715,14 @@ namespace Mk\Crud {
 						$aux[4]=str_replace('"',"'",$aux[4]);
 						//$prifk='pk';
 						$prifk=$this->database->getPrimaryKeyOf($aux[0]);
-						$joins[] ="\t\t".'$this->setJoins('."'{$aux[0]}','({$table}.{$key}=j_{$aux[0]}.{$prifk[0]})',Array('j_{$aux[0]}.{$aux[1]}' => 'join_{$key}'));"; 
+						$alias="j_{$aux[0]}";
+						if ($lalias[$alias]>0){
+							$lalias[$alias]=$lalias[$alias]+1;
+							$alias=$alias.'_'.($lalias[$alias]-1);
+						}else{
+							$lalias[$alias]=1;							
+						}
+						$joins[] ="\t\t".'$this->setJoins('."'{$aux[0]}','({$table}.{$key}={$alias}.{$prifk[0]})',Array('{$alias}.{$aux[1]}' => 'join_{$key}'),$alias);"; 
 					}
 				}
 
@@ -733,7 +752,7 @@ namespace Mk\Crud {
 
 				if (($field['usof'] == 'selecdb')||($field['usof'] == 'selecdbgrupo')||($field['usof'] == 'buscardb')) {
 					echo "<hr> usof selec DB:" . $field['campojoin'] . '<hr>';
-					$aux = explode('|', $field['campojoin'] . '||||');
+					$aux = explode('|', $field['campojoin'] . '||||||');
 					if (($aux[0]!='')&&($aux[1]!='')){
 						$aux[3]=str_replace('"',"'",$aux[3]);
 						$aux[4]=str_replace('"',"'",$aux[4]);
@@ -747,6 +766,7 @@ namespace Mk\Crud {
 						}
 						$anexos[] = '$anexos' . "['{$key}']['join']['table']='{$aux[0]}';";
 						$anexos[] = '$anexos' . "['{$key}']['join']['campo']='{$aux[1]}';";
+						$anexos[] = '$anexos' . "['{$key}']['join']['alias']='{$alias}';";
 						if ($aux[3]!=''){
 							$anexos[] = '$anexos' . "['{$key}']['join']['cond']=".'"'.$aux[3].'";';
 						}
@@ -756,6 +776,9 @@ namespace Mk\Crud {
 
 						if ($aux[5]!=''){
 							$anexos[] = '$anexos' . "['{$key}']['join']['join']=".'"'.$aux[5].'";';
+						}
+						if ($aux[6]!=''){
+							$anexos[] = '$anexos' . "['{$key}']['join']['cb']=".'"'.$aux[6].'";';
 						}
 
 						if ($field['usof'] == 'selecdbgrupo') {
@@ -870,7 +893,6 @@ namespace Mk\Crud {
 				$afterSave = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$afterSave);
 				$afterSave='public function afterSave($action){'.PHP_EOL.
 					$afterSave.PHP_EOL.
-					"\t\t".'return true;'.PHP_EOL.
 					"\t".'}';
 			}
 			$plantilla = str_replace('//<<[AFTERSAVE]>>//', $afterSave, $plantilla);					
@@ -879,7 +901,6 @@ namespace Mk\Crud {
 				$beforeSave = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$beforeSave);
 				$beforeSave='public function beforeSave($action){'.PHP_EOL.
 					$beforeSave.PHP_EOL.
-					"\t\t".'return true;'.PHP_EOL.
 					"\t".'}';
 			}
 			$plantilla = str_replace('//<<[BEFORESAVE]>>//', $beforeSave, $plantilla);
@@ -890,7 +911,6 @@ namespace Mk\Crud {
 				$afterDelete = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$afterDelete);
 				$afterDelete='public function afterDelete($id,$i,$t){'.PHP_EOL.
 					$afterDelete.PHP_EOL.
-					"\t\t".'return true;'.PHP_EOL.
 					"\t".'}';
 			}
 			$plantilla = str_replace('//<<[AFTERDELETE]>>//', $afterDelete, $plantilla);					
@@ -899,7 +919,6 @@ namespace Mk\Crud {
 				$beforeDelete = str_replace(PHP_EOL, PHP_EOL."\t\t","\t\t".$beforeDelete);
 				$beforeDelete='public function beforeDelete($id){'.PHP_EOL.
 					$beforeDelete.PHP_EOL.
-					"\t\t".'return true;'.PHP_EOL.
 					"\t".'}';
 			}
 			$plantilla = str_replace('//<<[BEFOREDELETE]>>//', $beforeDelete, $plantilla);

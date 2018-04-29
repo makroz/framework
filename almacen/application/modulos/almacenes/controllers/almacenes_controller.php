@@ -5,8 +5,8 @@ class Almacenes_controller extends CrudDb
 	public function __construct($options = array())
 	{
 		parent::__construct($options);
-		//$this$_secureKey='almacenes';
-		//$this->_secure();
+		$this->_secureKey='resp';
+		$this->_secure();
 	}
 
 	public function getAnexos($anexos=array(),$join=0){
@@ -21,6 +21,7 @@ class Almacenes_controller extends CrudDb
 		$anexos['estado']['options']['I']='Inventario en Curso';
 		$anexos['fk_resp']['join']['table']='resp';
 		$anexos['fk_resp']['join']['campo']='nombre';
+		$anexos['fk_resp']['join']['alias']='j_resp';
 		$anexos['lapso']['options']['1']='Diario';
 		$anexos['lapso']['options']['2']='Semanal';
 		$anexos['lapso']['options']['3']='Quincenal';
@@ -37,6 +38,13 @@ class Almacenes_controller extends CrudDb
 
 		return $anexos;
 	}
+
+	
+	
+
+	
+	
+	
 //* preserve code: *//
 
 
