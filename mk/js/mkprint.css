@@ -1,5 +1,5 @@
 @charset "utf-8";
-.printer{display:inline;}
+.printer, .onlyPrinter{display:inline;}
 .noprinter{display:none;}
 .uibutton{display:none;}
 table.tablaLista,.tablaLista td, .tablaLista th, table.striped td, table.striped, table.striped th  {
@@ -29,3 +29,4 @@ textarea{
 height:auto;overflow:visible;display:inline;
 
 }
+

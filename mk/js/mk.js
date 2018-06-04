@@ -80,6 +80,9 @@ function getCookie(cname) {
     method: method,
     url: link,
     data: data,
+    processData: false,
+    contentType: false,
+    cache: false,
     success: function(msg){
 
         if (div!=''){
@@ -110,9 +113,25 @@ function getCookie(cname) {
 
   }
 
+
+function getAbsolutePath() {
+    var loc = window.location;
+    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+  function routeImage(image,dir='/img',modulo=''){
+    var link=getAbsolutePath+'/'+modulo+'/'+dir+'/'+image;
+    link=str_replace('//','/',link);
+    return link;
+  }
+
   function reaction(options,newAction='', newModule='',isajax='',callback=null,method='GET'){
    var opciones='';
    var action=getQueryVariable('url');
+    if (action==false){
+      action='home';
+    }   
 
   if (newAction!=''){
     if (newModule!=''){
@@ -128,12 +147,17 @@ function getCookie(cname) {
       }
   }
     
+    if (method!='POST'){
     if ($.isArray(options)){
      for (let opt in options) {
       opciones=opciones+'&'+opt+'='+options[opt];
     }
     }else{
      opciones=opciones+'&'+options; 
+    }
+    options={ };
+    }else{
+
     }
     if (globaloptions!=''){
         opciones=opciones+'&'+globaloptions;  
@@ -150,7 +174,7 @@ function getCookie(cname) {
         //alert('cargand ajax'+window.location.pathname+'?'+search);
         $(isajax).LoadingOverlay("show");
         //if (callback){
-          getAjax(window.location.pathname+'?'+search,method,{ },isajax,callback);
+          getAjax(window.location.pathname+'?'+search,method,options,isajax,callback);
           //$(ajax).load(window.location.pathname+'?'+search,callback()); 
         //}else{
 
@@ -415,7 +439,9 @@ function alertfocus(msg,inp,color,def,){
         isAjax=0;
       }
       if (isAjax==1){
-        reaction($(f).serialize(),'save','','#mk_formulario .modal-content',success,'POST');
+        var formData = new FormData(document.getElementById($(f).prop('id')));
+        //reaction($(f).serialize(),'save','','#mk_formulario .modal-content',success,'POST');
+        reaction(formData,'save','','#mk_formulario .modal-content',success,'POST');
       }else{
         $(f).submit();
       }
@@ -571,8 +597,135 @@ return ({}).toString.call(obj).replace(/^\[.+?\s(\w+)\]$/,"$1").toLowerCase();
   return target.replace(new RegExp(str1,(ignore?"gi":"g")),str2);
 } 
 
+function str_replace (search, replace, subject, countObj) { // eslint-disable-line camelcase
+  //  discuss at: http://locutus.io/php/str_replace/
+  // original by: Kevin van Zonneveld (http://kvz.io)
+  // improved by: Gabriel Paderni
+  // improved by: Philip Peterson
+  // improved by: Simon Willison (http://simonwillison.net)
+  // improved by: Kevin van Zonneveld (http://kvz.io)
+  // improved by: Onno Marsman (https://twitter.com/onnomarsman)
+  // improved by: Brett Zamir (http://brett-zamir.me)
+  //  revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+  // bugfixed by: Anton Ongson
+  // bugfixed by: Kevin van Zonneveld (http://kvz.io)
+  // bugfixed by: Oleg Eremeev
+  // bugfixed by: Glen Arason (http://CanadianDomainRegistry.ca)
+  // bugfixed by: Glen Arason (http://CanadianDomainRegistry.ca)
+  //    input by: Onno Marsman (https://twitter.com/onnomarsman)
+  //    input by: Brett Zamir (http://brett-zamir.me)
+  //    input by: Oleg Eremeev
+  //      note 1: The countObj parameter (optional) if used must be passed in as a
+  //      note 1: object. The count will then be written by reference into it's `value` property
+  //   example 1: str_replace(' ', '.', 'Kevin van Zonneveld')
+  //   returns 1: 'Kevin.van.Zonneveld'
+  //   example 2: str_replace(['{name}', 'l'], ['hello', 'm'], '{name}, lars')
+  //   returns 2: 'hemmo, mars'
+  //   example 3: str_replace(Array('S','F'),'x','ASDFASDF')
+  //   returns 3: 'AxDxAxDx'
+  //   example 4: var countObj = {}
+  //   example 4: str_replace(['A','D'], ['x','y'] , 'ASDFASDF' , countObj)
+  //   example 4: var $result = countObj.value
+  //   returns 4: 4
 
+  var i = 0
+  var j = 0
+  var temp = ''
+  var repl = ''
+  var sl = 0
+  var fl = 0
+  var f = [].concat(search)
+  var r = [].concat(replace)
+  var s = subject
+  var ra = Object.prototype.toString.call(r) === '[object Array]'
+  var sa = Object.prototype.toString.call(s) === '[object Array]'
+  s = [].concat(s)
 
+  var $global = (typeof window !== 'undefined' ? window : global)
+  $global.$locutus = $global.$locutus || {}
+  var $locutus = $global.$locutus
+  $locutus.php = $locutus.php || {}
+
+  if (typeof (search) === 'object' && typeof (replace) === 'string') {
+    temp = replace
+    replace = []
+    for (i = 0; i < search.length; i += 1) {
+      replace[i] = temp
+    }
+    temp = ''
+    r = [].concat(replace)
+    ra = Object.prototype.toString.call(r) === '[object Array]'
+  }
+
+  if (typeof countObj !== 'undefined') {
+    countObj.value = 0
+  }
+
+  for (i = 0, sl = s.length; i < sl; i++) {
+    if (s[i] === '') {
+      continue
+    }
+    for (j = 0, fl = f.length; j < fl; j++) {
+      temp = s[i] + ''
+      repl = ra ? (r[j] !== undefined ? r[j] : '') : r[0]
+      s[i] = (temp).split(f[j]).join(repl)
+      if (typeof countObj !== 'undefined') {
+        countObj.value += ((temp.split(f[j])).length - 1)
+      }
+    }
+  }
+  return sa ? s : s[0]
+}
+
+function addslashes (str) {
+  //  discuss at: http://locutus.io/php/addslashes/
+  // original by: Kevin van Zonneveld (http://kvz.io)
+  // improved by: Ates Goral (http://magnetiq.com)
+  // improved by: marrtins
+  // improved by: Nate
+  // improved by: Onno Marsman (https://twitter.com/onnomarsman)
+  // improved by: Brett Zamir (http://brett-zamir.me)
+  // improved by: Oskar Larsson Högfeldt (http://oskar-lh.name/)
+  //    input by: Denny Wardhana
+  //   example 1: addslashes("kevin's birthday")
+  //   returns 1: "kevin\\'s birthday"
+
+  return (str + '')
+    .replace(/[\\"']/g, '\\$&')
+    .replace(/\u0000/g, '\\0')
+}
+
+function stripslashes (str) {
+  //       discuss at: http://locutus.io/php/stripslashes/
+  //      original by: Kevin van Zonneveld (http://kvz.io)
+  //      improved by: Ates Goral (http://magnetiq.com)
+  //      improved by: marrtins
+  //      improved by: rezna
+  //         fixed by: Mick@el
+  //      bugfixed by: Onno Marsman (https://twitter.com/onnomarsman)
+  //      bugfixed by: Brett Zamir (http://brett-zamir.me)
+  //         input by: Rick Waldron
+  //         input by: Brant Messenger (http://www.brantmessenger.com/)
+  // reimplemented by: Brett Zamir (http://brett-zamir.me)
+  //        example 1: stripslashes('Kevin\'s code')
+  //        returns 1: "Kevin's code"
+  //        example 2: stripslashes('Kevin\\\'s code')
+  //        returns 2: "Kevin\'s code"
+
+  return (str + '')
+    .replace(/\\(.?)/g, function (s, n1) {
+      switch (n1) {
+        case '\\':
+          return '\\'
+        case '0':
+          return '\u0000'
+        case '':
+          return ''
+        default:
+          return n1
+      }
+    })
+}
  
 
 

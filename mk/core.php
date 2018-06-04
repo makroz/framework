@@ -15,6 +15,7 @@ class Core
 		self::addPaths("\application\libraries",1);
 		self::addPaths("\application\controllers",1);
 		self::addPaths("\application\models",1);
+		self::addPaths("\application",1);
 		spl_autoload_register(array('MK\Core', 'autoload'));
 
 	}

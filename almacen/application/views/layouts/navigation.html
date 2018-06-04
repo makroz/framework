@@ -18,17 +18,16 @@
 		</ul>
 	<nav>
 		<div class="nav-wrapper">
-			<a href="#debug" class="" >Logo</a>
+			<a href="#debug" class="hide-on-med-and-down" >Logo</a>
 			{% if isset($_loged) %}
 				({% echo $_loged['id'].':'.$_loged['user']['nombre'] %})
 			{% /if %}
 
-	        <ul class="right hide-on-med-and-down">
-				<li><a href="/" > home</a></li>
+	        <ul class="right">
+				<li class=" hide-on-med-and-down"><a href="/" > home</a></li>
 				<li><a class="dropdown-trigger" href="#!" data-target="submodulos" >Modulos<i class="material-icons right">arrow_drop_down</i></a></li>
-				<li><a href = "index.php?url=resp/logout" >logout</a></li>
-				<li><a href = "index.php?url=resp/login" > login</a></li>
-				{% /else %}
+				<li class=" hide-on-med-and-down"><a href = "index.php?url=resp/logout" >logout</a></li>
+				<li class=" hide-on-med-and-down"><a href = "index.php?url=resp/login" > login</a></li>
 			</ul>
 		</div>
 	</nav>

@@ -81,7 +81,9 @@ color:#26a69a;
     width: calc(100% - 3rem);
 }
 
-
+#panelComponentes{
+  background-color:#fff;
+}
 
 {% /append %}
 
@@ -89,10 +91,10 @@ color:#26a69a;
 {% append js.files %}
 <link href='js/jquery-ui/jquery-ui.min.css' rel='stylesheet'>
 <script type='text/javascript' src='js/jquery-ui/jquery-ui.min.js'></script>
-<script src="../mk/js/mk_Tablas.js"></script>
+<!-- <script src="../mk/js/mk_Tablas.js"></script> -->
 <script src="../mk/js/mk_MasterDetails.js"></script>
 <script src="../mk/js/mk_Componentes.js"></script>
-
+{% echo \Mk\Tools\App::jscomponentes(); %}
 
 <link rel="stylesheet" href="../mk/js/codemirror/lib/codemirror.css">
 <link rel="stylesheet" href="../mk/js/codemirror/theme/material.css">
@@ -164,6 +166,14 @@ $('#usof').bind( "change", function() {
     opacity: 0.5,
 });
 
+ //$("#listado").sortable({
+ //  containment: "#campos",
+ //   cursor: "move",
+ //   forceHelperSize: true,
+ // handle: ".handle",
+ //   opacity: 0.5,
+ //});
+ 
 //$("#modal1").modal();
 
 

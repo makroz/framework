@@ -79,6 +79,8 @@ namespace Mk\Database\Connector
 			}
 			return $this;
 		}
+
+
 		// returns a corresponding query instance
 		public function query()
 		{
@@ -92,13 +94,46 @@ namespace Mk\Database\Connector
 
 			if (!$this->_isValidService())
 			{
-				throw $this->_Exception("Not connected to a valid service");
+				$this->connect();
+			}
+			if (!$this->_isValidService())
+			{
+				throw $this->_Exception("Not connected to a valid service ($sql)");
 			}
 			//$sql=str_replace("'", "`", $sql);
 			\Mk\Debug::msg($sql,2);
 			\Mk\Events::fire("mk.query.sql.after",  array('type'=>$sql));
 			return $this->_service->query($sql);
 		}
+		//start transaccion
+		public function startTransaction(){
+			if (!$this->_isValidService())
+			{
+				throw $this->_Exception("Not connected to a valid service");
+			}
+			return $this->_service->autocommit(false);
+
+		}
+		//commit transaccion
+		public function commitTransaction(){
+			if (!$this->_isValidService())
+			{
+				throw $this->_Exception("Not connected to a valid service");
+			}
+			return $this->_service->commit();
+
+		}
+
+		//commit transaccion
+		public function rollbackTransaction(){
+			if (!$this->_isValidService())
+			{
+				throw $this->_Exception("Not connected to a valid service");
+			}
+			return $this->_service->rollback();
+
+		}
+
 		// escapes the provided value to make it safe for queries
 		public function escape($value)
 		{

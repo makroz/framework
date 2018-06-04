@@ -1,0 +1,341 @@
+{% append style.inline %}
+
+
+
+@media screen {
+.botonera{
+	padding:0.5em;
+	display:inline-block;
+	width:100%;
+
+}
+}
+.botonera-panel > a {
+	margin-right:0.5em;
+	margin-left:0.5em;
+}
+.botonera-panel {
+	padding:0.5em;
+	margin-right:0.2em;
+	margin-left:0.2em;
+float:clear;
+}
+.separador{
+	border-left:1px solid #000;
+	width:5px;
+}
+
+
+	.input-field.col label.labeltop{
+	left: .75rem;
+	position: absolute;
+	top: -14px;
+	font-size: .8rem;
+	color: #9e9e9e;
+	cursor: text;
+	transition: .2s ease-out;
+	}
+	select.browser-default{
+		cursor: pointer;
+	background-color: transparent;
+	border: none;
+	border-bottom: 1px solid #9e9e9e;
+	outline: none;
+	height: 3rem;
+	line-height: 3rem;
+	width: 100%;
+	font-size: 1rem;
+	margin: 0 0 20px 0;
+	padding: 0;
+	display: block;
+	}
+	
+
+table.highlight > tbody > tr:hover {
+    background-color: #BFBFFF;
+}
+.sortable{
+	background-image:url('img/sort.png');
+	background-repeat: no-repeat;
+    background-position: left;
+	padding-left:19px;
+	cursor:pointer;
+}
+.sort_desc{
+	background-image:url('img/sort_desc.png');
+}
+.sort_asc{
+	background-image:url('img/sort_asc.png');
+}
+.tablaLista th{
+	border-right:1px solid #888888;
+	border-left:1px solid #888888;
+}
+.selTR, table.striped > tbody > tr.selTR:nth-child(2n+1), table.striped > tbody > tr.selTR:nth-child(2n+0) {
+    background-color: red;
+}
+{% /append %}
+{% append js.onready %}
+
+$(document).ajaxStop(function(){
+    showMensajes();
+});
+	$('#mk_formulario').modal();
+	$("select").formSelect();
+	showMensajes();
+
+
+	 $('input.datafecha').dateDropper();
+	
+
+initListTable();
+{% /append %}
+{% append js.inline %}             
+
+    jconfirm.defaults = {
+        title: 'Aviso',
+        boxWidth: '30%',
+        useBootstrap: false
+    };
+
+
+
+function printerArea(area){
+	$(area).printArea();
+}
+
+
+	
+	function _search_buscar(clear=false){
+		//alert($('form#_searchform').serialize());
+		if (clear==true){
+			reaction('&no_search=1&_runScriptLoad=initListTable();','','','.listTable');
+		}else{
+			reaction($('form#_searchform').serialize()+'&_runScriptLoad=initListTable();','','','.listTable');
+		}
+	}
+	
+
+function _changeFilter(f){
+	reaction($('#frmFilter').serialize(),'','','.listTable');
+}
+
+
+function sortTable(th){
+var options=[];
+	if ($(th).hasClass('sort_asc')){
+		options['direction']='desc';
+	}else{
+		if ($(th).hasClass('sort_desc')){
+			options['direction']='asc';
+		}else{
+			options['order']=$(th).data('field');
+		}
+	}
+reaction(options,'','','.listTable');
+}
+function initListTable(){
+  $('.sortable').click(function() {
+	  sortTable(this);
+	});
+		 $('input.datafecha').dateDropper();
+}
+
+
+
+
+
+
+
+
+
+{% /append %}
+
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<link type='text/css' rel='stylesheet' href='js/datedropper/datedropper.css'/>
+<link type='text/css' rel='stylesheet' href='js/custombox/custombox.min.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
+<script type='text/javascript' src='js/printarea/printarea.js'></script>
+<script type='text/javascript' src='js/datedropper/datedropper.js'></script>
+<script type='text/javascript' src='js/loadingoverlay/loadingoverlay.min.js'></script>
+<script type='text/javascript' src='js/custombox/custombox.min.js'></script>
+{% /append %}
+<div class="listTable">
+<!-- ajax: -->
+<div class="mk-section">
+<h1 > {% echo $modTitulo; %}</h1>
+<div class="onlyPrinter">
+{% echo $filterMsg; %}
+{% echo $searchMsg; %}
+</div>
+</div>
+<div class="mk-section">
+	<div class="row noprinter"  >
+		<form id="_searchform" autocomplete="off">
+	    <input type='hidden' id="search_campo" name="search_campo[]" value="fecha">
+	    <input type='hidden' id="search_cond" name="search_cond[]" value="7">
+
+				<div class="input-field col s2" >
+	          <input id="ini" name="ini" class="_search datafecha" data-format="{% echo $_param->fecha->formato; %}" data-init-set="false"  data-modal="true" data-large-default="true" data-large-mode="true"  data-default-date="{% echo date('m-d-Y'); %}" data-defval='{% echo \Mk\Tools\Form::dbToDate(date("Ymd")); %}' value="{% echo $ini; %}"  type="text">
+	          <label for="ini" class="active">Desde</label>
+				</div>
+	    <input type='hidden' id="search_join" name="search_join[]" value="1">
+
+	    <input type='hidden' id="search_campo" name="search_campo[]" value="fecha">
+	    <input type='hidden' id="search_cond" name="search_cond[]" value="8">
+
+				<div class="input-field col s2" >
+	          <input id="fin" name="fin" class="_search datafecha"  data-format="{% echo $_param->fecha->formato; %}" data-init-set="false"  data-modal="true" data-large-default="true" data-large-mode="true"  data-default-date="{% echo date('m-d-Y'); %}" data-defval='{% echo \Mk\Tools\Form::dbToDate(date("Ymd")); %}'  value="{% echo $fin; %}"  type="text">
+	          <label for="fin" class="active">Hasta</label>
+				</div>
+	    <input type='hidden' id="search_join" name="search_join[]" value="1">
+	          
+	    <div class="col s2">
+	      <a href="#!" class="modal-action  modal-close waves-effect waves-green btn " onclick="_search_buscar(this.form);">Buscar</a>
+	    </div>
+	    </form>
+</div>
+
+<div class="botonera z-depth-1 noprinter" >
+
+<div class="botonera-panel z-depth-1 left "  >
+	<form id="frmFilter" action="#"  method="post" style="margin:0;"  >
+	<ul class="pagination" style="margin:0; height:40px;">
+
+{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_almacenes][options],$_filter[fk_almacenes],'Todos '.$anexos[fk_almacenes][labelf],$anexos[fk_almacenes][join][grupo]); %}
+<li>
+	<select id="filter-fk_almacenes" name="_filter[fk_almacenes]"  class="browser-default listafilter" style="height: 40px;margin: 0;display: inline-block;" onchange="_changeFilter(this);" >
+	{% echo $options; %}
+	</select>
+</li>
+{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_almacenes_2][options],$_filter[fk_almacenes_2],'Todos '.$anexos[fk_almacenes_2][labelf],$anexos[fk_almacenes_2][join][grupo]); %}
+<li>
+	<select id="filter-fk_almacenes_2" name="_filter[fk_almacenes_2]"  class="browser-default listafilter" style="height: 40px;margin: 0;display: inline-block;" onchange="_changeFilter(this);" >
+	{% echo $options; %}
+	</select>
+</li>
+{% php $options=\Mk\Tools\Form::getOptions($anexos[tipo][options],$_filter[tipo],'Todos '.$anexos[tipo][labelf],$anexos[tipo][join][grupo]); %}
+<li>
+	<select id="filter-tipo" name="_filter[tipo]"  class="browser-default listafilter" style="height: 40px;margin: 0;display: inline-block;" onchange="_changeFilter(this);" >
+	{% echo $options; %}
+	</select>
+</li></ul></form></div>
+
+<div class="botonera-panel z-depth-1 left "  >
+<a class="btn-floating  waves-effect waves-light blue" title="Imprimir" onclick="printerArea('.listTable');"><i class="material-icons">print</i></a>
+{% if ($searchMsg!='') %}{% echo $searchMsg; %} <i class="tiny material-icons red white-text" title="Limpiar busqueda" onclick="_search_buscar(true);">close</i>{% /if %}
+</div>
+
+
+</div>
+
+
+</div>
+<table class="striped bordered highlight tablaLista">
+	<thead class="red">
+		<tr>
+			<th data-field="pk" width="60px" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="fecha" width="126px" class="sortable {% if ($order=='fecha') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecha][label] %} </th>{% if ($_filter[fk_almacenes]=="") %}<th data-field="join_fk_almacenes" width="230px" class="sortable {% if ($order=='join_fk_almacenes') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes][label] %} </th>{% /if %}{% if ($_filter[fk_almacenes_2]=="") %}<th data-field="join_fk_almacenes_2" width="206px" class="sortable {% if ($order=='join_fk_almacenes_2') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes_2][label] %} </th>{% /if %}<th data-field="join_fk_prod" width="" class="sortable {% if ($order=='join_fk_prod') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_prod][label] %} </th><th data-field="cant" width="233px" class="sortable {% if ($order=='cant') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[cant][label] %} </th><th data-field="join_fk_unidades" width="163px" class="sortable {% if ($order=='join_fk_unidades') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_unidades][label] %} </th>{% if ($_filter[tipo]=="") %}<th data-field="tipo" width="223px" class="sortable {% if ($order=='tipo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipo][label] %} </th>{% /if %}<th data-field="join_fk_resp" width="168px" class="sortable {% if ($order=='join_fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th>
+		</tr>
+	</thead>
+	<tbody>
+		{% php $nr=0; %}
+		{% foreach $row in $items %}
+		{% php $nr=$nr+1; %}
+		<tr>
+			
+			
+
+<td >
+     {% echo $row[pk]; %}
+</td>
+ 
+
+<td >
+     {% echo \Mk\Tools\Form::dbToDate($row[fecha]); %}
+</td>
+ {% if ($_filter[fk_almacenes]=="") %}
+
+<td >
+     {% echo $row[join_fk_almacenes];  %}
+</td>
+ {% /if %}{% if ($_filter[fk_almacenes_2]=="") %}
+
+<td >
+     {% echo $row[join_fk_almacenes_2];  %}
+</td>
+ {% /if %}
+
+<td >
+     {% echo $row[join_fk_prod];  %}
+</td>
+ 
+
+<td >
+     {% echo $row[cant]; %}
+</td>
+ 
+
+<td >
+     {% echo $row[join_fk_unidades];  %}
+</td>
+ {% if ($_filter[tipo]=="") %}
+
+<td >
+     {% echo $anexos[tipo]['options'][$row[tipo]]; %}
+</td>
+ {% /if %}
+
+<td >
+     {% echo $row[join_fk_resp];  %}
+</td>
+		</tr>
+		{% /foreach %}
+		{% if $nr<$limit %}
+		{% foreach $_i in range($nr+1, $limit) %}
+		<tr class="noprinter">
+			<td class="noprinter" >&nbsp; </td>
+			<td > </td><td > </td>{% if ($_filter[fk_almacenes]=="") %}<td > </td>{% /if %}{% if ($_filter[fk_almacenes_2]=="") %}<td > </td>{% /if %}<td > </td><td > </td><td > </td>{% if ($_filter[tipo]=="") %}<td > </td>{% /if %}<td > </td>
+			{% if ($anexos['listAction']=='show') %}
+			<td class="noprinter" > </td>
+			{% /if %}
+		</tr>
+		{% /foreach %}
+		{% /if %}
+	</tbody>
+</table>
+
+<div class="row onlyPrinter">
+<div class="col s4 center">
+<br>
+<br>	
+______________________________________<br>
+Firma del Amacenero
+<br>
+<br>
+
+</div>	
+<div class="col s4 center">
+	<br>
+<br>
+______________________________________<br>
+Firma del Receptor
+<br><br>
+
+</div>	
+<div class="col s4 center">
+	<br>
+<br>
+______________________________________<br>
+Firma 
+<br><br>
+
+</div>	
+
+</div>	
+<!-- onlyajax: -->
+<script type="text/javascript">
+	initListTable();
+</script>
+<!-- :onlyajax -->
+<!-- :ajax -->
+</div>

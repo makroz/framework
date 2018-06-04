@@ -1,0 +1,17 @@
+{% php
+	$nresp=$item['join_[[var:]]id[[:var]]'];
+	$idresp= $item[[[var:]]id[[:var]]];
+	if ($anexos[[[var:]]id[[:var]]]['funcion']=='useract'){
+		if (($_action=='add')||($_action=='index')){
+			$nresp=$_loged['user']['nombre'];
+			$idresp=$_loged['id'];
+		}
+	}
+php %}
+
+<div class="input-field col [[var:]]clase[[:var]]">
+	 <input  id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="hidden"  value='{% echo $idresp; %}'   data-defval='{% echo $idresp; %}' >
+      <input id="join_[[var:]]id[[:var]]" name="join_[[var:]]id[[:var]]" type="text" class="alfa $clasver  [[var:]]classForm[[:var]]" width="[[var:]]tam[[:var]]" value='{% echo $nresp; %}' disabled="disabled" data-defVal='{% echo $nresp; %}'>
+      <label for="join_[[var:]]id[[:var]]">{% echo $anexos[[[var:]]id[[:var]]][labelf] %}</label>
+      <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
+</div>	

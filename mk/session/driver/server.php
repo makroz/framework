@@ -7,11 +7,12 @@ namespace Mk\Session\Driver
 		/**
 		* @readwrite
 		*/
-		protected $_prefix = "appmk__";
+		protected $_prefix = APP_PATH;
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
 			session_start();
+			//echo $_SESSION;
 		}
 		public function get($key, $default = null)
 		{

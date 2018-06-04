@@ -1,0 +1,72 @@
+<hr>
+DEBUG				[<a href="index.php?url=home/debug&DELDEBUG=1">Limpiar Debug</a>] 		[<a href="index.php?url=home/debug&DATADEBUG=1">CAPTURAR _DATA de Modulos ({% echo $_SESSION['DATADEBUG']; %})</a>]
+<hr>
+	{% php
+	$r=$_SESSION[DEBUGMSG];
+	if (is_array($r)){
+		$r=array_reverse($r,true); 
+	}
+	$d='';
+	$mlevel=array();
+	if (is_array($r)){
+	foreach ($r as $key => $val){
+		$t='';
+		if (is_array($val)){
+		foreach ($val as $key1 => $val1){
+			$t.=$key.' -> ['.$key1.']     ';
+
+			
+			$level=0;
+			if ($val1['level']){
+				$t.= '(level:'.$val1['level'].') '; 
+				$level=$val1['level'];
+			}
+
+			if ($val1['origen']){
+				$t.= '['.$val1['origen'].']'; 
+			}
+
+			if ($val1['title']){
+				$t.= ' <span style="color:red">titulo:'.$val1['title'].'</span> '; 
+			}
+
+			$mlevel[$level].=$t.'<pre style="margin-left: 15px;">'.print_r($val1['msg'],true).'</pre>';
+			$d.=$t.'<pre style="margin-left: 15px;">'.print_r($val1['msg'],true).'</pre>';
+		}	
+		}
+	}
+	}
+
+	php %}
+
+{% append js.onready %}
+$('.tabs').tabs();
+{% /append %}
+
+<div class="row">
+    <div class="col s12">
+      <ul class="tabs">
+        <li class="tab col s1"><a class="active" href="#todo">Todo</a></li>
+        <li class="tab col s2"><a  href="#niv0">Nivel 0</a></li>
+        <li class="tab col s2"><a href="#niv1">Nivel 1 (sistema)</a></li>
+        <li class="tab col s2"><a href="#niv2">Nivel 2 (bd)</a></li>
+        <li class="tab col s2"><a href="#niv3">Nivel 3 </a></li>
+        <li class="tab col s2"><a href="#niv4">Nivel 4 </a></li>
+		{% if $_SESSION['DATADEBUG']==1 %}
+        <li class="tab col s1"><a href="#data">_DATA </a></li>
+        {% if $_SESSION['DATADEBUG']==1 %}
+      </ul>
+    </div>
+
+    <div id="todo" class="col s12">{% echo print_r($d,true); %}</div>
+    <div id="niv0" class="col s12">{% echo print_r($mlevel[0],true); %}</div>
+    <div id="niv1" class="col s12">{% echo print_r($mlevel[1],true); %}</div>
+    <div id="niv2" class="col s12">{% echo print_r($mlevel[2],true); %}</div>
+    <div id="niv3" class="col s12">{% echo print_r($mlevel[3],true); %}</div>
+    <div id="niv4" class="col s12">{% echo print_r($mlevel[4],true); %}</div>
+    {% if $_SESSION['DATADEBUG']==1 %}
+    <div id="data" class="col s12">{% echo print_r($_SESSION['DATADEBUGDATA'],true); %}</div>
+    {% /if %}
+</div>
+
+<hr>

@@ -103,6 +103,69 @@ class Ingalm_controller extends CrudDb
 	
 //* preserve code: *//
 
+	public function actionPrint(){
+		//$this->changeViewAction('listar.html');
+		
+		$view = $this-> getActionView();
+		$primary = $this->getPrimary();
+		$order = $this->getParam("order",$primary);
+		$direction = $this->getParam("direction",'desc');
+		$page =1;
+		$limit =null;
+		$filter = $this->getParam("_filter",array());
+		//\Mk\Debug::msg($filter,3,'Filtros');
+		$_sele_ =\Mk\Tools\App::isBuscar();
+
+
+		$ini =$this->getParam("ini",date('d/m/Y'));
+		$fin =$this->getParam("fin",'');
+
+		$where=$this->getSearchWhere();
+		$_searchMsg="Fecha: $ini";
+		if (($fin=='')||($fin==$ini)){
+			$where .="and(".$this->_model->getTable().".fecha='".\Mk\Tools\Form::dateToDbDate($ini)."')";
+			$fin='';
+		}else{
+			$where .="and(".$this->_model->getTable().".fecha>='".\Mk\Tools\Form::dateToDbDate($ini)."')and(".$this->_model->getTable().".fecha<='".\Mk\Tools\Form::dateToDbDate($fin)."')";
+				$_searchMsg="Fecha: $ini - $fin";
+		}
+		
+		
+		$anexos=$this->getAnexos($this->_model->getColumns());
+
+		$items = false;
+
+		$where = array(
+		'?'=>$where
+		);
+
+		$fields = array(
+		$this->_model->getTable().".*"
+		);
+
+		$join=$this->_model->getJoins();
+
+		//$count = $this->_model->count($where, $join);
+		$items = $this->_model->all($where, $fields, $order, $direction, $limit, $page,$join);
+		//\Mk\Debug::msg($items,1);
+		$view
+		-> set("order", $order)
+		-> set("direction", $direction)
+		-> set("page", $page)
+		-> set("limit", $limit)
+		-> set("ini", $ini)
+		-> set("fin", $fin)
+		-> set("count", $count)
+		-> set("_filter", $filter)
+		-> set("searchMsg", $_searchMsg)
+		-> set("filterMsg", $this->_filterMsg)
+		-> set("modTitulo", "Impresion de ".$this->_model->_tPlural)
+		-> set("modSingular",$this->_model->_tSingular)
+		-> set("anexos", $anexos)
+		-> set("item", $this->_model->loadToArray())
+		-> set("items", $items);
+		$this->afterListar($view);
+	}
 
 //* :preserve code *//
 

@@ -67,7 +67,148 @@ namespace Mk
 		* @readwrite
 		*/
 		protected $_renderAjaxDiv ='';
+		/**
+		* @readwrite
+		*/
+		protected $_secureKey;
 
+
+		public function __construct($options = array())
+		{
+			parent::__construct($options);
+
+			
+			$router = Registry::get("router");
+			$controller = $router->getController();
+			$action = $router->getAction();
+			
+			// $defaultPath = $this->getDefaultPath();
+			// $defaultLayout = $this->getDefaultLayout();
+			// $defaultExtension = $this->getDefaultExtension();
+			// $defaultModule=$this->getDefaultModules();
+			$this->addViewData('_action',$action);
+			$this->addViewData('_controller',$controller);
+
+
+			if ($this->getWillRenderLayoutView())
+			{
+				$file=$this->getFilenameLayout();
+
+				$view = new View(array(
+					"file" => $file
+					));
+				$this->setLayoutView($view);
+			}
+
+			if ($this->getWillRenderActionView())
+			{
+
+				$file=$this->getFilenameAction();
+				$view = new View(array(
+					"file" => $file
+					));
+				$this->setActionView($view);
+				//\MK\Debug::msg($this->getLayoutView()->getFile());
+			}
+
+			if ((!$this->_secureKey)or($this->_secureKey==''))
+			{
+				$this->_secureKey=str_replace('_controller','',get_class($this));	
+			}
+		}
+
+		protected function processUser($user,$key=false)
+		{
+			$dato=$user->getData();
+			unset($dato['user']['pass']);
+			return $dato;
+		}
+	
+		protected function getKey($key=false)
+		{
+			if (($key)and($key!='')){
+				$secureKey = $key; 	
+			}
+			else
+			{
+				$secureKey = $this->_secureKey;	
+			}
+			$secureKey=ucfirst($secureKey);
+			return $secureKey;
+		}
+
+		public function _secure($key=false)
+		{
+			$session = Registry::get("session");
+			$secureKey = $this->getKey($key);
+			$user = $session-> get('Secure_'.$secureKey, null);
+			if (!$user)
+			{
+				$session-> set('Secure_page_'.$secureKey,$_SERVER['QUERY_STRING']);
+				$secureKey=strtolower($secureKey);
+				header("Location: index.php?url={$secureKey}/login");
+				exit();
+			}
+		}
+
+		public function _isLoged($key=false)
+		{
+
+			$session = Registry::get("session");
+			$secureKey = $this->getKey($key);
+			
+			return $session-> get('Secure_'.$secureKey, false);
+		}
+	
+			public function _getLoged($key=false)
+		{
+			$session = Registry::get("session");
+			$secureKey = $this->getKey($key);
+
+			$user = $session-> get('Secure_'.$secureKey, null);
+			if ($user)
+			{
+				/* TODO: revsar non esta bien */
+				return processUser($this->_model->first(array(
+					"id = ?" => $user
+					))
+				);
+			}else{
+				return false;
+			}
+		}
+		
+		public function actionLogout($key)
+		{
+			$this->_setLoged('',null,$key,true);
+			$secureKey = strtolower($this->getKey($key));
+			header("Location: index.php?url={$secureKey}/login");
+			exit();
+
+		}
+
+		public function _setLoged($id,$user,$key=false,$logout=false)
+		{
+			$session = Registry::get("session");
+			$secureKey = $this->getKey($key);
+			\Mk\Debug::debug_to_console($user);
+			if (($id)and($id!='')and($user))
+			{
+				$dato['id']=$id;
+				$dato['time']=date('YmdHis');
+				$dato['user']=$this->processUser($user);
+				$session->set('Secure_'.$secureKey, $dato);
+
+				return  true;
+			}
+			else
+			{
+				if ($logout){
+					$session->erase('Secure_page_'.$secureKey);	
+				}
+				return  $session->erase('Secure_'.$secureKey);
+			}
+		}
 
 		public function getParam($name,$Default='',$controller=''){
 		if ($controller==''){
@@ -193,46 +334,6 @@ namespace Mk
 		}
 
 
-
-		public function __construct($options = array())
-		{
-			parent::__construct($options);
-
-			
-			$router = Registry::get("router");
-			$controller = $router->getController();
-			$action = $router->getAction();
-			
-			// $defaultPath = $this->getDefaultPath();
-			// $defaultLayout = $this->getDefaultLayout();
-			// $defaultExtension = $this->getDefaultExtension();
-			// $defaultModule=$this->getDefaultModules();
-			$this->addViewData('_action',$action);
-			$this->addViewData('_controller',$controller);
-
-
-			if ($this->getWillRenderLayoutView())
-			{
-				$file=$this->getFilenameLayout();
-
-				$view = new View(array(
-					"file" => $file
-					));
-				$this->setLayoutView($view);
-			}
-
-			if ($this->getWillRenderActionView())
-			{
-
-				$file=$this->getFilenameAction();
-				$view = new View(array(
-					"file" => $file
-					));
-				$this->setActionView($view);
-				//\MK\Debug::msg($this->getLayoutView()->getFile());
-			}
-		}
-
 		public function getVarView(){
 			$view = $this->getActionView();
 			$default = $view->Template->Implementation->getDefaultKey();
@@ -255,6 +356,13 @@ namespace Mk
 
 		public function render()
 		{
+
+			$loged=$this-> _isLoged();
+			if ($loged)
+			{
+				$this->addViewData('_loged',$loged);
+			}
+
 			$defaultContentType = $this->getDefaultContentType();
 			$results = null;
 

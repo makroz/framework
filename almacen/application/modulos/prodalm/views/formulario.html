@@ -1,0 +1,234 @@
+
+{% append style.files %}
+{% /append %}
+{% append style.inline %}
+
+{% /append %}
+{% append js.onready %}
+
+$(document).ajaxStop(function(){
+    showMensajes();
+});
+	$("select").formSelect();
+	showMensajes();
+{% /append %}
+{% append js.inline %}       
+
+    jconfirm.defaults = {
+        title: 'Aviso',
+        boxWidth: '30%',
+        useBootstrap: false
+    };
+
+
+function grabado(msg){
+if (msg=='ok'){
+	if (GrabarSeguir==true){
+		cleanForm('#frmEdit','.grabarSeguir');
+		GrabarSeguir=false;
+	}else{
+		$('#mk_formulario').modal('close');
+	}
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
+
+
+function _buscarDb(t){
+	var id=$(t).prop('id');
+	var old=$(t).data('oldvalue');
+	var dato=$(t).val();
+	var tabla=$(t).data('t');
+	var campo=$(t).data('c');
+	$('.btnPrevAjax').show();
+	var tag=$(t).data('tg');
+	var cb=$(t).data('cb');
+	var campos=campo;
+	if (tag!=''){
+		campos=campos+','+tag;
+	}
+	if ((dato!='')&&(dato!=old)){
+		$('.btnPrevAjax').hide();
+		getAjax(reaction('campos='+campos+'&cbuscar='+cb+'&cod='+dato,'getItem', tabla,true),'GET',{},'',function(msg){
+			msg=JSON.parse(msg);
+			if (msg.pk>0){
+				$('#_desc_'+id).val(msg[campo]);
+				$(t).data('tag',msg[tag]);
+				$(t).data('oldvalue',dato);
+				$(t).val(msg.pk);
+				_execTask('_buscarDb');
+				actualizarUI();
+			}else{
+				var label= $('label[for="'+id+'"]').text();
+				alertfocus('Ese '+label+' NO existe!!!','#'+id);
+			}
+			$('.btnPrevAjax').show();
+		});
+	}
+	if (dato==''){
+		$('#_desc_'+id).val('');
+		$(t).data('oldvalue',dato);
+		actualizarUI();
+	}
+}
+function getBuscar(cod){
+	//$('#_modal_buscarDb').modal('close');
+	Custombox.modal.close();
+	$('#'+$('#_modal_buscarDb').data('buscar')).val(cod).trigger('blur');
+}
+function _openBuscarDb(t){
+	t=$('#'+$(t).data('dest'));
+	var id=$(t).prop('id');
+	//var old=$(t).data('oldvalue');
+	//var dato=$(t).val();
+	var tabla=$(t).data('t');
+	//var campo=$(t).data('c');
+	$('#_modal_buscarDb').data('buscar',id);
+	$('#f_buscarDb').prop('src',reaction('_buscar_='+id,'listar', tabla,true));
+	new Custombox.modal({
+  	content: {
+    effect: 'fadein',
+    target: '#_modal_buscarDb',
+    onComplete: function(){
+      actualizarUI();
+    }
+  	}
+  	}).open();
+	//$('.btnPrevAjax').show();
+	//$('#_modal_buscarDb').modal('open');
+}
+{% /append %}
+{% append js.openform %}
+{% /append %}
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<link type='text/css' rel='stylesheet' href='js/custombox/custombox.min.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
+<script type='text/javascript' src='js/custombox/custombox.min.js'></script>
+{% /append %}
+	    <h4 class="modal-tit">
+			<h1 > Adicionar</h1>
+		</h4>
+<div class="container">
+<!-- ajax: -->
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' action="reaction('','save','',true);"  method="post" data-target='' class="$_action"  >
+<div class="row">
+
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"> <div class="dropin row      ">
+{% php $options=\Mk\Tools\Form::getOptions($anexos[fk_almacenes][options],$item[fk_almacenes],'Seleccione '.$anexos[fk_almacenes][labelf],$anexos[fk_almacenes][join][grupo]); %}
+	<div class="input-field col s12">
+	 {% if $_action!='ver' %}
+	<select id="fk_almacenes" name="fk_almacenes" class="select {% echo $clasver; %} numerico required  "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[fk_almacenes][defVal] %}' width="" >
+  {% echo $options; %}
+</select>
+ {% /if %}
+ {% else %}
+    {% php if (isset($anexos[fk_almacenes][options][$item[fk_almacenes]][text])){$valor=$anexos[fk_almacenes][options][$item[fk_almacenes]][text];}else{$valor=$anexos[fk_almacenes][options][$item[fk_almacenes]];}  %}
+    {% php if (trim($valor)==''){$valor=$item[join_fk_almacenes];}  %}
+ <input id="fk_almacenes" name="fk_almacenes" type="text" class="alfa {% echo $clasver; %}" width="" value='{% echo $valor; %}'  disabled="disabled"  >
+ {% /else %}
+	          <label for="fk_almacenes">{% echo $anexos[fk_almacenes][labelf] %}</label>
+	          <div class="error_input">{$errors[fk_almacenes][0]}</div>
+	</div>
+ 
+
+<input  id="pk" name="pk" type="hidden" class=" " value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
+ 
+
+{% append div.modales %}
+ <!-- Modal Structure -->
+  <div id="_modal_buscarDb" data-key="" class="modal modal-fixed-footer">
+   <h4 id="modal-tit" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);background-color: #fafafa;border-radius:  2px 2px 0 0;height: 56px;position: absolute;top: 0;padding: 4px 6px;width: 100%;">Buscar ...</h4>
+    <div class="modal-content" style="margin-top:56px;height:calc(100% - 112px);">
+	<iframe id="f_buscarDb" src="#" style="width: 100%;height: 100%;"></iframe>
+    </div>
+    <div class="modal-footer">
+     <button class="modal-action  waves-effect waves-green btn-flat" data-action="sel" onclick="document.getElementById('f_buscarDb').contentWindow.clicBotonera(this)">Ok</button>
+    </div>
+  </div>
+ <!-- Modal Structure -->
+{% /append %}
+<div class="col s12">
+<div class="input-field col s4">
+      <input id="fk_prod" name="fk_prod" type="text" class="alfa {% echo $clasver; %} numerico required  grabarSeguir" width="" value='{% echo $item[fk_prod]; %}'  onblur=' _buscarDb(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[fk_prod][defVal] %}' data-oldvalue='{% echo $item[fk_prod]; %}' data-t="{% echo $anexos[fk_prod][join][table]; %}" data-c="{% echo $anexos[fk_prod][join][campo]; %}" data-tg="{% echo $anexos[fk_prod][join][tag]; %}" data-tag="{% echo $item[$anexos[fk_prod][join][tag]]; %}" data-cb='{% echo $anexos[fk_prod][join][cb]; %}'>
+     <label for="fk_prod">{% echo $anexos[fk_prod][labelf] %}</label>
+      <div class="error_input">{$errors[fk_prod][0]}</div>
+</div>
+<div class="input-field col s8">
+	{% if $_action!='ver' %}
+   	<i class="material-icons prefix" data-dest="fk_prod" onclick="_openBuscarDb(this);">sms</i>
+   	{% /if %}
+      <input id="_desc_fk_prod" name="_desc_fk_prod" type="text" class="alfa {% echo $clasver; %} numerico required  grabarSeguir" value='{% echo $item[join_fk_prod]; %}' readonly="readonly" tabindex="-1" >
+</div>
+</div>
+ 
+
+<div class="input-field col s4">
+      <input id="cant" name="cant" type="text" class="float {% echo $clasver; %} numerico " data-decimal='2' width="" value='{% echo $item[cant]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} readonly="readonly" data-defval='{% echo $anexos[cant][defVal] %}' >
+     <label for="cant">{% echo $anexos[cant][labelf] %}</label>
+      <div class="error_input">{$errors[cant][0]}</div>
+</div>
+ 
+
+<div class="input-field col s4">
+      <input id="minstock" name="minstock" type="text" class="float {% echo $clasver; %} numerico required  " data-decimal='2' width="" value='{% echo $item[minstock]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[minstock][defVal] %}' >
+     <label for="minstock">{% echo $anexos[minstock][labelf] %}</label>
+      <div class="error_input">{$errors[minstock][0]}</div>
+</div>
+ 
+
+<div class="input-field col s4">
+      <input id="recompra" name="recompra" type="text" class="float {% echo $clasver; %} numerico required  " data-decimal='2' width="" value='{% echo $item[recompra]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[recompra][defVal] %}' >
+     <label for="recompra">{% echo $anexos[recompra][labelf] %}</label>
+      <div class="error_input">{$errors[recompra][0]}</div>
+</div>
+ 
+
+<div class="input-field col s3">
+      <input id="costo" name="costo" type="text" class="float {% echo $clasver; %} numerico required  " data-decimal='2' width="" value='{% echo $item[costo]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[costo][defVal] %}' >
+     <label for="costo">{% echo $anexos[costo][labelf] %}</label>
+      <div class="error_input">{$errors[costo][0]}</div>
+</div>
+ 
+
+<div class="input-field col s3">
+      <input id="precio" name="precio" type="text" class="float {% echo $clasver; %} numerico " data-decimal='2' width="" value='{% echo $item[precio]; %}'   onkeypress=' return soloNum(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[precio][defVal] %}' >
+     <label for="precio">{% echo $anexos[precio][labelf] %}</label>
+      <div class="error_input">{$errors[precio][0]}</div>
+</div>
+ 
+
+<div class="input-field col s6">
+      <input id="ubicacion" name="ubicacion" type="text" class="alfa {% echo $clasver; %}  " width="" value='{% echo $item[ubicacion]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[ubicacion][defVal] %}'>
+      <label for="ubicacion">{% echo $anexos[ubicacion][labelf] %}</label>
+      <div class="error_input">{$errors[ubicacion][0]}</div>
+</div>
+</div></div>
+</div>
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
+</form>
+<!-- notajax: -->
+{% if ('[[var:]]mostrar[[:var]]'!='1') %}
+<div class="modal-footer" >
+<div class="pag white-text" style="float: left;"></div>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='add') %}
+				<a href="#!" id="btnSaveNext" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado,true);" >Grabar y Seguir</a>
+				{% /if %}
+				{% if ($_action=='ver') %}
+				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
+				{% /if %}
+        </div>
+{% /if %}
+<!-- :notajax -->
+<!-- :ajax -->
+</div>

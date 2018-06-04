@@ -1,0 +1,32 @@
+@charset "utf-8";
+.printer{display:inline;}
+.noprinter{display:none;}
+.uibutton{display:none;}
+table.tablaLista,.tablaLista td, .tablaLista th, table.striped td, table.striped, table.striped th  {
+border:#000000 solid 1px;
+}
+input{border:0px;width:100%;overflow:visible;}
+.bodydetalle{height:auto;display: inline;}
+.asmListItem {
+	/* li item from the html list above */
+	position: relative; 
+	margin-left: 0;
+	padding-left: 0;
+	list-style: none;
+	background: #666666;
+	/*border: 1px solid #bbb; */
+	width: 100%; 
+	margin: 0 0 -1px 0; 
+	line-height: 1em;
+}
+
+.printbarcode {color: #000;font-size:10px;}
+.printbarcode td{color: #000;font-size:10px;}
+.ui-tabs-panel{
+height:auto;
+}
+textarea{
+height:auto;overflow:visible;display:inline;
+
+}
+

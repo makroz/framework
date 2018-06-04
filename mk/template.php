@@ -266,6 +266,92 @@ namespace Mk
 			}
 			return implode($content);
 		}
+
+
+		private function procesaPhpHtml($html, $funcionphp)
+		{
+			if ($funcionphp) {
+				$php = \Mk\Tools\String::getEtiquetas($html, '[[php:]]', '[[:php]]', '1');
+				//print_r($php);
+				//$php=array_unique($php);
+				\Mk\Debug::msg(htmlentities(print_r($php,true)),1);
+				foreach ($php as $key2 => $param2) {
+					$param = trim(implode(',', $param2), ',');
+					$texto = $funcionphp->$key2($param2);
+					//echo "<br>EL php {$key2} es: $texto";
+					if ($param == '') {
+						$html = str_replace('[[php:]]' . $key2 . '[[:php]]', $texto, $html);
+					} else {
+						$html = str_replace('[[php:]]' . $key2 . '::' . $param . '[[:php]]', $texto, $html);
+					}
+				}
+			}
+			return $html;
+		}
+
+		public function getComponente($name,$params,$template){
+			$raiz='';
+			$f=explode('.',$name.'.');
+			if ($f[1]!=''){
+				$raiz=$f[0]. DIRECTORY_SEPARATOR;
+				$name=$f[1];
+			}
+			$dir  = APP_PATH . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR .  'components' . DIRECTORY_SEPARATOR .$raiz. $name . DIRECTORY_SEPARATOR;
+			$file = $dir . $name . '.html';
+			if (!file_exists($file)) {
+				//echo "no se encontro  archivo ($file)";
+				$dir  = CORE_PATH . DIRECTORY_SEPARATOR . 'mk' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR .$raiz. $name . DIRECTORY_SEPARATOR;
+				$file = $dir . $name . '.html';
+				if (!file_exists($file)) {
+					//echo "no existe archivo ($file)";
+					$file='';
+
+				}
+			}
+
+			$funcionphp = null;
+			if ($file!=''){
+				$gestor = fopen($file, "r");
+				$html   = fread($gestor, filesize($file));
+				fclose($gestor);
+				if (@filesize($dir . $name . '.php') > 0) {
+					//echo "Si existe php";
+					$funcionphp = '\Components\\' . ucfirst($name) . '\\' . ucfirst($name);
+					$funcionphp = new $funcionphp($data,$params);
+				} 
+			}else{
+				$html='';
+			}
+			$html1=$html;
+			foreach ($params as $key => $param) {
+				$html=$html1;
+				$paramvar = explode('&', $param . '&');
+				foreach ($paramvar as $key1 => $var1) {
+					if ($var1 != '') {
+						$var1 = explode('=', $var1 . '=');
+						if ($var1[0] != '') {
+							$html  = str_replace('[[var:]]' . $var1[0] . '[[:var]]', rtrim(implode(array_slice($var1, 1), '='), '='), $html);
+						}
+					}
+				}
+				//echo "<hr>$html<hr>";
+				$html = $this->procesaPhpHtml($html, $funcionphp);
+				$template = str_replace("[[code:componente:$name$key]]", $html, $template);
+			}
+			return $template;
+		}
+
+		public function parseComponente($template){
+
+			$_code_ = \Mk\Tools\String::getComponentes($template);
+				\Mk\Debug::msg(htmlentities(print_r($_code_,true)),1);
+				foreach ($_code_ as $name => $params) {
+						$template=$this->getComponente($name,$params,$template);	
+				}
+
+		return $template;
+		}
+
 		public function parse($template,$_data='',$msg=0)
 		{
 			if (!is_a($this->_implementation, "Mk\Template\Implementation"))
@@ -273,6 +359,7 @@ namespace Mk
 				throw $this->_Exception();
 			}
 
+				
 				$_code_ = \Mk\Tools\String::getCodes($template,'{% append', '{% /append %}', 'compile',' %}');
 				//\Mk\Debug::msg(htmlentities(print_r($_code_,true)),1);
 				foreach ($_code_ as $key2 => $html) {
@@ -294,13 +381,16 @@ namespace Mk
 					$template = str_replace("[[code:compile:{$key2}]]",$html1,$template);
 				}
 
+			$template=$this->parseComponente($template);
+
+
 			$array = $this->_array($template);
 			$tree = $this->_tree($array["all"]);
 			$this->_code = $this->header.$this->_script($tree).$this->footer;
 			try
 			{	
 				//\Mk\Debug::msg(htmlentities($this->code));
-				//	echo "<hr>tenplate:<br> <pre>".htmlentities(print_r($this->code,true)).'</pre>';
+				//echo "<hr>tenplate:<br> <pre>".htmlentities(print_r($this->code,true)).'</pre>';
 				$this->_function = create_function("\$_data", $this->code);
 			}
 			catch(\Exception $e)

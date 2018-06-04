@@ -1,0 +1,6 @@
+<div class="tredes">Redes Sociales:</div>
+[[php:]]get::social[[:php]]
+{% foreach $soc in $social %}
+<a href="{% echo $soc[link]; %}" target="_blank"><img title="{% echo $soc[nom]; %}" src="upload\sociales-file1-{% echo $soc[pk]; %}.png" width="40"></a>
+{% /foreach %}
+

@@ -5,10 +5,13 @@
 
 
 
+@media screen {
 .botonera{
 	padding:0.5em;
 	display:inline-block;
 	width:100%;
+
+}
 }
 .botonera-panel > a {
 	margin-right:0.5em;
@@ -556,11 +559,16 @@ function _openBuscarDb(t){
 <script type='text/javascript' src='js/loadingoverlay/loadingoverlay.min.js'></script>
 <script type='text/javascript' src='js/custombox/custombox.min.js'></script>
 {% /append %}
-<div class="mk-section">
-<h1 > {% echo $modTitulo; %}</h1>
-</div>
 <div class="listTable">
 <!-- ajax: -->
+<div class="mk-section">
+<h1 > {% echo $modTitulo; %}</h1>
+<div class="onlyPrinter">
+{% echo $filterMsg; %}
+{% echo $searchMsg; %}
+</div>
+</div>
+
 <div class="mk-section">
 <div class="botonera z-depth-1 noprinter" >
 <div class="botonera-panel z-depth-1 left" >
@@ -573,7 +581,7 @@ function _openBuscarDb(t){
 </div>
 <div class="botonera-panel z-depth-1 left "  >
 {% if \Mk\Tools\App::isBuscar()==false %}
-<a class="btn-floating  waves-effect waves-light blue" title="Imprimir" onclick="printerArea('.listTable');"><i class="material-icons">print</i></a>
+<a class="btn-floating  waves-effect waves-light blue" title="Imprimir" href="index.php?url=ingalm/print" target="_blank" ><i class="material-icons">print</i></a>
 {% /if %}
 <a class="btn-floating  waves-effect waves-light blue" title="Buscar" onclick="$('#mk_buscar').modal('open');"><i class="material-icons">search</i></a>
 {% if ($searchMsg!='') %}{% echo $searchMsg; %} <i class="tiny material-icons red white-text" title="Limpiar busqueda" onclick="_search_buscar(true);">close</i>{% /if %}
@@ -584,20 +592,21 @@ function _openBuscarDb(t){
 	      <div class="row search1" data-count='0'>
 	            <div class="input-field col s3" >
 	    <select id="search_campo" name='search_campo[]' class="_search browser-default" onchange="_search_campo_change(this)" autocomplete='false' >
-	      <option value="pk" class="_sc2">Id</option><option value="fecha" class="_sc4">Fecha</option><option value="fk_almacenes" class="_sc1">Almacen</option><option value="fk_almacenes_2" class="_sc1">Alm Origen</option><option value="fk_prod" class="_sc1">Producto</option><option value="cant" class="_sc2">Cant</option><option value="fk_unidades" class="_sc1">Unidad</option><option value="costo" class="_sc2">Costo</option><option value="tipo" class="_sc1">Tipo</option><option value="tipodoc" class="_sc1">Tipo Doc.</option><option value="nfac" class="_sc1">Doc</option><option value="fecven" class="_sc4">Vence</option><option value="serial" class="_sc1">Serial</option><option value="fk_resp" class="_sc1">Resp</option><option value="created_" class="_sc4">Created_</option><option value="modified_" class="_sc4">Modified_</option>
+	    	<option value="fk_prod" class="_sc1">Producto</option>
+	      <option value="pk" class="_sc2">Id</option><option value="fecha" class="_sc4">Fecha</option><option value="fk_almacenes" class="_sc1">Almacen</option><option value="fk_almacenes_2" class="_sc1">Alm Origen</option><option value="cant" class="_sc2">Cant</option><option value="fk_unidades" class="_sc1">Unidad</option><option value="costo" class="_sc2">Costo</option><option value="tipo" class="_sc1">Tipo</option><option value="tipodoc" class="_sc1">Tipo Doc.</option><option value="nfac" class="_sc1">Doc</option><option value="fecven" class="_sc4">Vence</option><option value="serial" class="_sc1">Serial</option><option value="fk_resp" class="_sc1">Resp</option><option value="created_" class="_sc4">Created_</option><option value="modified_" class="_sc4">Modified_</option>
 	    </select>
 	          <label for="search_campo" class="labeltop">Campo de busqueda</label>
 				</div>
 	    <div class="input-field col s3" >
 	    <select id="search_cond" name='search_cond[]' class="_search browser-default search_cond"   >
-	      <option value="1" class="_sc1">contiene</option>
+	       <option value="1" class="_sc1">contiene</option>
 	 	  <option value="2" class="_sc1">no contiene</option>
 	      <option value="3" class="_sc1 _sc2 _sc3 _sc4">igual a</option>
 	      <option value="4" class="_sc1 _sc2 _sc3 _sc4">diferente de</option>
-	      <option value="5" class="_sc2">mayor que</option>
-	      <option value="6" class="_sc2">menor que</option>
-	      <option value="7" class="_sc2">mayor o igual que</option>
-	      <option value="8" class="_sc2">menor o igual que</option>
+	      <option value="5" class="_sc2 _sc4">mayor que</option>
+	      <option value="6" class="_sc2 _sc4">menor que</option>
+	      <option value="7" class="_sc2 _sc4">mayor o igual que</option>
+	      <option value="8" class="_sc2 _sc4">menor o igual que</option>
 	      <option value="9" class="_sc1">empieza por</option>
 	      <option value="10" class="_sc1">no empieza por</option>
 	      <option value="11" class="_sc1">termina por</option>

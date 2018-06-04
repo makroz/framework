@@ -77,6 +77,14 @@ namespace Mk
 		protected $_columns;
 		protected $_colExtras;
 		protected $_primary;
+		public function setError($name,$message=''){
+			if (!isset($this->_errors[$name]))
+			{
+				$this->_errors[$name] = array();
+			}
+			$this->_errors[$name][] = $message;
+			return true;
+		}
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
@@ -669,11 +677,7 @@ namespace Mk
 							{
 								$message = str_replace("{{$i}}", $replacement, $message);
 							}
-							if (!isset($this->_errors[$name]))
-							{
-								$this->_errors[$name] = array();
-							}
-							$this->_errors[$name][] = $message;
+							$this->setError($name,$message);
 							$error = true;
 						}
 					}

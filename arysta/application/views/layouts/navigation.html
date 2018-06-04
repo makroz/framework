@@ -1,0 +1,80 @@
+<div class="row">
+<div class="col s3">
+				<a href="{% echo \Mk\Tools\App::routeLink(''); %}" class="" ><img src="{% echo \Mk\Tools\App::routeImage('logo.png'); %}"	height="100px"></a>
+</div>
+<div class="col s6">
+	
+</div>
+
+<div class="col s3">
+			[[componente: social ]][[:componente]]
+			{% if isset($_loged) %}
+				<br>({% echo $_loged['id'].':'.$_loged['user']['nombre'] %})
+			{% /if %}
+
+</div>
+</div>
+{% if $_controller=='Home' %}
+	<ul id="submodulos" class="dropdown-content">
+ 			{% php
+
+					$path = APP_PATH . "/application/modulos";
+					$mmm='';
+					$iterator = new DirectoryIterator($path);
+					foreach ($iterator as $item)
+					{
+						if (!$item->isDot() && $item->isDir())
+						{
+							$file=$item->getFilename();
+							$mmm=$mmm.'<li><a href = "index.php?url='.$file.'" >'.$file.'</a></li>';
+						}
+					}
+				%}
+				{% echo $mmm; %}
+		</ul>
+	<nav>
+		<div class="nav-wrapper indigo darken-4">
+
+	        <ul class="right hide-on-med-and-down">
+				<li><a href="{% echo \Mk\Tools\App::routeLink(''); %}" > home</a></li>
+				<li><a class="dropdown-trigger" href="#!" data-target="submodulos" >Modulos<i class="material-icons right">arrow_drop_down</i></a></li>
+				<li><a href = "index.php?url=resp/logout" >logout</a></li>
+				<li><a href = "index.php?url=resp/login" > login</a></li>
+				{% /else %}
+			</ul>
+		</div>
+	</nav>
+
+{% /if %}
+{% else %}
+	<ul id="submodulos" class="dropdown-content">
+ 			{% php
+
+					$path = APP_PATH . "/application/modulos";
+					$mmm='';
+					$iterator = new DirectoryIterator($path);
+					foreach ($iterator as $item)
+					{
+						if (!$item->isDot() && $item->isDir())
+						{
+							$file=$item->getFilename();
+							$mmm=$mmm.'<li><a href = "index.php?url='.$file.'" >'.$file.'</a></li>';
+						}
+					}
+				%}
+				{% echo $mmm; %}
+		</ul>
+	<nav>
+		<div class="nav-wrapper">
+
+	        <ul class="right hide-on-med-and-down">
+				<li><a href="{% echo \Mk\Tools\App::routeLink(''); %}" > home</a></li>
+				<li><a class="dropdown-trigger" href="#!" data-target="submodulos" >Modulos<i class="material-icons right">arrow_drop_down</i></a></li>
+				<li><a href = "index.php?url=resp/logout" >logout</a></li>
+				<li><a href = "index.php?url=resp/login" > login</a></li>
+				{% /else %}
+			</ul>
+		</div>
+	</nav>
+
+{% /else %}

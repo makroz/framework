@@ -1,6 +1,7 @@
 /*modulo Conponentes*/
 var Mk_Componentes = {};
 (function (modulo){
+  var modalComponentes='<div id="mk_componentes_lista"></div>';
   var modalConfig='#menu-campos-config';
   var items = [];
   var tools =' <i class="material-icons" onclick="Mk_Componentes.openAdd(this)">add</i>'+
@@ -14,16 +15,18 @@ var Mk_Componentes = {};
   function Mk_Componente(options){
   this.type= options.type || 'c-base';
   this.isItem= options.isItem || 0;
+  this.parametros = options.parametros || false;
   this.name= options.name || 'Base';
   this.icon=  options.icon || 'extension';
   this.color=  options.color || 'green';
   this.hide=  options.hide || false;
+  this.html= options.html || '';
   this.openForm=  options.openForm || '';
   this.cant=  options.cant || -1;
   this.init = options.init || false;
-  this.add = options.add || false;
-  this.classAdd = options.classAdd || '';
+  this.add = options.add || function(nitem){return this.html;};
   this.saveConfig = options.saveConfig || false;
+  this.classAdd = options.classAdd || '';
   this.openConfig = options.openConfig || false;
   this.showConfig = options.showConfig || false;
   this.tools = options.tools || false;
@@ -41,9 +44,39 @@ var Mk_Componentes = {};
     modalConfig=value;
   };
 
+  modulo.setHtml=function(type,html){
+    if (items[type]){
+      html=str_replace( ['(%','%)','\\','[[]]'],['{%','%}','\\\\','$'], html);
+      items[type].html=html;
+    }
+  };
+
+  modulo.setParametros=function(type,param){
+    if (items[type]){
+      for (var pp in param){
+        if (!items[type].parametros){
+          items[type].parametros=[];
+        }
+        if (!items[type].parametros[param[pp]]){
+          items[type].parametros[param[pp]]='string';  
+        }
+        
+      }
+      
+    }
+  };
+
   modulo.getModalConfig=function(value){
     return modalConfig;
   };
+
+  modulo.setModalComponentes=function(value){
+    modalComponentes=value;
+  };
+
+  modulo.getModalComponentes=function(value){
+    return modalComponentes;
+  }
 
   modulo.setTagFin=function(value){
     tagFin=value;
@@ -84,6 +117,55 @@ var Mk_Componentes = {};
   .addClass('bindered');
 
   }
+
+ 
+  modulo.openAdd=function(boton){
+     if (!boton){
+      return false;
+    }
+
+    var componente=$(boton).closest('.componente');
+
+    if ($(componente).prop('class')==undefined){
+      componente=$(boton).closest('.form-config-section');
+    }
+
+    if ($(componente).prop('class')==undefined){
+      return false;
+    }
+
+    if ($(componente).find('.dropin').length==0){
+      return false;
+    }
+  
+  modulo.cur_Id=$(componente).prop('id');
+
+  new Custombox.modal({
+  content: {
+    effect: 'fadein',
+    target: '#panelComponentes'
+  }
+  }).open();
+
+ //   var tpadre='';
+ //   var padre=$(campo).parent();
+
+    //$(this.getModalConfig()).html(this.showAll(this.getModalComponentes())).show();
+
+  }
+
+
+  modulo.addComponente=function(id,donde){
+    if (!donde){
+      donde=this.cur_Id;
+    }
+
+     $('#'+donde).find('.dropin').eq(0).append(this.showComponente(id));
+          this.initComponentes();
+          helper();
+
+  }
+
 
   modulo.init=function(quien){
     $(".form-config,.form-config-section").removeClass('bindered');
@@ -197,17 +279,78 @@ var Mk_Componentes = {};
 
       return '<div class="'+isItem+' i_'+type+'" id="'+type+'-'+items[type].cant+'" data-campo="'+type+'-'+items[type].cant+'" data-type="'+type+'">'+
       //tools+
-      items[type].add(items[type].cant)+
+      '<div class="mk_comp_html">'+items[type].add(items[type].cant)+'</div>'+
       openF+
+      '<input type="hidden" name="componente['+type+']" id="data-'+type+'-'+items[type].cant+'" value="'+type+'">';
       '</div>';
     }
   };
 
+  modulo.saveConfigDef=function(typec,idc){
+    if (!typec){
+      typec=this.cur_Type;
+    }
+    if (!idc){
+      idc=this.cur_Id;
+    }
+    
+    if ((items[typec].parametros)){
+       var html=items[typec].html;
+        for (var param in items[typec].parametros) {
+          html=this.configParamSave(param,items[typec].parametros[param],idc,html);
+        }
+        console.log(html);
+        $('#'+idc).find('.mk_comp_html').html(html);
+    }
+
+  }
+
+  modulo.configParamSave=function(idparam,type='string',idc,html){
+    if (!idc){
+      idc=this.cur_Id;
+    }
+    if ((type=='string')&&(idparam!='')&&(idparam!=undefined)){
+      var dato =$('#option-'+idparam).val();
+      //var value=$('#data-'+idc).data(idparam);
+      if (dato==undefined){dato='';}
+      $('#data-'+idc).data(idparam,dato);
+      if (dato!=''){
+        html=str_replace('[[var:]]'+idparam+'[[:var]]',dato,html);
+      }
+
+    }
+    return html;
+     
+  }
+
+  modulo.configParam=function(idparam,type='string',value='',idc){
+    if (!idc){
+      idc=this.cur_Id;
+    }
+    if (value==''){
+      value=$('#data-'+idc).data(idparam);
+    }
+    if (value==undefined){
+      value='';
+    }
+    if ((type=='string')&&(idparam!='')&&(idparam!=undefined)){
+     return ' '+
+     '<div class="input-field col s12">'+
+     '   <input id="option-'+idparam+'" name="option-'+idparam+'" type="text" value="'+value+'" >'+
+     '   <label for="option-'+idparam+'" >'+idparam+':</label>'+
+     ' </div>'; 
+    }
+    return '';
+     
+  }
   modulo.saveConfig = function(){
     if(items[this.cur_Type].saveConfig){
       items[this.cur_Type].saveConfig(this.cur_Id);
-      this.updateCB();
+      
+    }else{
+      this.saveConfigDef();
     }
+    this.updateCB();
     this.closeConfig();
   };
 
@@ -275,19 +418,20 @@ var Mk_Componentes = {};
     var padre=$(campo).parent();
     
     while ((padre)&&(!$(padre).hasClass('form-content'))){
-      if ($(padre).hasClass('col')){
+      /*if ($(padre).hasClass('col')){
         tpadre=$(padre).prop('id')+' Col > '+tpadre;
       }
       if ($(padre).hasClass('row')){
         tpadre=$(padre).prop('id')+' Row > '+tpadre;
-      }
+      }*/
+      tpadre=tpadre+$(padre).prop('id')+'>';
       padre=$(padre).parent();
     }
-    tpadre='::'+tpadre;
+    //tpadre='::'+tpadre;
     this.cur_Type =$(campo).data('type');
     this.cur_Id=$(campo).data('campo');
 
-    if ((this.isEmpty)&&(!items[this.cur_Type].openConfig)){
+    if ((this.isEmpty)&&(!items[this.cur_Type].openConfig)&&(!items[this.cur_Type].parametros)){
       this.delConfig();
       return false;  
     }
@@ -305,7 +449,7 @@ var Mk_Componentes = {};
 
       $(this.getModalConfig())
         .find('h4')
-          .html(tpadre+this.cur_Id)
+          .html("<div style='font-size:0.5em;'>"+tpadre+'</div>'+this.cur_Id)
         .end()
         .find('.modal-content')
           .html('<div class="row op-edit op-edit-'+this.cur_Type+'">'+
@@ -316,6 +460,40 @@ var Mk_Componentes = {};
 
       items[this.cur_Type].openConfig(this.cur_Id);
       actualizarUI();
+    }else{
+      var lparam='';
+      if ((items[this.cur_Type].parametros)){
+        for (var param in items[this.cur_Type].parametros) {
+          lparam = lparam + this.configParam(param,items[this.cur_Type].parametros[param]);
+        }
+
+          if (items[this.cur_Type].hide!=1){
+              $(this.getModalConfig())
+            .find('#config-borrar').show();        
+          }else{
+            $(this.getModalConfig())
+            .find('#config-borrar').hide();
+          }
+
+          $(this.getModalConfig())
+            .find('h4')
+              .html("<div style='font-size:0.5em;'>"+tpadre+'</div>'+this.cur_Id)
+            .end()
+            .find('.modal-content')
+              .html('<div class="row op-edit op-edit-'+this.cur_Type+'">'+
+                lparam+
+                '</div')
+            .end()
+            .show(); 
+
+          //items[this.cur_Type].openConfig(this.cur_Id);
+          actualizarUI();
+
+
+ 
+      }
+
+
     }
 
 
@@ -324,7 +502,7 @@ var Mk_Componentes = {};
 
   modulo.show=function(type){
     if (items[type]){
-      return '<div class="comp_dragable" id="'+items[type].type+'" style="text-align: center;display: inline-block;margin:5px;">'+
+      return '<div class="comp_dragable" id="'+items[type].type+'" onclick="Mk_Componentes.addComponente(\''+items[type].type+'\')" style="text-align: center;display: inline-block;margin:5px;">'+
         '<a class="btn-floating  waves-effect waves-light '+items[type].color+'"><i class="material-icons">'+items[type].icon+'</i></a>'+
         '<div style="font-size: 9px;text-align: center;">'+items[type].name+'</div>'+
         '</div>';
@@ -340,13 +518,13 @@ var Mk_Componentes = {};
         r=r+this.show(item);
       }
     }
-    $(donde).html(r);
+    donde=$(donde).html(r);
 
-    $( ".comp_dragable" ).draggable({
+   /* $( ".comp_dragable" ).draggable({
       revert: "invalid",
       helper:"clone"
-    });
-
+    });*/
+    return donde;
   };
 
 
@@ -530,19 +708,10 @@ Mk_Componentes.add({
     });
 
     return Mk_MasterDetails.show(nid);  
-/*      return ''+
-      '<table class="tDetalle" data-tmaster="" >'+
-      '  <thead>'+
-      '    <tr><th>Col1</th><th>Col2</th></tr>'+
-      '  </thead>'+
-      '  <tbody>'+
-      '    <tr><td>Col1</td><td>Col2</td></tr>'+
-      '  </tbody>'+
-      '</table>';
-*/  }
+  }
 });
 
-Mk_Componentes.add({
+/*Mk_Componentes.add({
   name:'tabla',
   type:'c-Table',
   icon:'view_module',
@@ -559,3 +728,4 @@ Mk_Componentes.add({
     return Mk_Tablas.show(nid);  
   }
 });
+*/

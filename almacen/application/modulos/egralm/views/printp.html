@@ -1,0 +1,24 @@
+
+	<form id="_searchform" autocomplete="off">
+	    <input type='hidden' id="search_campo" name="search_campo[]" value="fecha">
+	    <input type='hidden' id="search_cond" name="search_cond[]" value="7">
+
+				<div class="input-field col s4" style="display: block;">
+	          <input id="search_search_date" name="search_search_date[]" class="_search datafecha picker-input" data-format="d/m/Y" data-large-mode="true" value=""  type="text">
+	          <label for="search_search_date" class="active">Desde</label>
+				</div>
+	    <input type='hidden' id="search_join" name="search_join[]" value="1">
+
+	    <input type='hidden' id="search_campo" name="search_campo[]" value="fecha">
+	    <input type='hidden' id="search_cond" name="search_cond[]" value="8">
+
+				<div class="input-field col s4" style="display: block;">
+	          <input id="search_search_date" name="search_search_date[]" class="_search datafecha picker-input" data-format="d/m/Y" data-large-mode="true" value=""  type="text">
+	          <label for="search_search_date" class="active">Hasta</label>
+				</div>
+	    <input type='hidden' id="search_join" name="search_join[]" value="1">
+	          
+	    <div class="modal-footer">
+	      <a href="#!" class="modal-action  modal-close waves-effect waves-green btn-flat " onclick="_search_buscar(this.form);">Buscar</a>
+	    </div>
+	    </form>

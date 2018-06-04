@@ -11,6 +11,7 @@ namespace Mk\Shared
 	{
 
 		protected $_searchMsg='';
+		protected $_filterMsg='';
 
 		protected $dataAnt;
 		
@@ -284,6 +285,49 @@ namespace Mk\Shared
 		return -1;
 	}
 
+	public function _FechatoBd($fecha,$campo){
+		$model=$this->_model;
+		$i= strpos($campo, '.');
+		if ($i!==false){
+			$i=$i+1;
+			$campo=substr($campo,$i);
+		}
+		$campo=$model->columns[$campo];
+		switch ($campo['funcion']) {
+		case 'datetime':
+		case 'datetimesystem':
+			if ($campo['type']=='char'){
+				$fecha=\Mk\Tools\Form::dateToDb($fecha,true);
+			}else{
+				$fecha=\Mk\Tools\Form::dateToDbDate($fecha,true);
+			}
+			break;
+		case 'date':
+		case 'datesystem':
+			if ($campo['type']=='char'){
+				$fecha=\Mk\Tools\Form::dateToDb($fecha);
+			}else{
+
+				$fecha=\Mk\Tools\Form::dateToDbDate($fecha);
+			}
+			break;
+		case 'time':
+		case 'timesystem':
+			if ($campo['type']=='char'){
+				$fecha=\Mk\Tools\Form::timeToDb($fecha);
+			}else{
+				$fecha=\Mk\Tools\Form::timeToDbDate($fecha);
+			}
+			break;
+		default:
+			# code...
+			break;
+	}
+
+	return $fecha;	
+
+	}
+
 	public function _verificarDatos($action){
 			$model=$this->_model;
 			if ($action=='add'){
@@ -437,7 +481,9 @@ namespace Mk\Shared
 				}
 
 				$dato=$this->_model->escape($search[$dd][$key]);
-
+				if ($dd=='_sc4'){
+					$dato=$this->_FechatoBd($dato,$value);
+				}
 				
 				if ((stripos($value, '.')===false)&&($columns[$value]['join']['alias']=='')){
 					$value=$this->_model->getTable().'.'.$value;
@@ -456,6 +502,9 @@ namespace Mk\Shared
 
 					$msg=$this->_cond_search_msg[$cond[$key]];
 					$msg= str_replace("[1]", $columns[$campos[$key]]['label'], $msg);
+					if ($dd=='_sc4'){
+						$dato=\Mk\Tools\Form::dbToDate($dato);
+					}
 					$msg= str_replace("[2]", $dato, $msg);
 					
 
@@ -482,12 +531,21 @@ namespace Mk\Shared
 			}
 
 		}
-
+		$columns=$this->getAnexos($this->_model->getColumns());
+		$this->_filterMsg='';
 		$filter = $this->getParam("_filter",array());
 		foreach ($filter as $key => $value) {
-			if ($value!='')
-			$where.="and(".$this->_model->getTable().".{$key}='{$value}')";
+			if ($value!=''){
+				if (is_array($columns[$key]['options'][$value])){
+					$this->_filterMsg.=$columns[$key]['labelf'].':'.$columns[$key]['options'][$value]['text'].'<br>';
+				}else{
+					$this->_filterMsg.=$columns[$key]['labelf'].':'.$columns[$key]['options'][$value].'<br>';
+				}
+				
+				$where.="and(".$this->_model->getTable().".{$key}='{$value}')";
+			}
 		}
+		//$this->setParam('_filterMsg',stripslashes($this->_filterMsg));
 
 		return $where;
 	}
@@ -517,12 +575,15 @@ namespace Mk\Shared
 	}
 
 	public function delete($id){
+
 		$database = \Mk\Registry::get("database");
 		$table=$this->_model->getTable();
 		$primary = $this->getPrimary();	
 		$ids=explode(',',$id.',');
 		$id=array();
 		$r=0;
+		try {
+		$this->StartTransaction();
 		foreach ($ids as $key => $value) {
 			if (trim($value)!=''){
 				$value=$this->_model->escape($value);
@@ -536,7 +597,16 @@ namespace Mk\Shared
 					
 
 				}
+				
 			}
+		}
+		$this->commitTransaction();
+		} catch (Exception $e) {
+			//echo "delete from $table where ($primary='$value')";
+			$this->rollbackTransaction();
+			$this->_model->setError('ERROR',$e->getMessage());
+			$view->set("success", false);
+			return $e->getMessage();
 		}
 		return $r;
 	}
@@ -571,11 +641,20 @@ namespace Mk\Shared
 			//echo "<hr>Notcolumn:<hr>";print_r($notColumns);echo "<hr>";
 			if ($this->_model-> validate())
 			{
+				try {
+				$this->StartTransaction();
 				$this->beforeSave($action);
 				//print_r($notColumns);
 				$this->_model->save($notColumns);
 				$this->afterSave($action);
+				$this->commitTransaction();
 				$view->set("success", true);
+				} catch (Exception $e) {
+					$this->rollbackTransaction();
+					$this->_model->setError('ERROR',$e->getMessage());
+					$view->set("success", false);
+				}
+
 			}
 			$view->set("errors", $this->_model->getErrors());
 
@@ -590,6 +669,33 @@ namespace Mk\Shared
 
 			}
 
+				if ($view->get('success')==true){
+
+					/*componentes */
+					if ($_FILES){
+						foreach ($_FILES as $file => $fdatos) {
+							$foo = new \Mk\Uploadfile($fdatos); 
+							if ($foo->uploaded) {
+	   						// save uploaded image with no changes
+	   							$primary = $this->getPrimary();
+	   							$primary=$this->_model->$primary;
+	   							$foo->file_new_name_body=$this->_model->getTable()."_{$file}_{$primary}";
+	   							$foo->file_new_name_ext='png';
+	   							$foo->Process(APP_PATH.'\upload');
+	   							if ($foo->processed) {
+	     							//echo 'original image copied '.$foo->file_dst_pathname;
+	   							} else {
+	     							//echo 'error : ' . $foo->error;
+	     							$this->_model->setError($file,$foo->error);
+	     							$view->set("errors", $this->_model->getErrors());
+	     							echo json_encode($_error);
+	   							}
+	   						}
+												
+						}
+					}
+					/*componentes */
+				}
 			if (\Mk\Tools\App::isAjax()==true){
 				if ($view->get('success')==true){
 					$this->setRenderView(false);
@@ -699,7 +805,6 @@ namespace Mk\Shared
 		$this->changeViewAction('listar.html');
 		$this->actionListar();
 	}
-
 	public function actionListar(){
 
 		$view = $this-> getActionView();
@@ -756,6 +861,7 @@ namespace Mk\Shared
 		-> set("count", $count)
 		-> set("_filter", $filter)
 		-> set("searchMsg", $this->_searchMsg)
+		-> set("filterMsg", $this->_filterMsg)
 		-> set("modTitulo", "Listado de ".$this->_model->_tPlural)
 		-> set("modSingular",$this->_model->_tSingular)
 		-> set("anexos", $anexos)
