@@ -77,10 +77,11 @@ namespace Mk
 					));
 				Registry::set("controller", $instance);
 			}
-			catch (\Exception $e)
+			catch (\Exception $e )
 			{
+				echo "ERRORORORORORO";
 				
-				throw $this->_Exception("Controller {$name} not found",1,$e);
+				throw $this->_Exception("El modulo {$name} no existe",1,$e);
 			}
 
 			Events::fire("mk.router.controller.after", array($controller, $parameters));

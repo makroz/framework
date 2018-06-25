@@ -1,0 +1,125 @@
+
+{% append style.files %}
+{% /append %}
+{% append style.inline %}
+
+{% /append %}
+{% append js.onready %}
+
+$(document).ajaxStop(function(){
+    showMensajes();
+});
+	$("select").formSelect();
+	showMensajes();
+{% /append %}
+{% append js.inline %}     
+
+    jconfirm.defaults = {
+        title: 'Aviso',
+        boxWidth: '30%',
+        useBootstrap: false
+    };
+
+
+function grabado(msg){
+if (msg=='ok'){
+	if (GrabarSeguir==true){
+		cleanForm('#frmEdit','.grabarSeguir');
+		GrabarSeguir=false;
+	}else{
+		$('#mk_formulario').modal('close');
+	}
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
+{% /append %}
+{% append js.openform %}
+{% /append %}
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
+{% /append %}
+	    <h4 class="modal-tit">
+			<h1 > Adicionar</h1>
+		</h4>
+<div class="container">
+<!-- ajax: -->
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' enctype="multipart/form-data" action="reaction('','save','',true);"  method="post" data-target='' class="$_action"  >
+<div class="row">
+
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+
+<input  id="pk" name="pk" type="hidden" class=" " value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
+ 
+
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"> <div class="dropin row ">
+<div class="input-field col s12">
+      <input id="titulo" name="titulo" type="text" class="alfa {% echo $clasver; %}  required  " width="" value='{% echo $item[titulo]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[titulo][defVal] %}'>
+      <label for="titulo">{% echo $anexos[titulo][labelf] %}</label>
+      <div class="error_input">{$errors[titulo][0]}</div>
+</div>
+ 
+
+<div class="input-field col s12">
+      <input id="descrip" name="descrip" type="text" class="alfa {% echo $clasver; %}  " width="" value='{% echo $item[descrip]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[descrip][defVal] %}'>
+      <label for="descrip">{% echo $anexos[descrip][labelf] %}</label>
+      <div class="error_input">{$errors[descrip][0]}</div>
+</div>
+ 
+
+<div class="input-field col s8">
+      <input id="boton" name="boton" type="text" class="alfa {% echo $clasver; %}  " width="" value='{% echo $item[boton]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[boton][defVal] %}'>
+      <label for="boton">{% echo $anexos[boton][labelf] %}</label>
+      <div class="error_input">{$errors[boton][0]}</div>
+</div>
+ 
+
+{% php $options=\Mk\Tools\Form::getOptions($anexos[color][options],$item[color],'Seleccione '.$anexos[color][labelf],$anexos[color][join][grupo]); %}
+	<div class="input-field col s4">
+	 {% if $_action!='ver' %}
+	<select id="color" name="color" class="select {% echo $clasver; %} numerico "   onkeypress=' return soloNum(event,this);'  data-defval='{% echo $anexos[color][defVal] %}' width="" >
+  {% echo $options; %}
+</select>
+ {% /if %}
+ {% else %}
+    {% php if (isset($anexos[color][options][$item[color]][text])){$valor=$anexos[color][options][$item[color]][text];}else{$valor=$anexos[color][options][$item[color]];}  %}
+    {% php if (trim($valor)==''){$valor=$item[join_color];}  %}
+ <input id="color" name="color" type="text" class="alfa {% echo $clasver; %}" width="" value='{% echo $valor; %}'  disabled="disabled"  >
+ {% /else %}
+	          <label for="color">{% echo $anexos[color][labelf] %}</label>
+	          <div class="error_input">{$errors[color][0]}</div>
+	</div>
+ 
+
+<div class="input-field col s12">
+      <input id="link" name="link" type="text" class="alfa {% echo $clasver; %}  " width="" value='{% echo $item[link]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[link][defVal] %}'>
+      <label for="link">{% echo $anexos[link][labelf] %}</label>
+      <div class="error_input">{$errors[link][0]}</div>
+</div>
+</div></div>
+</div>
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
+</form>
+<!-- notajax: -->
+{% if ('[[var:]]mostrar[[:var]]'!='1') %}
+<div class="modal-footer" >
+<div class="pag white-text" style="float: left;"></div>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='add') %}
+				<a href="#!" id="btnSaveNext" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado,true);" >Grabar y Seguir</a>
+				{% /if %}
+				{% if ($_action=='ver') %}
+				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
+				{% /if %}
+        </div>
+{% /if %}
+<!-- :notajax -->
+<!-- :ajax -->
+</div>

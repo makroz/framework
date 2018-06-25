@@ -1,0 +1,10 @@
+[[php:]]get::menus[[:php]]
+{% foreach $menu in $menus %}
+{% if $menu[tipo]=='M' %}
+<li><a class="dropdown-trigger" href="#!" data-target="submenu{% echo $menu[pk]; %}" >{% echo $menu[nom]; %}<i class="material-icons right">arrow_drop_down</i></a></li>
+{% /if %}
+{% else %}
+<li><a href = "{% echo $menu[link]; %}" >{% echo $menu[nom]; %}</a></li>
+{% /else %}
+{% /foreach %}
+

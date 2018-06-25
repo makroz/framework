@@ -231,10 +231,11 @@ function initListTable(){
 
 
 </div>
+
 <table class="striped bordered highlight tablaLista">
 	<thead class="red">
 		<tr>
-			<th data-field="pk" width="60px" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="fecha" width="126px" class="sortable {% if ($order=='fecha') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecha][label] %} </th>{% if ($_filter[fk_almacenes]=="") %}<th data-field="join_fk_almacenes" width="230px" class="sortable {% if ($order=='join_fk_almacenes') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes][label] %} </th>{% /if %}{% if ($_filter[fk_almacenes_2]=="") %}<th data-field="join_fk_almacenes_2" width="206px" class="sortable {% if ($order=='join_fk_almacenes_2') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes_2][label] %} </th>{% /if %}<th data-field="join_fk_prod" width="" class="sortable {% if ($order=='join_fk_prod') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_prod][label] %} </th><th data-field="cant" width="233px" class="sortable {% if ($order=='cant') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[cant][label] %} </th><th data-field="join_fk_unidades" width="163px" class="sortable {% if ($order=='join_fk_unidades') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_unidades][label] %} </th>{% if ($_filter[tipo]=="") %}<th data-field="tipo" width="223px" class="sortable {% if ($order=='tipo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipo][label] %} </th>{% /if %}<th data-field="join_fk_resp" width="168px" class="sortable {% if ($order=='join_fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th>
+			<th data-field="pk" width="60px" class="sortable {% if ($order=='pk') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[pk][label] %} </th><th data-field="fecha" width="126px" class="sortable {% if ($order=='fecha') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fecha][label] %} </th>{% if ($_filter[fk_almacenes]=="") %}<th data-field="join_fk_almacenes" width="230px" class="sortable {% if ($order=='join_fk_almacenes') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes][label] %} </th>{% /if %}{% if ($_filter[fk_almacenes_2]=="") %}<th data-field="join_fk_almacenes_2" width="206px" class="sortable {% if ($order=='join_fk_almacenes_2') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_almacenes_2][label] %} </th>{% /if %}<th data-field="join_fk_prod" width="" class="sortable {% if ($order=='join_fk_prod') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_prod][label] %} </th><th data-field="cant" width="233px" class="sortable {% if ($order=='cant') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[cant][label] %} </th><th data-field="costo" width="163px" class="sortable {% if ($order=='costo') %} sort_{% echo $direction; %} {% /if %}" > Costo </th>{% if ($_filter[tipo]=="") %}<th data-field="tipo" width="223px" class="sortable {% if ($order=='tipo') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[tipo][label] %} </th>{% /if %}<th data-field="join_fk_resp" width="168px" class="sortable {% if ($order=='join_fk_resp') %} sort_{% echo $direction; %} {% /if %}" > {% echo $anexos[fk_resp][label] %} </th>
 		</tr>
 	</thead>
 	<tbody>
@@ -270,13 +271,13 @@ function initListTable(){
 </td>
  
 
-<td >
-     {% echo $row[cant]; %}
+<td style="text-align: right;" >
+     {% echo $row[cant].' '.$row[join_fk_unidades]; %}
 </td>
  
 
-<td >
-     {% echo $row[join_fk_unidades];  %}
+<td style="text-align: right;">
+     {% echo $row[costo];  %}
 </td>
  {% if ($_filter[tipo]=="") %}
 
@@ -290,17 +291,19 @@ function initListTable(){
 </td>
 		</tr>
 		{% /foreach %}
-		{% if $nr<$limit %}
-		{% foreach $_i in range($nr+1, $limit) %}
-		<tr class="noprinter">
-			<td class="noprinter" >&nbsp; </td>
-			<td > </td><td > </td>{% if ($_filter[fk_almacenes]=="") %}<td > </td>{% /if %}{% if ($_filter[fk_almacenes_2]=="") %}<td > </td>{% /if %}<td > </td><td > </td><td > </td>{% if ($_filter[tipo]=="") %}<td > </td>{% /if %}<td > </td>
-			{% if ($anexos['listAction']=='show') %}
-			<td class="noprinter" > </td>
-			{% /if %}
+
+		<tr class="red">
+
+			<th > </th><th  >  </th>
+			{% if ($_filter[fk_almacenes]=="") %}<th  > </th> {% /if %}
+			{% if ($_filter[fk_almacenes_2]=="") %}<th  > </th>{% /if %}
+			<th > </th>
+			<th  style="text-align: right;"> TOTALES </th>
+			<th style="text-align: right;"> {% echo $total; %}</th>
+			{% if ($_filter[tipo]=="") %}<th > </th>{% /if %}
+			<th > </th>
 		</tr>
-		{% /foreach %}
-		{% /if %}
+
 	</tbody>
 </table>
 

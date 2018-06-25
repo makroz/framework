@@ -1,0 +1,17 @@
+[[php:]]get::menus[[:php]]
+{% php $ults=''; %}
+{% foreach $menu in $menus %}
+{% if $menu[fk_menus]!=$ults %}
+{% if $ults!='' %}</ul>{% /if %}
+<ul id="submenu{% echo $menu[fk_menus]; %}" class="dropdown-content dropmenu">
+{% php $ults=$menu[fk_menus]; %}
+{% /if %}
+{% if $menu[tipo]=='P' %}
+<li><a href = "index.php?url=home/page&id={% echo $menu[pk]; %}" >{% echo $menu[nom]; %}</a></li>
+{% /if %}
+{% else %}
+<li><a href = "{% echo $menu[link]; %}" >{% echo $menu[nom]; %}</a></li>
+{% /else %}
+{% /foreach %}
+{% if $ults!='' %}</ul>{% /if %}
+

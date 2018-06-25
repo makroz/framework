@@ -145,6 +145,24 @@ class Egralm_controller extends CrudDb
 		//$count = $this->_model->count($where, $join);
 		$items = $this->_model->all($where, $fields, $order, $direction, $limit, $page,$join);
 		//\Mk\Debug::msg($items,1);
+		$database = \Mk\Registry::get("database");
+		$total=0;
+		foreach ($items as $key => $item) {
+			$costo=0;
+			$c=$database->query()->first("select costo, fk_unidades,cant from ingalm where (fk_prod='{$item['fk_prod']}')and(costo>0) order by fecha desc limit 1");
+			if ($c['costo']>0){
+				
+				$unidad=$database->query()->first("select prod.pk, fk_unidades, unidades.relbase, uni2.relbase as relbase2 from prod left join unidades on (unidades.pk=fk_unidades) left join unidades as uni2 on (uni2.pk={$item['fk_unidades']}) where (prod.pk={$item['fk_prod']}) limit 1");
+				$cant=($c['cant']*$unidad['relbase2'])/$unidad['relbase'];	
+				if ($cant>0){
+					$costo=($c['costo']/$cant)*$item['cant'];	
+				}
+			}
+			$total=$total+$costo;
+			$item['costo']=\Mk\Tools\Form::bdf($costo,2);
+			$items[$key]=$item;
+		}
+		//echo '<pre>'.print_r($items,true).'</pre>';
 		$view
 		-> set("order", $order)
 		-> set("direction", $direction)
@@ -160,6 +178,7 @@ class Egralm_controller extends CrudDb
 		-> set("modSingular",$this->_model->_tSingular)
 		-> set("anexos", $anexos)
 		-> set("item", $this->_model->loadToArray())
+		-> set("total", \Mk\Tools\Form::bdf($total,2))
 		-> set("items", $items);
 		$this->afterListar($view);
 	}

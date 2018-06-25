@@ -60,7 +60,7 @@
 		  });
 			$(document).ready(function(){
 				{% yield js.onready %}
-				$('.dropdown-trigger').dropdown();
+				$('.dropdown-trigger').dropdown({hover: true});
 			});
 			{% yield js.inline %}
 		</script>

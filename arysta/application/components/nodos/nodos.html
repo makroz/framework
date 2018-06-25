@@ -1,0 +1,30 @@
+[[php:]]get::nodos[[:php]]
+{% php $f=ceil(count($nodos)/4);$f=count($nodos)-$f;$i=1; %}
+<table id="alveolo">
+{% foreach $nodo in $nodos %}
+{% if (($i==1)||($i>$f)) %}
+	<tr>
+{% /if %}
+
+<td {% if ($i & 1)&&($i<$f) %} rowspan="2" {% /if %} >
+		
+<div class="alveole insecticides clearfix ">
+<div class="content wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft;">
+<h2 class="cc{% echo $nodo[color]; %}">{% echo $nodo[titulo]; %}</h2>
+<div class="masque">
+<article>
+<p>{% echo $nodo[descrip]; %}</p>
+<a href="{% echo $nodo[link]; %}" class="button" style="background:url(img/alveolo{% echo $nodo[color]; %}.png);background-position:bottom center;  background-repeat:no-repeat;  background-size:contain;">{% echo $nodo[boton]; %}</a></article>
+</div>
+</div>
+</div>
+
+</td>
+
+
+{% if ($i>$f) %}
+	</tr>
+{% /if %}
+{% php $i++; %}
+{% /foreach %}
+</table>

@@ -451,6 +451,7 @@ function grabado(msg){
 if (msg=='ok'){
 	if (GrabarSeguir==true){
 		cleanForm('#frmEdit','.grabarSeguir');
+		$('.grabarSeguir:visible:first').focus();
 		GrabarSeguir=false;
 	}else{
 		$('#mk_formulario').modal('close');
@@ -464,11 +465,16 @@ if (msg=='ok'){
 }
 return -1;
 }
+function actualizaylibera(){
+	actualizarUI();
+	$('.btnPrevAjax').show();
+}
+
 function onChangeProd(){
   var dato=$('#fk_prod').val();
     sel=$('#fk_prod').data('tag');
     if (sel>0){
-      reaction('campo=fk_unidades&arg1=tipo&sel='+sel,'getListFor','','#fk_unidades',actualizarUI);
+      reaction('campo=fk_unidades&arg1=tipo&sel='+sel,'getListFor','','#fk_unidades',actualizaylibera);
     }
 }
 _setTask(onChangeProd,'_buscarDb');
@@ -512,7 +518,7 @@ function _buscarDb(t){
 				var label= $('label[for="'+id+'"]').text();
 				alertfocus('Ese '+label+' NO existe!!!','#'+id);
 			}
-			$('.btnPrevAjax').show();
+			//$('.btnPrevAjax').show();
 		});
 	}
 	if (dato==''){

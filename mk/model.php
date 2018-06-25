@@ -34,7 +34,8 @@ namespace Mk
 			"char",
 			"tinyint",
 			"float",
-			"date"
+			"date",
+			"longtext"
 			);
 		/**
 		* @read

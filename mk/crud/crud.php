@@ -75,6 +75,7 @@ namespace Mk\Crud {
 			$lusof['join']            			= 'De Otra Tabla';
 			$lusof['tree']					  = 'Lista Tree';
 			$lusof['buscardb']                = 'DB Buscar';
+			$lusof['editor']                = 'Editor Html';
 			$lusof['multiple']                = 'Lista Multiple';
 			$lusof['oculto']                  = 'Oculto';
 			
@@ -268,10 +269,11 @@ namespace Mk\Crud {
 					'char',
 					'tinytext',
 					'mediumtext',
-					'largetext'
+					'longtext'
 				), true)) {
 					$pedir['funcion']['val'][$key]   = 'st';
 					$pedir['usof']['val'][$key]      = 'alfa';
+
 					$pedir['tipolista']['val'][$key] = 'show';
 					if ($field['args'][0] > 0) {
 						$pedir['tamlista']['val'][$key] = ($field['args'][0] * 5) + 20;
@@ -283,9 +285,13 @@ namespace Mk\Crud {
 					if (in_array($field['type'], array(
 						'tinytext',
 						'mediumtext',
-						'largetext'
+						'longtext',
 					), true)) {
 						$pedir['usof']['val'][$key]     = 'area';
+						if ($field['type']=='longtext'){
+							$pedir['usof']['val'][$key]      = 'editor';
+						}
+
 						$pedir['tamlista']['val'][$key] = '';
 						$pedir['tipolista']['val'][$key] = '-1';
 						$pedir['search']['val'][$key]   = '0';

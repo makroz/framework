@@ -1,0 +1,118 @@
+
+{% append style.files %}
+{% /append %}
+{% append style.inline %}
+
+{% /append %}
+{% append js.onready %}
+
+$(document).ajaxStop(function(){
+    showMensajes();
+});
+	$("select").formSelect();
+	showMensajes();
+{% /append %}
+{% append js.inline %}      
+
+    jconfirm.defaults = {
+        title: 'Aviso',
+        boxWidth: '30%',
+        useBootstrap: false
+    };
+
+
+function grabado(msg){
+if (msg=='ok'){
+	if (GrabarSeguir==true){
+		cleanForm('#frmEdit','.grabarSeguir');
+		GrabarSeguir=false;
+	}else{
+		$('#mk_formulario').modal('close');
+	}
+	reaction('','','','.listTable');
+}else{
+	var error=JSON.parse(msg);
+	$.each(error, function(i, item) {
+		$('#'+i).parent().find('.error_input').html(item);
+	});
+}
+return -1;
+}
+{% /append %}
+{% append js.openform %}
+{% /append %}
+{% append js.files %}<link type='text/css' rel='stylesheet' href='js/confirm/confirm.css'/>
+<script type='text/javascript' src='js/confirm/confirm.js'></script>
+<script type='text/javascript' src='../mk/js/ckeditor/ckeditor.js'></script>
+{% /append %}
+	    <h4 class="modal-tit">
+			<h1 > Adicionar</h1>
+		</h4>
+<div class="container">
+<!-- ajax: -->
+<div class="errorList"></div>
+<form id="frmEdit" data-_action='{$_action}' enctype="multipart/form-data" action="reaction('','save','',true);"  method="post" data-target='' class="$_action"  >
+<div class="row">
+
+{% php if ($_action=='ver'){  $clasver='ver';}else{  $clasver='';} %}
+
+<input  id="pk" name="pk" type="hidden" class=" " value='{% echo $item[pk]; %}' data-defval='{% echo $anexos[pk][defVal] %}' >
+ 
+
+<div class="row  i_c-section bindered" id="c-section-0" data-campo="c-section-0" data-type="c-section"><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span><span class="campos-edit"></span> <div class="dropin row ">
+<div class="input-field col s10">
+      <input id="nom" name="nom" type="text" class="alfa {% echo $clasver; %}  required  " width="" value='{% echo $item[nom]; %}' [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[nom][defVal] %}'>
+      <label for="nom">{% echo $anexos[nom][labelf] %}</label>
+      <div class="error_input">{$errors[nom][0]}</div>
+</div>
+ 
+
+<div class="input-field col s2">
+      <input id="posi" name="posi" type="text" class="float {% echo $clasver; %} numerico required  " data-rango='[[var:]]rango[[:var]]' width="" value='{% echo $item[posi]; %}'  onkeypress=' return soloInt(event,this);'  onblur=' _refreshFloat(this);'  {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defval='{% echo $anexos[posi][defVal] %}' >
+     <label for="posi">{% echo $anexos[posi][labelf] %}</label>
+      <div class="error_input">{$errors[posi][0]}</div>
+</div>
+ 
+
+[[prevar: openform]]
+	contenidoEditor_contenido=CKEDITOR.replace( 'contenido',{
+     filebrowserBrowseUrl: 'js/ckfinder/ckfinder.html',
+     filebrowserImageBrowseUrl: 'js/ckfinder/ckfinder.html?type=Images',
+     filebrowserUploadUrl: 'js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+     filebrowserImageUploadUrl: 'js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images'
+ } );
+contenidoEditor_contenido.on( 'change', function( evt ) {
+		$('#contenido').val(evt.editor.getData());
+});
+[[:prevar]]
+[[prevar: cleanform]]
+	if (isDefined('contenidoEditor_contenido')){
+		contenidoEditor_contenido.setData('');
+	}
+[[:prevar]]
+<div class="input-field col s12">
+	<textarea id="contenido" name="contenido" class="editor {% echo $clasver; %}   " width="" [[var:]]eventos[[:var]] {% if $_action=='ver' %} disabled="disabled" {% /if %} [[var:]]readonly[[:var]] data-defVal='{% echo $anexos[contenido][defVal] %}'  >{% echo $item[contenido]; %}</textarea>
+      <label for="contenido">{% echo $anexos[contenido][labelf] %}</label>
+      <div class="error_input">{$errors[contenido][0]}</div>
+</div>
+</div></div>
+</div>
+<input type="hidden" name="_save_" id="_save_" value="{% echo $_action; %}">
+</form>
+<!-- notajax: -->
+{% if ('[[var:]]mostrar[[:var]]'!='1') %}
+<div class="modal-footer" >
+<div class="pag white-text" style="float: left;"></div>
+				<a href="#!" class=" modal-action modal-close waves-effect waves-red btn-flat " >Volver</a>
+				<a href="#!" id="btnSave" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado);" >Grabar</a>
+				{% if ($_action=='add') %}
+				<a href="#!" id="btnSaveNext" class=" modal-action  waves-effect waves-green btn-flat btnPrevAjax" onclick="_sendForm('#frmEdit',0,grabado,true);" >Grabar y Seguir</a>
+				{% /if %}
+				{% if ($_action=='ver') %}
+				<a href="#!" id="btnPrint" class=" modal-action  waves-effect waves-blue btn-flat " onclick="printerArea('#mk_formulario .modal-content');" >Imprimir</a>
+				{% /if %}
+        </div>
+{% /if %}
+<!-- :notajax -->
+<!-- :ajax -->
+</div>

@@ -4,6 +4,7 @@ function grabado(msg){
 if (msg=='ok'){
 	if (GrabarSeguir==true){
 		cleanForm('#frmEdit','.grabarSeguir');
+		$('.grabarSeguir:visible:first').focus();
 		GrabarSeguir=false;
 	}else{
 		$('#mk_formulario').modal('close');

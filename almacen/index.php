@@ -11,7 +11,7 @@ include(CORE_PATH."/mk/core.php");
 //echo "b";
 Mk\Core::initialize();
 //echo "c";
-\MK\Debug::initTime($_GET["url"]);
+\Mk\Debug::initTime($_GET["url"]);
 //echo "d";
 $path = APP_PATH . "/application/plugins";
 //echo "3";

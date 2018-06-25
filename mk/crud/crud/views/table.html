@@ -449,6 +449,14 @@ function showFormulario(){
               Mk_Componentes.getTagFin()+
               '</div>';
           break;
+     case 'area':
+     case 'editor':
+          inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'"" data-type="field">'+
+              '<textarea id="config-'+item[1]+'" type="text" class="area" width="'+tam+'" ></textarea>'+
+              '<label for="config-'+item[1]+'">'+label+'</label>'+
+              Mk_Componentes.getTagFin()+
+              '</div>';
+          break;          
       case 'check':
           inp='<div id="form-config-'+item[1]+'" class="input-field col '+clase+' form-config " data-campo="'+item[1]+'" data-type="field">'+
               '<input type="checkbox" id="config-'+item[1]+'"  class="check" value="1" />'+
