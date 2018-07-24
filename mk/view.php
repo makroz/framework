@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 namespace Mk
 {
 	use Mk\Base as Base;
-	use Mk\Template as Template;
+	use Mk\Templatebladeone as Templatebladeone;
 	//use Mk\View\Exception as Exception;
 	class View extends Base
 	{
@@ -15,6 +15,7 @@ namespace Mk
 		* @read
 		*/
 		protected $_template;
+		protected $_bladeext='.blade.php';
 		protected $_data = array();
 
 		public function _getData(){
@@ -24,19 +25,23 @@ namespace Mk
 		public function __construct($options = array())
 		{
 			parent::__construct($options);
-			$this-> _template = new Template(array(
-				"implementation" => new Template\Implementation\Extended(array("defaultPath"=>dirname($this->_file)
-					)
-					)
-				));
-			//\Mk\Debug::msg($this-> _template);
-			//$this-> _template->_implementation->_defaultPath=dirname($this->getFile());
+			$views = dirname($this->_file);
+			$cache = dirname($this->_file).DIRECTORY_SEPARATOR.'cache1';
+			define("BLADEONE_MODE",1); // (optional) 1=forced (test),2=run fast (production), 0=automatic, default value.
+			$this->_template=new Templatebladeone\BladeOneMk($views,$cache);
+			if ($this->_template->templateExiste($this->_file)) {
+				echo "Existe {$this->_file}";
+			}else {
+				echo "No Existe {$this->_file}";
+			}
+
+			//echo $blade->run(strtolower(basename($this->_file)));
 		}
 
 		public function fileexist()
 		{
 
-			
+
 			$this->setFile(strtolower(str_replace("/", DIRECTORY_SEPARATOR, trim($this-> getFile() )) ));
 			//echo "<hr>FileXXXXXX:".$this-> getFile().'<hr>';
 			if (!file_exists($this-> getFile()))
@@ -48,7 +53,7 @@ namespace Mk
 		}
 
 		public function getVarView(){
-			
+
 			$default = $this->Template->Implementation->getDefaultKey();
 			//echo "Mario:".$default;
 			$data = Registry::get($default, array());

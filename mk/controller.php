@@ -54,7 +54,7 @@ namespace Mk
 		/**
 		* @readwrite
 		*/
-		protected $_defaultExtension = "html";
+		protected $_defaultExtension = "blade.php";
 		/**
 		* @readwrite
 		*/
@@ -77,11 +77,11 @@ namespace Mk
 		{
 			parent::__construct($options);
 
-			
+
 			$router = Registry::get("router");
 			$controller = $router->getController();
 			$action = $router->getAction();
-			
+
 			// $defaultPath = $this->getDefaultPath();
 			// $defaultLayout = $this->getDefaultLayout();
 			// $defaultExtension = $this->getDefaultExtension();
@@ -89,15 +89,16 @@ namespace Mk
 			$this->addViewData('_action',$action);
 			$this->addViewData('_controller',$controller);
 
-
+			$fileLayout='';
 			if ($this->getWillRenderLayoutView())
 			{
-				$file=$this->getFilenameLayout();
-
-				$view = new View(array(
-					"file" => $file
-					));
-				$this->setLayoutView($view);
+				$fileLayout=$this->getFilenameLayout();
+				//
+				// $view = new View(array(
+				// 	"file" => $file
+				// 	));
+				// $this->setLayoutView($view);
+				$this->setLayoutView($fileLayout);
 			}
 
 			if ($this->getWillRenderActionView())
@@ -113,7 +114,7 @@ namespace Mk
 
 			if ((!$this->_secureKey)or($this->_secureKey==''))
 			{
-				$this->_secureKey=str_replace('_controller','',get_class($this));	
+				$this->_secureKey=str_replace('_controller','',get_class($this));
 			}
 		}
 
@@ -123,15 +124,15 @@ namespace Mk
 			unset($dato['user']['pass']);
 			return $dato;
 		}
-	
+
 		protected function getKey($key=false)
 		{
 			if (($key)and($key!='')){
-				$secureKey = $key; 	
+				$secureKey = $key;
 			}
 			else
 			{
-				$secureKey = $this->_secureKey;	
+				$secureKey = $this->_secureKey;
 			}
 			$secureKey=ucfirst($secureKey);
 			return $secureKey;
@@ -156,10 +157,10 @@ namespace Mk
 
 			$session = Registry::get("session");
 			$secureKey = $this->getKey($key);
-			
+
 			return $session-> get('Secure_'.$secureKey, false);
 		}
-	
+
 			public function _getLoged($key=false)
 		{
 			$session = Registry::get("session");
@@ -177,7 +178,7 @@ namespace Mk
 				return false;
 			}
 		}
-		
+
 		public function actionLogout($key)
 		{
 			$this->_setLoged('',null,$key,true);
@@ -204,7 +205,7 @@ namespace Mk
 			else
 			{
 				if ($logout){
-					$session->erase('Secure_page_'.$secureKey);	
+					$session->erase('Secure_page_'.$secureKey);
 				}
 				return  $session->erase('Secure_'.$secureKey);
 			}
@@ -213,13 +214,13 @@ namespace Mk
 		public function getParam($name,$Default='',$controller=''){
 		if ($controller==''){
 			$controller=$this->getName();
-		}		
+		}
 		$llave=$controller.'_'.$name;
 		$session = Registry::get("session");
 		$n=$session->get($llave,$Default);
 		$valor = Inputs::get($name, $n);
 		if ($valor!=$n){
-			$session->set($llave,$valor);	
+			$session->set($llave,$valor);
 		}
 		return $valor;
 	}
@@ -227,7 +228,7 @@ namespace Mk
 	public function setParam($name,$valor,$controller=''){
 		if ($controller==''){
 			$controller=$this->getName();
-		}		
+		}
 		$session = Registry::get("session");
 		$session->set($controller.'_'.$name,$valor);
 		return true;
@@ -240,7 +241,7 @@ namespace Mk
 		}
 
 
-		
+
 		public function getFilenameLayout($file='',$theme=''){
 			$router = Registry::get("router");
 			$controller = $router->getController();
@@ -250,7 +251,7 @@ namespace Mk
 			$defaultLayout = $this->getDefaultLayout();
 			$defaultExtension = $this->getDefaultExtension();
 			$defaultModule=$this->getDefaultModules();
-			
+
 			if ($theme==''){
 				$theme='layouts';
 			}
@@ -280,7 +281,7 @@ namespace Mk
 
 			$defaultPath = $this->getDefaultPath();
 			$defaultLayout = $this->getDefaultLayout();
-			$defaultExtension = $this->getDefaultExtension();
+			$defaultExtension = '.'.$this->getDefaultExtension();
 			$defaultModule=$this->getDefaultModules();
 
 			if ($theme!=''){
@@ -292,11 +293,12 @@ namespace Mk
 			$this->_pathModule ="{$defaultModule}/{$controller}/views/$theme";
 
 			if ($file==''){
-				$file="{$action}.{$defaultExtension}";
+				//$file="{$action}.{$defaultExtension}";
+				$file="{$action}";
 			}
 
 			$filed=$this->_pathModule.$file;
-				if (!file_exists($filed))
+				if (!file_exists($filed.$defaultExtension))
 				{
 					$this->_pathModule =APP_PATH."/{$defaultPath}/{$controller}/$theme";
 					$filed=$this->_pathModule.$file;
@@ -304,7 +306,7 @@ namespace Mk
 
 			$filed=str_replace('\\',DIRECTORY_SEPARATOR,$filed);
 			$filed=str_replace('/',DIRECTORY_SEPARATOR,$filed);
-			return $filed;
+			return strtolower($filed);
 
 		}
 
@@ -379,11 +381,11 @@ namespace Mk
 			//echo "Archivo Existe:".$this->getActionView()->fileExist().'<hr>';
 			$doAction = $this->getWillRenderActionView() && $this->getActionView()->fileExist();
 			$doLayout = $this->getWillRenderLayoutView() && $this->getLayoutView()->fileExist();
-			
+
 			//$this->getVarView();
 			try
 			{
-				
+
 
 				if ($doAction)
 				{
@@ -393,7 +395,7 @@ namespace Mk
 					}
 					$data1=$view->_getData();
 					$results = $view->render();
-					
+
 				}
 				//\Mk\Shared\FormTools::debug($result,2);
 				if ($doLayout)
@@ -418,7 +420,7 @@ namespace Mk
 						//echo $runScript;
 						$results=\Mk\Tools\String::getEtiquetas($results,'<!-- ajax: -->','<!-- :ajax -->',2,'root',' ');
 						$x=\Mk\Tools\String::getEtiquetas($results,'<!-- notajax: -->','<!-- :notajax -->',2,'root',' ');
-					
+
 					}else{
 
 						$x=\Mk\Tools\String::getEtiquetas($results,'<!-- onlyajax: -->','<!-- :onlyajax -->',2,'root',' ');
@@ -435,7 +437,7 @@ namespace Mk
 							$results.='<div id="debug_content1">'.$debug.
 								'</div>'."<script type='text/javascript'>$('#debug_content').html($('#debug_content1').html());$('#debug_content1').remove(); </script>";
 						}
-								
+
 					}
 */
 					if (($_SESSION['DATADEBUG']==1)&&($data1['_action']!='debug')){
@@ -444,16 +446,16 @@ namespace Mk
 					}
 
 					$results = \Mk\Tools\String::quitarSaltosDobles($results);
-	
+
 					$_var_ = \Mk\Tools\String::getCodes($results,'[[setvar:', '[[:setvar]]', '',']]');
 					$_var_ = \Mk\Tools\String::getCodes($results,'<!--setvar:', '<!--:setvar-->', false,'-->','a',$_var_);
 					$_var_ = \Mk\Tools\String::getCodes($results,'<!--prevar:', '<!--:prevar-->', false,'-->','p',$_var_);
 					$_var_ = \Mk\Tools\String::getCodes($results,'[[prevar:', '[[:prevar]]', '',']]','p',$_var_);
-					
+
 					foreach ($_var_ as $key2 => $html) {
 						$results = str_replace("[[printvar:{$key2}]]",stripslashes($html),$results);
 					}
-					
+
 					$_var_ = \Mk\Tools\String::getCodes($results,'[[printvar:', ']]', '','');
 					//$_var_ =\Mk\Tools\String::getEtiquetas($results, '[[var:]]', '[[:var]]', 2, 'index', ' ');
 					//$_var_1 = \Mk\Tools\String::getCodes($results,'[[var:', '[[:var]]', '',']','p',$_var_);
@@ -490,6 +492,6 @@ namespace Mk
 		}
 
 	}
-}	
+}
 
 ?>
