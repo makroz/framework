@@ -1,20 +1,20 @@
-<?php  
+<?php
 
 namespace Mk\Tools
 {
-	class String
+	class Strings
 	{
 		private function __construct()
 		{
 		}
-		
+
 		private function __clone()
 		{
 		}
 
 
 		public static function pluralize($t){
-			
+
 			$t=trim($t);
 			if ($t==''){return '';}
 			$out='';
@@ -49,16 +49,16 @@ namespace Mk\Tools
 			            [0] => http://google.com
 			        )
 
-			) 
+			)
 		*/
-	
+
 			public static function getComponentes(&$string,$start='[[componente:',$end='[[:componente]]',$_reemplazo='componente',$startend=']]',$out=array()){
 				$ini=stripos($string,$start);
 					$i=0;
 				while ($ini!==false){
 					$ini1=$ini;$nappend='';
 					if ($startend!=''){
-						$ini=stripos($string,$startend,$ini);	
+						$ini=stripos($string,$startend,$ini);
 						$nappend=substr($string,$ini1+strlen($start),$ini-($ini1+strlen($start)));
 					}
 					if ($ini!==false){
@@ -72,7 +72,7 @@ namespace Mk\Tools
 							$value=substr($string,$ini,$fin-$ini);
 							//if (stripos($value,'{%')!==false){
 								$i++;
-								if ($_reemplazo!==false){ 
+								if ($_reemplazo!==false){
 									if ($_reemplazo!=''){
 										$code="[[code:{$_reemplazo}:".trim($nappend)."{$i}]]";
 										//$previus='';
@@ -88,11 +88,11 @@ namespace Mk\Tools
 										$fin=$ini+strlen($code);
 										//echo "<hr>:".($fin+strlen($end)).":".strlen($string)."<hr>";
 										if ($fin+strlen($end)>strlen($string)){
-											$ini=stripos($string,$start,$ini);	
+											$ini=stripos($string,$start,$ini);
 										}else{
 											$ini=stripos($string,$start,$ini);
 										}
-										
+
 									}else{
 										$code='';
 										if (in_array($value,$out[trim($nappend)])===false){
@@ -126,7 +126,7 @@ namespace Mk\Tools
 					$ini1=$ini;$nappend='';
 					if ($startend!=''){
 
-						$ini=stripos($string,$startend,$ini);	
+						$ini=stripos($string,$startend,$ini);
 						$nappend=trim(substr($string,$ini1+strlen($start),$ini-($ini1+strlen($start))));
 					}
 					if ($ini!==false){
@@ -140,7 +140,7 @@ namespace Mk\Tools
 							$value=substr($string,$ini,$fin-$ini);
 							//if (stripos($value,'{%')!==false){
 								$i++;
-								if ($_reemplazo!==false){ 
+								if ($_reemplazo!==false){
 									if ($_reemplazo!=''){
 										$code="[[code:{$_reemplazo}:{$nappend}{$i}]]";
 										//$previus='';
@@ -194,7 +194,7 @@ namespace Mk\Tools
 				}
 				return $out;
 			}
-			
+
 			public static function getEtiquetas(&$string,$start,$end,$_type='',$_key='root',$_delete=false){
 				$string = str_replace("\n",'[[ln]]',$string);
 				preg_match_all('/' . preg_quote($start, '/') . '(.*?)'. preg_quote($end, '/').'/i', $string, $m);
@@ -223,30 +223,30 @@ namespace Mk\Tools
 								$out[$key1][$_key]="\n". $value1;
 							}
 						}else{
-							$out[$key1][] = $value1;	
+							$out[$key1][] = $value1;
 						}
 						if ($_delete!==false){
-							$string = str_replace($start.$value1.$end,$_delete,$string);	
+							$string = str_replace($start.$value1.$end,$_delete,$string);
 						}
-						
+
 					} else {
 						if ($_type!=1){
 							if (stripos($out[$_key],$value)===false){
-								$out[$_key] .="\n".$value; 
+								$out[$_key] .="\n".$value;
 							}
-							
+
 						}else{
-							$out[] =$value; 
+							$out[] =$value;
 						}
 						if ($_delete!==false){
-							$string = str_replace($start.$value.$end,$_delete,$string);	
+							$string = str_replace($start.$value.$end,$_delete,$string);
 						}
 
 					}
 				}
-				
+
 				if ($_type!=1){
-					$out= $out[$_key];	
+					$out= $out[$_key];
 				}
 				return $out;
 			}
@@ -281,30 +281,30 @@ namespace Mk\Tools
 							}
 						}else{
 							$value1=explode(',',$value1);
-							$out[$key1] = $value1;	
+							$out[$key1] = $value1;
 						}
 						if ($_delete!==false){
-							$string = str_replace($start.$value1.$end,$_delete,$string);	
+							$string = str_replace($start.$value1.$end,$_delete,$string);
 						}
-						
+
 					} else {
 						if ($_type!=1){
 							if (stripos($out[$_key],$value)===false){
-								$out[$_key] .="\n".$value; 
+								$out[$_key] .="\n".$value;
 							}
-							
+
 						}else{
-							$out[] =$value; 
+							$out[] =$value;
 						}
 						if ($_delete!==false){
-							$string = str_replace($start.$value.$end,$_delete,$string);	
+							$string = str_replace($start.$value.$end,$_delete,$string);
 						}
 
 					}
 				}
-				
+
 				if ($_type!=1){
-					$out= $out[$_key];	
+					$out= $out[$_key];
 				}
 				return $out;
 			}
@@ -351,7 +351,7 @@ namespace Mk\Tools
 							}
 							return $pos;
 						}
-						
+
 					}
 				} else {
 					$pos=stripos($haystack, $needles);

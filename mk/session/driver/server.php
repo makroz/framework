@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Mk\Session\Driver
 {
 	use Mk\Session as Session;

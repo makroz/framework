@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Mk
 {
 	use Mk\Base as Base;
@@ -25,7 +25,7 @@ namespace Mk
 				{
 					$configuration = $configuration-> initialize();
 					$parsed = $configuration-> parse("configuration/session");
-					if (!empty($parsed-> session-> default) && 
+					if (!empty($parsed-> session-> default) &&
 						!empty($parsed-> session-> default-> type))
 					{
 						$type = $parsed-> session-> default-> type;

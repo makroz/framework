@@ -137,7 +137,7 @@ public static function jsComponentes(){
 			$html=str_replace(['{%','%}','$'], ['(%','%)','[[]]'], $html);
 			$html=str_replace(PHP_EOL, '\n', addslashes($html));
 			$r2.=PHP_EOL."Mk_Componentes.setHtml('c-{$key}','{$html}');".PHP_EOL;
-			$_code_ = \Mk\Tools\String::getEtiquetas($html, '[[var:]]', '[[:var]]', '1');
+			$_code_ = \Mk\Tools\Strings::getEtiquetas($html, '[[var:]]', '[[:var]]', '1');
 			//\MK\Debug::msg(implode(',', $_code_),2);
 			if (count($_code_)>0){
 				$r3=array();

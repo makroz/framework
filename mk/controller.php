@@ -93,12 +93,11 @@ namespace Mk
 			if ($this->getWillRenderLayoutView())
 			{
 				$fileLayout=$this->getFilenameLayout();
-				//
-				// $view = new View(array(
-				// 	"file" => $file
-				// 	));
-				// $this->setLayoutView($view);
-				$this->setLayoutView($fileLayout);
+				$view = new View(array(
+					"file" => $fileLayout
+					));
+				$this->setLayoutView($view);
+				//$this->setLayoutView($fileLayout);
 			}
 
 			if ($this->getWillRenderActionView())
@@ -257,11 +256,12 @@ namespace Mk
 			}
 
 			if ($file==''){
-				$file="{$defaultLayout}.{$defaultExtension}";
+				$file="{$defaultLayout}";
+				//.{$defaultExtension}";
 			}
 
 			$filed="{$defaultModule}/{$controller}/views/$theme/$file";
-				if (!file_exists($filed))
+				if (!file_exists($filed.$defaultExtension))
 				{
 					$filed=APP_PATH."/{$defaultPath}/$theme/$file";
 				}
@@ -385,8 +385,6 @@ namespace Mk
 			//$this->getVarView();
 			try
 			{
-
-
 				if ($doAction)
 				{
 					$view = $this->getActionView();
@@ -418,12 +416,12 @@ namespace Mk
 					if ($this->_renderAjaxDiv!=''){
 						$runScript=Inputs::get("_runScriptLoad",'');
 						//echo $runScript;
-						$results=\Mk\Tools\String::getEtiquetas($results,'<!-- ajax: -->','<!-- :ajax -->',2,'root',' ');
-						$x=\Mk\Tools\String::getEtiquetas($results,'<!-- notajax: -->','<!-- :notajax -->',2,'root',' ');
+						$results=\Mk\Tools\Strings::getEtiquetas($results,'<!-- ajax: -->','<!-- :ajax -->',2,'root',' ');
+						$x=\Mk\Tools\Strings::getEtiquetas($results,'<!-- notajax: -->','<!-- :notajax -->',2,'root',' ');
 
 					}else{
 
-						$x=\Mk\Tools\String::getEtiquetas($results,'<!-- onlyajax: -->','<!-- :onlyajax -->',2,'root',' ');
+						$x=\Mk\Tools\Strings::getEtiquetas($results,'<!-- onlyajax: -->','<!-- :onlyajax -->',2,'root',' ');
 					}
 
 /*					if ($this->getParam("_debug",'')=='1'){
@@ -445,20 +443,20 @@ namespace Mk
 						$_SESSION['DATADEBUGDATA']="MOd:".$this->getName().' Action:'.$data1['_action'].'<hr><pre>'.$debug.'</pre>';
 					}
 
-					$results = \Mk\Tools\String::quitarSaltosDobles($results);
+					$results = \Mk\Tools\Strings::quitarSaltosDobles($results);
 
-					$_var_ = \Mk\Tools\String::getCodes($results,'[[setvar:', '[[:setvar]]', '',']]');
-					$_var_ = \Mk\Tools\String::getCodes($results,'<!--setvar:', '<!--:setvar-->', false,'-->','a',$_var_);
-					$_var_ = \Mk\Tools\String::getCodes($results,'<!--prevar:', '<!--:prevar-->', false,'-->','p',$_var_);
-					$_var_ = \Mk\Tools\String::getCodes($results,'[[prevar:', '[[:prevar]]', '',']]','p',$_var_);
+					$_var_ = \Mk\Tools\Strings::getCodes($results,'[[setvar:', '[[:setvar]]', '',']]');
+					$_var_ = \Mk\Tools\Strings::getCodes($results,'<!--setvar:', '<!--:setvar-->', false,'-->','a',$_var_);
+					$_var_ = \Mk\Tools\Strings::getCodes($results,'<!--prevar:', '<!--:prevar-->', false,'-->','p',$_var_);
+					$_var_ = \Mk\Tools\Strings::getCodes($results,'[[prevar:', '[[:prevar]]', '',']]','p',$_var_);
 
 					foreach ($_var_ as $key2 => $html) {
 						$results = str_replace("[[printvar:{$key2}]]",stripslashes($html),$results);
 					}
 
-					$_var_ = \Mk\Tools\String::getCodes($results,'[[printvar:', ']]', '','');
-					//$_var_ =\Mk\Tools\String::getEtiquetas($results, '[[var:]]', '[[:var]]', 2, 'index', ' ');
-					//$_var_1 = \Mk\Tools\String::getCodes($results,'[[var:', '[[:var]]', '',']','p',$_var_);
+					$_var_ = \Mk\Tools\Strings::getCodes($results,'[[printvar:', ']]', '','');
+					//$_var_ =\Mk\Tools\Strings::getEtiquetas($results, '[[var:]]', '[[:var]]', 2, 'index', ' ');
+					//$_var_1 = \Mk\Tools\Strings::getCodes($results,'[[var:', '[[:var]]', '',']','p',$_var_);
 					//\Mk\Debug::msg($_var_);
 
 					echo $results;

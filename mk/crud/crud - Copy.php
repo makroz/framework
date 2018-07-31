@@ -544,13 +544,13 @@ namespace Mk\Crud
 			
 			//print_r($plantilla);
 
-			$componentes=\Mk\Tools\String::getEtiquetas($plantilla,'[[component:]]','[[:component]]','1');
+			$componentes=\Mk\Tools\Strings::getEtiquetas($plantilla,'[[component:]]','[[:component]]','1');
 
-			$codeUnique['jsinline']['index']=\Mk\Tools\String::getEtiquetas($plantilla,'{% append js.inline %}','{% /append %}',2,'index',' ');
-			$codeUnique['jsonready']['index']=\Mk\Tools\String::getEtiquetas($plantilla,'{% append js.onready %}','{% /append %}',2,'index',' ');
-			$codeUnique['jsfiles']['index']=\Mk\Tools\String::getEtiquetas($plantilla,'{% append js.files %}','{% /append %}',2,'index',' ');
-			$codeUnique['styleinline']['index']=\Mk\Tools\String::getEtiquetas($plantilla,'{% append style.inline %}','{% /append %}',2,'index',' ');
-			$codeUnique['stylefiles']['index']=\Mk\Tools\String::getEtiquetas($plantilla,'{% append style.files %}','{% /append %}',2,'index',' ');
+			$codeUnique['jsinline']['index']=\Mk\Tools\Strings::getEtiquetas($plantilla,'{% append js.inline %}','{% /append %}',2,'index',' ');
+			$codeUnique['jsonready']['index']=\Mk\Tools\Strings::getEtiquetas($plantilla,'{% append js.onready %}','{% /append %}',2,'index',' ');
+			$codeUnique['jsfiles']['index']=\Mk\Tools\Strings::getEtiquetas($plantilla,'{% append js.files %}','{% /append %}',2,'index',' ');
+			$codeUnique['styleinline']['index']=\Mk\Tools\Strings::getEtiquetas($plantilla,'{% append style.inline %}','{% /append %}',2,'index',' ');
+			$codeUnique['stylefiles']['index']=\Mk\Tools\Strings::getEtiquetas($plantilla,'{% append style.files %}','{% /append %}',2,'index',' ');
 
 			while(sizeof($componentes)>0){
 
@@ -565,13 +565,13 @@ namespace Mk\Crud
 				$html = fread($gestor,filesize($file));
 				fclose($gestor);
 
-				$codeUnique['jsinline'][$component]=\Mk\Tools\String::getEtiquetas($html,'{% append js.inline %}','{% /append %}',2,$component,' ');
-				$codeUnique['jsonready'][$component]=\Mk\Tools\String::getEtiquetas($html,'{% append js.onready %}','{% /append %}',2,$component,' ');
-				$codeUnique['jsfiles'][$component]=\Mk\Tools\String::getEtiquetas($html,'{% append js.files %}','{% /append %}',2,$component,' ');
-				$codeUnique['styleinline'][$component]=\Mk\Tools\String::getEtiquetas($html,'{% append style.inline %}','{% /append %}',2,$component,' ');
-				$codeUnique['stylefiles'][$component]=\Mk\Tools\String::getEtiquetas($html,'{% append style.files %}','{% /append %}',2,$component,' ');
+				$codeUnique['jsinline'][$component]=\Mk\Tools\Strings::getEtiquetas($html,'{% append js.inline %}','{% /append %}',2,$component,' ');
+				$codeUnique['jsonready'][$component]=\Mk\Tools\Strings::getEtiquetas($html,'{% append js.onready %}','{% /append %}',2,$component,' ');
+				$codeUnique['jsfiles'][$component]=\Mk\Tools\Strings::getEtiquetas($html,'{% append js.files %}','{% /append %}',2,$component,' ');
+				$codeUnique['styleinline'][$component]=\Mk\Tools\Strings::getEtiquetas($html,'{% append style.inline %}','{% /append %}',2,$component,' ');
+				$codeUnique['stylefiles'][$component]=\Mk\Tools\Strings::getEtiquetas($html,'{% append style.files %}','{% /append %}',2,$component,' ');
 				if (!$codeUnique['codeunique'][$component]){
-					$codeUnique['codeunique'][$component]=\Mk\Tools\String::getEtiquetas($html,'[[unique:]]','[[:unique]]',2,$component,' ');
+					$codeUnique['codeunique'][$component]=\Mk\Tools\Strings::getEtiquetas($html,'[[unique:]]','[[:unique]]',2,$component,' ');
 					if (trim($codeUnique['codeunique'][$component])!=''){
 						
 						$posi=strpos($plantilla,"[[component:]]$component");
@@ -626,7 +626,7 @@ namespace Mk\Crud
 					}
 
 
-					$compile=\Mk\Tools\String::getEtiquetas($html,'[[compile:]]','[[:compile]]',2,$component,'[[compilando]] ');
+					$compile=\Mk\Tools\Strings::getEtiquetas($html,'[[compile:]]','[[:compile]]',2,$component,'[[compilando]] ');
 
 					$compile = str_replace('$$','[[*]]',$compile);
 					$compile = str_replace('{% ','[% ',$compile);
@@ -655,7 +655,7 @@ namespace Mk\Crud
 				}
 
 			}
-			$componentes=\Mk\Tools\String::getEtiquetas($plantilla,'[[component:]]','[[:component]]','1');
+			$componentes=\Mk\Tools\Strings::getEtiquetas($plantilla,'[[component:]]','[[:component]]','1');
 		}//while
 
 
@@ -690,7 +690,7 @@ namespace Mk\Crud
 
 		private function procesaPhpHtml($html,$funcionphp){
 			if ($funcionphp){
-			$php=\Mk\Tools\String::getEtiquetas($html,'[[php:]]','[[:php]]','1');
+			$php=\Mk\Tools\Strings::getEtiquetas($html,'[[php:]]','[[:php]]','1');
 			//print_r($php);
 			//$php=array_unique($php);
 			foreach($php as $key2 => $param2){
@@ -711,10 +711,10 @@ namespace Mk\Crud
 
 		private function renderComponente($idComponent,$plantilla,&$codeUnique,&$codeExist){
 			//print_r($plantilla);
-			$jsinline=\Mk\Tools\String::getEtiquetas($plantilla,'{% append js.inline %}','{% /append %}',2,$idComponent,' ');
+			$jsinline=\Mk\Tools\Strings::getEtiquetas($plantilla,'{% append js.inline %}','{% /append %}',2,$idComponent,' ');
 			$codeUnique['jsinline'][$idComponent]=$jsinline[$idComponent];
 			
-			$componentes=\Mk\Tools\String::getEtiquetas($plantilla,'[[component:]]','[[:component]]','1');
+			$componentes=\Mk\Tools\Strings::getEtiquetas($plantilla,'[[component:]]','[[:component]]','1');
 			//print_r($componentes);
 
 			foreach($componentes as $component => $parametros){
@@ -724,7 +724,7 @@ namespace Mk\Crud
 				$html = fread($gestor,filesize($file));
 				fclose($gestor);
 
-				$jsinline=\Mk\Tools\String::getEtiquetas($html,'{% append js.inline %}','{% /append %}',2,$component,' ');
+				$jsinline=\Mk\Tools\Strings::getEtiquetas($html,'{% append js.inline %}','{% /append %}',2,$component,' ');
 				$codeUnique['jsinline'][$component]=$jsinline[$component];
 				
 				$parametros=array_unique($parametros);

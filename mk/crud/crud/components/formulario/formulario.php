@@ -101,7 +101,7 @@ public function array_sort_by(&$arrIni, $col, $order = SORT_ASC)
                     if ($value['tam']==''){
                         $class='s12';
                     }
-                    if (\Mk\Tools\String::stripos_array($value['tam'],array('s','m','l'))!==false){
+                    if (\Mk\Tools\Strings::stripos_array($value['tam'],array('s','m','l'))!==false){
                         $class=$value['tam'];
                     }else{
                         $tam=$value['tam'];

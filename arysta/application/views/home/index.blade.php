@@ -2,7 +2,7 @@
 <div class="produits plus ">
 <div class="center">
 
-  [[componente: nodos ]][[:componente]]
+  @componente(nodos)
 
 
 </div>
