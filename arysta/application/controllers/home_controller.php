@@ -7,11 +7,10 @@ class Home_controller extends Mk\Controller
 		parent::__construct($options);
 /*		$this->_secureKey='resp';
 		$this->_secure();
-*/		parent::__construct($options);
-
+*/
 		$database = \Mk\Registry::get("database");
 		$database-> connect();
-			
+
 		\Mk\Events::add("mk.controller.destruct.after", function($name) {
 			$database = \Mk\Registry::get("database");
 			$database->disconnect();

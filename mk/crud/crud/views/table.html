@@ -1037,7 +1037,7 @@ var idtabshow='';
   <div   id="tabcampos" class="col s12">
 
    <div class="input-field col s4">
-          <input id="singular" name='singular' type="text" class="validate plantilla " data-type="text" value="{% echo \Mk\Tools\String::singularize(ucfirst($tableName)); %}">
+          <input id="singular" name='singular' type="text" class="validate plantilla " data-type="text" value="{% echo \Mk\Tools\Strings::singularize(ucfirst($tableName)); %}">
           <label for="singular" data-error="Debe escribir un nombre en singular" data-success="">Nombre del Modulo en Singular</label>
    </div>
    <div class="input-field col s4">

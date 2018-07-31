@@ -9,7 +9,7 @@ class Core
 
 	public static function debug($msg,$color='#000'){
 		if (self::$_debug==true){
-			echo "<div style='color:{$color};'>".$msg."</div>";	
+			echo "<div style='color:{$color};'>".$msg."</div>";
 		}
 	}
 
@@ -35,7 +35,7 @@ class Core
 
 	public static function addPaths($url,$system='0')
 	{
-		$url=str_replace('/', "\\", $url);	
+		$url=str_replace('/', "\\", $url);
 		$url=str_replace("\\", DIRECTORY_SEPARATOR, trim($url, "\\"));
 
 		if ($system>0)
@@ -55,12 +55,12 @@ public static function autoload($class)
 
 	$flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE;
 
-	$file=str_replace('/', "\\", $class);	
+	$file=str_replace('/', "\\", $class);
 	$file=str_replace("\\", DIRECTORY_SEPARATOR, trim($file, "\\")).'.php';
 	self::debug("File: $file");
 
 	if (strpos($file,"Mk".DIRECTORY_SEPARATOR)===false)
-	{	
+	{
 		self::debug("Entro en no MK: $class",'blue');
 		if (strpos($file,'_controller')>0)
 		{
@@ -98,14 +98,14 @@ public static function autoload($class)
 		//$classFile=$session-> get("cur_model_path");
 /*		if ($classFile!='')
 		{
-			
+
 			//\Mk\Debug::smsg("$classFile",'cur_model_path');
 			$combined=MODULE_PATH.DIRECTORY_SEPARATOR.$classFile.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$file;
-			//echo "<br>3Se Busco  $combined ($class)";	
+			//echo "<br>3Se Busco  $combined ($class)";
 			if (file_exists($combined))
 			{
 				include($combined);
-				//\Mk\Debug::smsg("Se encontro la clase $combined",'',3);	
+				//\Mk\Debug::smsg("Se encontro la clase $combined",'',3);
 				return;
 			}
 		}
@@ -121,7 +121,7 @@ public static function autoload($class)
 				self::debug("Se encontro clase: ($classFile) $combined",'green');
 				return;
 			}
-			//echo "<hr>Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")";	
+			//echo "<hr>Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")";
 	    }
 
 	}else{
@@ -138,8 +138,8 @@ public static function autoload($class)
 
 	}
 
-	
-            self::debug("<hr><span style='color:red'>Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")</span>");	
+
+            self::debug("<hr><span style='color:red'>Se busco y no se encontro en  $combined/ (( $class )) (".APP_PATH.'**'.getcwd().")</span>");
             $deb=debug_backtrace();
             foreach ($deb as $k => $v) {
                 self::debug('<pre>'.print_r($v,true).'</pre>');

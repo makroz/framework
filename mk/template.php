@@ -271,7 +271,7 @@ namespace Mk
 		private function procesaPhpHtml($html, $funcionphp)
 		{
 			if ($funcionphp) {
-				$php = \Mk\Tools\String::getEtiquetas($html, '[[php:]]', '[[:php]]', '1');
+				$php = \Mk\Tools\Strings::getEtiquetas($html, '[[php:]]', '[[:php]]', '1');
 				//print_r($php);
 				//$php=array_unique($php);
 				\Mk\Debug::msg(htmlentities(print_r($php,true)),1);
@@ -343,7 +343,7 @@ namespace Mk
 
 		public function parseComponente($template){
 
-			$_code_ = \Mk\Tools\String::getComponentes($template);
+			$_code_ = \Mk\Tools\Strings::getComponentes($template);
 				\Mk\Debug::msg(htmlentities(print_r($_code_,true)),1);
 				foreach ($_code_ as $name => $params) {
 						$template=$this->getComponente($name,$params,$template);	
@@ -360,7 +360,7 @@ namespace Mk
 			}
 
 				
-				$_code_ = \Mk\Tools\String::getCodes($template,'{% append', '{% /append %}', 'compile',' %}');
+				$_code_ = \Mk\Tools\Strings::getCodes($template,'{% append', '{% /append %}', 'compile',' %}');
 				//\Mk\Debug::msg(htmlentities(print_r($_code_,true)),1);
 				foreach ($_code_ as $key2 => $html) {
 					//echo "<hr>Append: $key2 <br> $html<hr>";

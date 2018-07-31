@@ -21,12 +21,17 @@ namespace Mk
 
         }
 
-        public static function debug_to_console($data) {
+        public static function debug_to_console($data,$quien=false,$step=1) {
+          if ($quien!==false) {
+            $quien='('.addslashes(self::quienLlamo($quien,$step)).')';
+          }else {
+            $quien='';
+          }
     if(is_array($data) || is_object($data))
     {
-        echo("<script>console.log('PHP: ".json_encode($data)."');</script>");
+        echo("<script>console.log('PHP: {$quien}".json_encode($data)."');</script>");
     } else {
-        echo("<script>console.log('PHP: ".$data."');</script>");
+        echo("<script>console.log('PHP: {$quien} ".addslashes($data)."');</script>");
     }
     }
 
@@ -79,7 +84,7 @@ namespace Mk
         $trace = preg_replace ('/^#(\d+)/me', '\'#\' . ($1 - 1)', $trace);
 
         return $trace;
-        } 
+        }
 
         public function whoDidThat() {
         $who=debug_backtrace();
@@ -97,25 +102,28 @@ namespace Mk
         }
         return $result;
         }
-        public static function quienLlamo($step=1,$c=1) {
-        $who=debug_backtrace(2,4);
+        public static function quienLlamo($c=1,$step=1) {
+
+        $who=debug_backtrace();
         $result="";
         $count = 0;
         $last=count($who);
-        $ini=$last-3;
+        if ($c<0){
+          $c=$last+$c;
+        }
         $c=$c-1;
         foreach($who as $k=>$v) {
 
             $count++;
-            if ($count > 0) 
+            if ($count > 0)
             {
                 if (( $count>=$step+2)and( $count<=$step+2+$c)) {
                     $result=$who[$k]['class'].".".$who[$k]['function'].$result;
                 }
                 if (( $count>=$step+1)and( $count<=$step+1+$c)){
-                    $result="[".$who[$k]['line']."]".$result;    
+                    $result="[".$who[$k]['line']."]".$result;
                 }
-                
+
             }
         }
         return $result;
@@ -142,10 +150,10 @@ namespace Mk
             if ($nivel>0){
                 $m1[$date]['level']=$nivel;
             }
-            if ($title!=''){  
+            if ($title!=''){
                 $m1[$date]['titulo']=$title;
             }
-            
+
 
             $m1[$date]['origen']="Mod:$controller Action:$action Llamo:".self::quienLlamo();
             $m1[$date]['msg']=$msg;
@@ -170,7 +178,7 @@ namespace Mk
             $prev   = $e->getPrevious();
             $result[] = sprintf('%s%s: %s', $starter, get_class($e), $e->getMessage());
             if (DEBUG>=1)
-            {    
+            {
 
                 $file = $e->getFile();
                 $line = $e->getLine();
