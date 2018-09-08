@@ -15,7 +15,6 @@ table#alveolo td{
   background-position:center center
  }
  .center {
-  display:flex;
   justify-content:center;
   align-items:center;
   transform:scale(0.9)

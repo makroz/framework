@@ -1,0 +1,111 @@
+@section('js.files')
+<link href='js/custombox/custombox.min.css' rel='stylesheet'>
+<script type='text/javascript' src='js/custombox/custombox.min.js'></script>
+@append 
+@section('js.inline')
+
+function _buscarDb(t){
+	var id=$(t).prop('id');
+	var old=$(t).data('oldvalue');
+	var dato=$(t).val();
+	var tabla=$(t).data('t');
+	var campo=$(t).data('c');
+	$('.btnPrevAjax').show();
+	var tag=$(t).data('tg');
+	var cb=$(t).data('cb');
+	var campos=campo;
+	if (tag!=''){
+		campos=campos+','+tag;
+	}
+
+	if ((dato!='')&&(dato!=old)){
+		$('.btnPrevAjax').hide();
+
+		getAjax(reaction('campos='+campos+'&cbuscar='+cb+'&cod='+dato,'getItem', tabla,true),'GET',{},'',function(msg){
+			msg=JSON.parse(msg);
+			if (msg.pk>0){
+				$('#_desc_'+id).val(msg[campo]);
+				$(t).data('tag',msg[tag]);
+				$(t).data('oldvalue',dato);
+				$(t).val(msg.pk);
+
+				_execTask('_buscarDb');
+				actualizarUI();
+			}else{
+				var label= $('label[for="'+id+'"]').text();
+				alertfocus('Ese '+label+' NO existe!!!','#'+id);
+			}
+
+			$('.btnPrevAjax').show();
+		});
+	}
+	if (dato==''){
+		$('#_desc_'+id).val('');
+		$(t).data('oldvalue',dato);
+		actualizarUI();
+	}
+}
+
+function getBuscar(cod){
+	//$('#_modal_buscarDb').modal('close');
+	Custombox.modal.close();
+	$('#'+$('#_modal_buscarDb').data('buscar')).val(cod).trigger('blur');
+}
+function _openBuscarDb(t){
+	t=$('#'+$(t).data('dest'));
+	var id=$(t).prop('id');
+	//var old=$(t).data('oldvalue');
+	//var dato=$(t).val();
+	var tabla=$(t).data('t');
+	//var campo=$(t).data('c');
+	$('#_modal_buscarDb').data('buscar',id);
+	$('#f_buscarDb').prop('src',reaction('_buscar_='+id,'listar', tabla,true));
+	
+	new Custombox.modal({
+  	content: {
+    effect: 'fadein',
+    target: '#_modal_buscarDb',
+    onComplete: function(){
+      actualizarUI();
+    }
+  	}
+  	}).open();
+
+	//$('.btnPrevAjax').show();
+	//$('#_modal_buscarDb').modal('open');
+	
+}
+@append 
+@section('div.modales')
+ <!-- Modal Structure -->
+
+  <div id="_modal_buscarDb" data-key="" class="modal modal-fixed-footer">
+   <h4 id="modal-tit" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);background-color: #fafafa;border-radius:  2px 2px 0 0;height: 56px;position: absolute;top: 0;padding: 4px 6px;width: 100%;">Buscar ...</h4>
+    <div class="modal-content" style="margin-top:56px;height:calc(100% - 112px);">
+
+	<iframe id="f_buscarDb" src="#" style="width: 100%;height: 100%;"></iframe>	   
+
+    </div>
+    <div class="modal-footer">
+     <button class="modal-action  waves-effect waves-green btn-flat" data-action="sel" onclick="document.getElementById('f_buscarDb').contentWindow.clicBotonera(this)">Ok</button>
+     
+      
+    </div>
+  </div>
+  
+ <!-- Modal Structure -->
+@append 
+<div class="col [[var:]]clase[[:var]]">
+
+<div class="input-field col s4">
+      <input id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="text" class="alfa {{$clasver}} [[var:]]validate[[:var]] [[var:]]classForm[[:var]]" width="[[var:]]tam[[:var]]" value='{{$item[[[var:]]id[[:var]]]}}' [[var:]]eventos[[:var]] @if( $_action=='ver' )  disabled="disabled"  @endif  [[var:]]readonly[[:var]] data-defval='{{$anexos[[[var:]]id[[:var]]][defVal]}}' data-oldvalue='{{$item[[[var:]]id[[:var]]]}}' data-t="{{$anexos[[[var:]]id[[:var]]][join][table]}}" data-c="{{$anexos[[[var:]]id[[:var]]][join][campo]}}" data-tg="{{$anexos[[[var:]]id[[:var]]][join][tag]}}" data-tag="{{$item[$anexos[[[var:]]id[[:var]]][join][tag]]}}" data-cb='{{$anexos[[[var:]]id[[:var]]][join][cb]}}'>
+     <label for="[[var:]]id[[:var]]">{{$anexos[[[var:]]id[[:var]]][labelf]}}</label>
+      <div class="error_input">{$errors[[[var:]]id[[:var]]][0]}</div>
+</div>
+<div class="input-field col s8">
+	@if( $_action!='ver' ) 
+   	<i class="material-icons prefix" data-dest="[[var:]]id[[:var]]" onclick="_openBuscarDb(this);">sms</i>
+   	 @endif 
+      <input id="_desc_[[var:]]id[[:var]]" name="_desc_[[var:]]id[[:var]]" type="text" class="alfa {{$clasver}} [[var:]]validate[[:var]] [[var:]]classForm[[:var]]" value='{{$item[join_[[var:]]id[[:var]]]}}' readonly="readonly" tabindex="-1" >
+</div>
+</div>

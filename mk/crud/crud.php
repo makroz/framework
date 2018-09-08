@@ -125,6 +125,9 @@ namespace Mk\Crud {
             $pedir['posf']['text']             = 'Pos. Form.';
             $pedir['posf']['type']             = 'text';
             $pedir['posf']['tam']              = 's2';
+            $pedir['posl']['text']             = 'Pos. Lista';
+            $pedir['posl']['type']             = 'hidden';
+            $pedir['posl']['tam']              = 's2';
 
             $pedir['funcion']['text']         = 'Funcion al Grabar/cargar';
             $pedir['funcion']['type']         = 'sel';
@@ -255,6 +258,7 @@ namespace Mk\Crud {
                 $pedir['search']['val'][$key]   = '1';
                 $pedir['tipolista']['val'][$key]   = 'show';
                 $pedir['posf']['val'][$key]   = $posf;
+                $pedir['posl']['val'][$key]   = $posf;
                 $pedir['defVal']['val'][$key]   = $field['default'];
                 $posf++;
                 // Valores por defecto segun tipo de datos de la BD

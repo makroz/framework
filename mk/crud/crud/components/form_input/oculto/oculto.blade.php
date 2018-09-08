@@ -1,0 +1,1 @@
+<input  id="[[var:]]id[[:var]]" name="[[var:]]id[[:var]]" type="hidden" class=" [[var:]]classForm[[:var]]" value='{{$item[[[var:]]id[[:var]]]}}' data-defval='{{$anexos[[[var:]]id[[:var]]][defVal]}}' >

@@ -1,17 +1,15 @@
 <?php
-
-
 namespace Mk\Templatebladeone;
 
 /**
- * trait BladeOneMk
- * Copyright (c) 2018 Mario Guzman. Don't delete this comment, its part of the license.
- * Extends the tags of the class BladeOne.  Its optional
- * Adiciona todas las funcionalidades del Framework MK
- * @package  BladeOneMk
- * @version 1.0 2018-07-24
- * @author   Mario Guzman <makroz@hotmail.com>
- */
+* trait BladeOneMk
+* Copyright (c) 2018 Mario Guzman. Don't delete this comment, its part of the license.
+* Extends the tags of the class BladeOne.  Its optional
+* Adiciona todas las funcionalidades del Framework MK
+* @package  BladeOneMk
+* @version 1.0 2018-07-24
+* @author   Mario Guzman <makroz@hotmail.com>
+*/
 trait BladeOneMkTrait
 {
     protected function getFileComponente($name)
@@ -37,7 +35,6 @@ trait BladeOneMkTrait
         }
         return $file;
     }
-
     protected function processComponente($name, $params='')
     {
         $file=$this->getFileComponente($name);
@@ -51,7 +48,6 @@ trait BladeOneMkTrait
             } else {
                 $params=array();
             }
-
             $file=strtolower(basename($file));
             $funcionphp=null;
             if (@filesize($this->templatePath .DIRECTORY_SEPARATOR. $file . '.php') > 0) {
@@ -62,7 +58,6 @@ trait BladeOneMkTrait
             if ($funcionphp) {
                 $params['_php']=$funcionphp;
             }
-
             $r=$this->runChild($file, $params);
             $this->templatePath = $oldTemplatePath;
             $this->compiledPath = $oldCompilePath;
@@ -82,5 +77,61 @@ trait BladeOneMkTrait
             $param=addslashes(implode(',', $param));
         }
         return $this->phpTag . "echo \$this->processComponente('{$c}','{$param}'); ?>";
+    }
+    /**
+    * Compile the prependsection statements into valid PHP.
+    *
+    * @return string
+    */
+    public function compilePrependsection($expression)
+    {
+        return $this->phpTag . '$this->prependSection(); ?>';
+    }
+    /**
+    * Stop injecting content into a section and prepend it.
+    *
+    * @return string
+    * @throws \InvalidArgumentException
+    */
+    public function prependSection()
+    {
+        if (empty($this->sectionStack)) {
+            throw new InvalidArgumentException('Cannot end a section without first starting one.');
+        }
+        $last = array_pop($this->sectionStack);
+        $content=ob_get_clean();
+        if (isset($this->sections[$last])) {
+            if (strpos($this->sections[$last], $content)===false) {
+                $this->sections[$last] = $content.$this->sections[$last];
+            }
+        } else {
+            $this->sections[$last] = $content;
+        }
+        return $last;
+    }
+    public function appendSection()
+    {
+        if (empty($this->sectionStack)) {
+            throw new InvalidArgumentException('Cannot end a section without first starting one.');
+        }
+        $last = array_pop($this->sectionStack);
+        $content=ob_get_clean();
+        if (isset($this->sections[$last])) {
+            if (strpos($this->sections[$last], $content)===false) {
+                $this->sections[$last] .= $content;
+            }
+        } else {
+            $this->sections[$last] = $content;
+        }
+        return $last;
+    }
+    public function setSections($sections)
+    {
+        $this->sections=$sections;
+        return true;
+    }
+    public function getSections()
+    {
+        return $this->sections;
     }
 }

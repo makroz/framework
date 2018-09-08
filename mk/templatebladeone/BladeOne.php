@@ -111,7 +111,7 @@ class BladeOne
      * The main url of the system. Don't use $SERVER['HTTP_HOST'] or $SERVER['SERVER_NAME'] unless the server is protected
      * @var string
      */
-    var $baseUrl = './';
+    public $baseUrl = './';
 
     /**
      * The file currently being compiled.
@@ -308,7 +308,9 @@ class BladeOne
         try {
             eval('?' . '>' . $php);
         } catch (Exception $e) {
-            while (ob_get_level() > $obLevel) ob_end_clean();
+            while (ob_get_level() > $obLevel) {
+                ob_end_clean();
+            }
             throw $e;
         }/* catch (Throwable $e) {
             while (ob_get_level() > $obLevel) ob_end_clean();
@@ -345,7 +347,9 @@ class BladeOne
             }
         }
         $this->isRunFast = $runFast;
-        return $this->evaluatePath($this->getCompiledFile(), $variables);
+        $r=$this->evaluatePath($this->getCompiledFile(), $variables);
+        //\Mk\Debug::debug_to_console($this->sections);
+        return $r;
     }
 
     /**
@@ -721,7 +725,6 @@ class BladeOne
         } else {
             $role = $this->stripParentheses($expression);
             return $this->phpTag . "if(!isset(\$this->currentUser) || \$this->currentRole!={$role}): ?>";
-
         }
     }
 
@@ -901,14 +904,12 @@ class BladeOne
      */
     protected function compileEmpty($expression = '')
     {
-
         if (($expression == '')) {
             $empty = '$__empty_' . $this->forelseCounter--;
             return $this->phpTag . "endforeach; if ({$empty}): ?>";
         } else {
             return $this->phpTag . "if (empty{$expression}): ?>";
         }
-
     }
 
     /**
@@ -1362,13 +1363,11 @@ class BladeOne
      */
     public function splitForeach($each = 1, $splitText, $splitEnd = '')
     {
-
         $loopStack = static::last($this->loopsStack); // array(7) { ["index"]=> int(0) ["remaining"]=> int(6) ["count"]=> int(5) ["first"]=> bool(true) ["last"]=> bool(false) ["depth"]=> int(1) ["parent"]=> NULL }
         if ($loopStack['index'] == $loopStack['count']) {
             return $splitEnd;
         }
         if ($loopStack['index'] % $each == 0) {
-
             return $splitText;
         }
         return "";
@@ -1436,7 +1435,7 @@ class BladeOne
         return implode(' ', array_map('static::convertArgCallBack', array_keys($array), $array));
     }
 
-    function convertArgCallBack($k, $v)
+    public function convertArgCallBack($k, $v)
     {
         return $k . "='{$v}' ";
     }
@@ -1760,7 +1759,9 @@ class BladeOne
      */
     public function getFile($fileName)
     {
-        if (is_file($fileName)) return file_get_contents($fileName);
+        if (is_file($fileName)) {
+            return file_get_contents($fileName);
+        }
         $this->showError('getFile', "File does not exist at path {$fileName}", true);
         return '';
     }
@@ -1975,7 +1976,6 @@ class BladeOne
                 if ($needle != '' && strpos($haystack, $needle) === 0) {
                     return true;
                 }
-
             }
         }
 

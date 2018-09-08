@@ -1,0 +1,251 @@
+@section('js.inline')
+
+function _fillForm(msg){
+if (msg=='error'){
+	$('#mk_formulario').modal('close');
+	alert('error');
+}else{
+	var datos=JSON.parse(msg);
+	$.each(datos, function(i, item) {
+		var type=$('#'+i).prop("tagName");
+		if (type=='INPUT'){
+			var type2=$('#'+i).prop("type");
+			if (type2=='checkbox'){
+				if (item==1){
+					item=true;
+				}else{
+					item=false;
+				}
+				$('#'+i).prop('checked', item);
+			}else{
+				$('#'+i).val(item);
+			}
+
+		}
+		if (type=='SELECT'){
+			$('#'+i).find('option[value="'+item+'"]').prop('selected', true);
+		}
+		//alert(i+' es :'+$('#'+i).prop("tagName"));
+	});
+	$("select").formSelect();
+
+}
+return -1;
+}
+
+function initOpenForm(_respond,noejecutar){
+if (!noejecutar){
+if ($('#_save_').val()=='add'){
+	cleanForm(formul);
+}
+[[compile:]]
+	$$variables[codejsopenform]
+[[:compile]]
+///
+{% yield js.openform %}
+///
+@yield('openform')
+}
+return '001';
+}
+
+function cleanForm(f,seguir){
+	var idAction=$(f).find('#_save_').val();
+	if (!seguir){
+		seguir='';
+	}
+
+	$(f).find('select'+seguir).each(function(index){
+		var def=$(this).data('defval');
+		if (def==undefined){
+			def='';
+		}
+		if (def==''){
+			$(this).find('option:eq(0)').prop('selected', true);
+		}else{
+			$(this).val(def);
+		}
+		$(this).data('oldvalue','');
+	});
+	$(f).find('input'+seguir).each(function(index){
+	//console.log($(this).hasClass('check'),this);
+		if (!$(this).hasClass('check')){
+			var def=$(this).data('defval');
+			if (def==undefined){
+				def='';
+			}
+			$(this).val(def);
+			$(this).data('oldvalue','');
+		}
+	});
+	$(f).find('.check'+seguir).each(function(index){
+		var def=$(this).data('defval');
+		if (def==undefined){
+			def='';
+		}
+		if (def==0){
+			def='';
+		}
+		if (def==''){
+			$(f).find('.check').prop('checked', false);
+		}else{
+			if (def=='1'){
+				$(f).find('.check').prop('checked', true);
+			}
+		}
+	});
+	@yield('cleanform')
+	$(f).find('.error_input').html('');
+	$(f).find('#_save_').val(idAction);
+}
+
+var formul='';
+function _openForm(f, idAction,tit){
+		if ($(f).data('ultAction')==undefined){
+			$(f).data('ultAction','ver');
+		}
+		formul=f;
+		cleanForm(f);
+		$(f).find('#_save_').val(idAction);
+		$(f).find('h4.modal-tit').html(tit);
+
+		if (idAction=='ver'){
+			$('#btnSave, #btnSaveNext').hide();
+			$('#btnPrint').show();
+			$(f).data('ultAction',idAction);
+		}else{
+			$('#btnPrint').hide();
+			$('#btnSave, #btnSaveNext').show();
+			$('#mk_formulario  .modal-footer').find('.pag').html('');
+			if (((idAction=='add')&&($(f).data('ultAction')=='ver'))||('{{$anexos[cargaAjaxForm]}}'=='1')){
+				reaction('',idAction,'','#mk_formulario .modal-content',initOpenForm);
+			}else{
+				@foreach($anexos as $row_i=>$row)
+				@if( @$row['cargaAjax']==1 )
+				reaction('campo=$row[name]','getListFor','','#$row[name]',actualizarUI);
+				 @endif
+				@endforeach
+				//if (idAction=='add'){
+				//	initOpenForm();
+				//}
+
+			}
+			$(f).data('ultAction',idAction);
+		}
+
+
+		actualizarUI();
+		$(f).modal('open');
+}
+
+
+function verItem(id){
+	$('.mk_pag').removeClass('active');
+	$('.mk_pag:contains("'+id+'")').addClass('active');
+	reaction('cod='+id,'ver','','#mk_formulario .modal-content');
+}
+
+
+
+function clicBotonera(boton,action){
+var idSel = $(boton).parent().parent().data('cod');
+if (!action){
+var idAction = $(boton).data('action');
+}else{
+var idAction = action;
+}
+var selCount = 1;
+var div=''
+
+if (idSel==undefined){
+	idSel = serializar();
+	selCount = $(".list_check:checked").length;
+}
+
+var options=[];
+	options['cod']=idSel;
+
+	if (idAction=='add'){
+		options=[];
+		_openForm('#mk_formulario',idAction,'Adicionar [[var:]]_modSingular_[[:var]]');
+		//reaction(options,idAction,'','#mk_formulario .modal-content');
+		return false;
+	}
+
+
+	if (idAction=='sel'){
+		if (selCount!=1){
+		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
+		return false;
+		}
+		parent.getBuscar(idSel);
+		return false;
+	}
+
+	if (idAction=='edit'){
+		if (selCount!=1){
+		$.alert({ content:'Debe escoger 1 fila y solo 1',type: 'blue'});
+		return false;
+		}
+		_openForm('#mk_formulario',idAction,'Editar [[var:]]_modSingular_[[:var]]');
+		//reaction(options,'getItem','','#mk_formulario .modal-content',_fillForm,'POST');
+		reaction(options,idAction,'','#mk_formulario .modal-content',initOpenForm);
+		return false;
+	}
+	if (idAction=='del'){
+		if (selCount==0){
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
+		return false;
+		}
+		idAction='';
+		$.confirm({
+		    title: 'Confirmacion',
+		    content: '¿Esta seguro de querer borrar los registros marcados?',
+		    type:'red',
+		    buttons: {
+		        confirm: function () {
+		            options['_del']='del';
+					idAction='listar';
+					div='.listTable';
+					reaction(options,idAction,'',div);
+		        },
+		        cancel: function () {
+
+		        }
+		    }
+		});
+	}
+
+	if (idAction=='ver'){
+		if (selCount==0){
+		$.alert({ content:'Debe escoger al menos 1 fila',type: 'blue'});
+		return false;
+		}
+		var pag='';
+		if (selCount>1){
+
+			var cods=idSel.split(',');
+			$.each(cods,function(i,item){
+				pag=pag+'<span class="mk_pag" onclick="verItem('+item+');" >'+item+'</span>';
+			});
+		}
+		$('#mk_formulario  .modal-footer').find('.pag').html(pag);
+		_openForm('#mk_formulario',idAction,'Ver [[var:]]_modSingular_[[:var]]',true);
+
+		reaction(options,idAction,'','#mk_formulario .modal-content');
+		return false;
+	}
+
+	if (idAction!=''){
+	reaction(options,idAction,'',div);
+	//alert('Action Seleccionada: '+idAction);
+	}
+	return false;
+}
+
+@append
+<a class="btn-floating  waves-effect waves-light yellow darken-1"" title="Editar" data-action="edit" onclick="clicBotonera(this);"><i class="material-icons">edit</i></a>
+@if( \Mk\Tools\App::isBuscar()==false )
+<a class="btn-floating waves-effect waves-light red" title="Elimminar" data-action="del" onclick="clicBotonera(this);"><i class="material-icons">delete</i></a>
+ @endif
+<a class="btn-floating  waves-effect waves-light blue" title="Ver" data-action="ver" onclick="clicBotonera(this);"><i class="material-icons">visibility</i></a>
