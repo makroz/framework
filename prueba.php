@@ -116,6 +116,7 @@ var pk=[[]](item).data('pk');
 var status=[[]](item).data('status');
 
 var options=[];
+
 	options['pk']=pk;
 	options['campos[status]']=status;
 var link=reaction(options,'setData','',true);
